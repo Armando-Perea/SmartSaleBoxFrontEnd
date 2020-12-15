@@ -23,7 +23,7 @@ public class SmartSaleBoxMain extends JFrame {
 	private static final long serialVersionUID = -3289141083530735532L;
 	
 	private JPanel contentPane;
-	private JTable tableSale;
+	private JTable tblSale;
 	private JTable tableCartSale;
 	private JTextField txtSubTotal;
 	private JTextField txtTotalSale;
@@ -118,8 +118,8 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedSale.add(salePanel);
 		salePanel.setLayout(new BorderLayout(0, 0));
 		
-		tableSale = new JTable();
-		salePanel.add(tableSale, BorderLayout.CENTER);
+		tblSale = new JTable();
+		salePanel.add(tblSale, BorderLayout.CENTER);
 		
 		JPanel cartSalePanel = new JPanel();
 		cartSalePanel.setBounds(53, 78, 484, 85);
