@@ -8,7 +8,7 @@ import com.java.smartsalebox.models.Employee;
 import com.java.smartsalebox.models.Products;
 import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
 
-public class SaveAdministratorProcess {
+public class SaveEmployeeProcess {
 
 	 public final static String ADMIN_SAVED_SUCCESSFULLY=" ha sido dado de alta con éxito!";
 	    public final static String ADMIN_SAVED_FAILED="No es posible dar de alta Administrador en este momento";
