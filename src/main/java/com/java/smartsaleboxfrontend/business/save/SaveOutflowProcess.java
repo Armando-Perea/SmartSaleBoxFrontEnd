@@ -1,6 +1,9 @@
 package com.java.smartsaleboxfrontend.business.save;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import javax.swing.JOptionPane;
 
@@ -16,12 +19,15 @@ public class SaveOutflowProcess {
 	
 	public static Integer createNewOutflow() {
 		Outflow newOutflow = new Outflow();
+		LocalDateTime myDateObj = LocalDateTime.now();
+		DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy", new Locale("es", "ES"));
+		String formattedDate = myDateObj.format(myFormatObj);
 			try {	
 				newOutflow.setIdOutflow(0);
 				newOutflow.setAttendee("");
 				newOutflow.setConcept("");
 				newOutflow.setDescription("");
-				newOutflow.setOutflowDate(new Date(5L));
+				newOutflow.setOutflowDate(formattedDate);
 				newOutflow.setPaymentType("");
 				newOutflow.setQuantity(0.00);
 

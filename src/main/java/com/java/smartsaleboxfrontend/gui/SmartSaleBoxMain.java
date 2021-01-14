@@ -6,15 +6,21 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
+import com.java.smartsalebox.models.Sales;
+import com.java.smartsaleboxfrontend.business.read.ReadCartSaleInfo;
+import com.java.smartsaleboxfrontend.business.read.ReadProductsInfo;
 import com.java.smartsaleboxfrontend.business.save.SaveBulkProductProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveEmailProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveProductProcess;
+import com.java.smartsaleboxfrontend.business.save.SaveSaleProcess;
 import com.java.smartsaleboxfrontend.utils.SmartSaleBoxOperations;
 
 import javax.swing.JTabbedPane;
 import java.awt.SystemColor;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import java.awt.Font;
 import javax.swing.JTable;
@@ -25,23 +31,45 @@ import javax.swing.JPasswordField;
 import javax.swing.JComboBox;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SmartSaleBoxMain extends JFrame {
 
 	private static final long serialVersionUID = -3289141083530735532L;
 	
-	public static Integer noSale = 0;
+	public static Integer noSale = 1;
+	public static List<Sales> salesList = new ArrayList<>();
 	
 	private JPanel contentPane;
 	
-	public static  JTable tblSale;
-	public static JTable tableCartSale;
+	/// TABLES CREATION  /////
+	public static JTable tblSale;
+	public static JTable tblCartSale;
 	public static JTable tblCashPayment;
 	public static JTable tblSaleHistory;
 	public static JTable tblNewProduct;
 	public static JTable tblNewBulkProducts;
-	public static JTable tableEmail;
-	public static JTable tableAdmin;
+	public static JTable tblEmail;
+	public static JTable tblAdmin;
+	
+	/// TABLE MODEL CREATION  /////
+	public static DefaultTableModel tableModelSale;  
+	public static DefaultTableModel tableModelCartSale; 
+	public static DefaultTableModel tableModelCashPayment; 
+	public static DefaultTableModel tableModelSaleHistory;
+	public static DefaultTableModel tableModelNewProduct;
+	public static DefaultTableModel tableModelNewBulkProducts;
+	public static DefaultTableModel tableModelEmail;
+	public static DefaultTableModel tableModelAdmin;
+	
+	// SCROLL SECTION
+	public static JScrollPane scrollCartSale;
+	public static JScrollPane scrollSale;
 	
 	public static JTextField txtSubTotal;
 	public static JTextField txtTotalSale;
@@ -141,16 +169,19 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedSale.add(salePanel);
 		salePanel.setLayout(new BorderLayout(0, 0));
 		
+		scrollSale = new JScrollPane();
+		salePanel.add(scrollSale, BorderLayout.CENTER);
+		
 		tblSale = new JTable();
-		salePanel.add(tblSale, BorderLayout.CENTER);
+		scrollSale.setViewportView(tblSale);
 		
 		JPanel cartSalePanel = new JPanel();
 		cartSalePanel.setBounds(53, 78, 484, 85);
 		tabbedSale.add(cartSalePanel);
 		cartSalePanel.setLayout(new BorderLayout(0, 0));
 		
-		tableCartSale = new JTable();
-		cartSalePanel.add(tableCartSale, BorderLayout.CENTER);
+		scrollCartSale = new JScrollPane();
+		cartSalePanel.add(scrollCartSale, BorderLayout.CENTER);
 		
 		JLabel lblProducto = new JLabel("Producto:");
 		lblProducto.setFont(new Font("Lucida Bright", Font.BOLD, 14));
@@ -212,6 +243,18 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedSale.add(lblConsultarProducto);
 		
 		txtSaleProductSaleName = new JTextField();
+		txtSaleProductSaleName.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					if (ReadCartSaleInfo.validateGetProdName()) {
+						ReadCartSaleInfo.fillCartSaleTableByName(txtSaleProductSaleName.getText());
+					} else {
+						JOptionPane.showMessageDialog(null, "Ingrese Producto por favor");
+					}
+				}
+			}
+		});
 		txtSaleProductSaleName.setColumns(10);
 		txtSaleProductSaleName.setBounds(677, 78, 212, 28);
 		tabbedSale.add(txtSaleProductSaleName);
@@ -858,8 +901,8 @@ public class SmartSaleBoxMain extends JFrame {
 		paneEmail.setBounds(498, 225, 498, 168);
 		EmailConfigPanel.add(paneEmail);
 		
-		tableEmail = new JTable();
-		paneEmail.setViewportView(tableEmail);
+		tblEmail = new JTable();
+		paneEmail.setViewportView(tblEmail);
 		
 		JButton btnUpdateEmail = new JButton("Actualizar");
 		btnUpdateEmail.setBounds(509, 420, 117, 25);
@@ -943,8 +986,8 @@ public class SmartSaleBoxMain extends JFrame {
 		paneAdmin.setBounds(466, 227, 553, 251);
 		adminConfigPanel.add(paneAdmin);
 		
-		tableAdmin = new JTable();
-		paneAdmin.setViewportView(tableAdmin);
+		tblAdmin = new JTable();
+		paneAdmin.setViewportView(tblAdmin);
 		
 		JButton btnUpdateAdmin = new JButton("Actualizar");
 		btnUpdateAdmin.setBounds(476, 490, 153, 34);
@@ -953,5 +996,39 @@ public class SmartSaleBoxMain extends JFrame {
 		JButton btnDeleteAdmin = new JButton("Borrar");
 		btnDeleteAdmin.setBounds(866, 490, 123, 34);
 		adminConfigPanel.add(btnDeleteAdmin);
+		
+		/////////////// BEGINS CART SALE MODEL BUILDING
+		final String cartSaleColumns[] = { "idProd", "Producto", "Precio", "Stock" };
+		tableModelCartSale = new DefaultTableModel(cartSaleColumns, 0);
+		tblCartSale = new JTable(tableModelCartSale);
+		tblCartSale.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				System.out.println("Clicked");
+				SaveSaleProcess.addProductToSaleList(e);
+			}
+		});
+		tblCartSale.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		tblCartSale.getColumnModel().getColumn(0).setPreferredWidth(50);
+		tblCartSale.getColumnModel().getColumn(1).setPreferredWidth(230);
+		tblCartSale.getColumnModel().getColumn(2).setPreferredWidth(100);
+		tblCartSale.getColumnModel().getColumn(3).setPreferredWidth(100);
+		scrollCartSale.setViewportView(tblCartSale);
+		
+		/////////////// BEGINS SALE INFO MODEL BUILDING // Agregar Id prodcuto y Stock para el control de las tablas de stock
+		final String saleColumns[] = {"idSale","noSale","Description","Precio","Unidades","total" };
+		tableModelSale = new DefaultTableModel(saleColumns, 0);
+		tblSale = new JTable(tableModelSale);
+		tblSale.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		tblSale.getColumnModel().getColumn(0).setPreferredWidth(50);
+		tblSale.getColumnModel().getColumn(1).setPreferredWidth(50);
+		tblSale.getColumnModel().getColumn(2).setPreferredWidth(180);
+		tblSale.getColumnModel().getColumn(3).setPreferredWidth(60);
+		tblSale.getColumnModel().getColumn(4).setPreferredWidth(70);
+		tblSale.getColumnModel().getColumn(5).setPreferredWidth(60);
+		scrollSale.setViewportView(tblSale);
+		
+		
 	}
+	
 }

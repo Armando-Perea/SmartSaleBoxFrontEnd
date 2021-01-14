@@ -32,17 +32,17 @@ public class UpdateEmployeeProcess {
 		String employeeName, employeeLast, employeePhone, employeePassword, employeeRole;
 
 		Employee employee = new Employee();
-		row = SmartSaleBoxMain.tableAdmin.getSelectedRow();
+		row = SmartSaleBoxMain.tblAdmin.getSelectedRow();
 		try {
 			if (row > -1) {
-				employeeId = Integer.parseInt(SmartSaleBoxMain.tableAdmin.getValueAt(row, 0).toString());
+				employeeId = Integer.parseInt(SmartSaleBoxMain.tblAdmin.getValueAt(row, 0).toString());
 				employee = EmployeeClient.getEmployeeById(employeeId);
 				if (employee != null) {
-					employeeName = (String) SmartSaleBoxMain.tableAdmin.getValueAt(row, 1);
-					employeeLast = (String) SmartSaleBoxMain.tableAdmin.getValueAt(row, 2);
-					employeePhone = (String) SmartSaleBoxMain.tableAdmin.getValueAt(row, 3);
-					employeePassword = (String) SmartSaleBoxMain.tableAdmin.getValueAt(row, 4);
-					employeeRole = (String) SmartSaleBoxMain.tableAdmin.getValueAt(row, 5);
+					employeeName = (String) SmartSaleBoxMain.tblAdmin.getValueAt(row, 1);
+					employeeLast = (String) SmartSaleBoxMain.tblAdmin.getValueAt(row, 2);
+					employeePhone = (String) SmartSaleBoxMain.tblAdmin.getValueAt(row, 3);
+					employeePassword = (String) SmartSaleBoxMain.tblAdmin.getValueAt(row, 4);
+					employeeRole = (String) SmartSaleBoxMain.tblAdmin.getValueAt(row, 5);
 					//// SETTING THE VALUES TO CAREER OBJECT
 					if (!employeeName.isEmpty()) {
 						employee.setEmployeeName(employeeName);

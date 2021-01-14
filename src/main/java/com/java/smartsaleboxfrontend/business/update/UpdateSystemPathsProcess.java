@@ -32,17 +32,17 @@ public class UpdateSystemPathsProcess {
 		String inflowsPdf, outflowsPdf, earningsPdf, productsPdf, salesPdf;
 
 		SystemPaths paths = new SystemPaths();
-		row = SmartSaleBoxMain.tableAdmin.getSelectedRow();
+		row = SmartSaleBoxMain.tblAdmin.getSelectedRow();
 		try {
 			if (row > -1) {
-				idPath = Integer.parseInt(SmartSaleBoxMain.tableAdmin.getValueAt(row, 0).toString());
+				idPath = Integer.parseInt(SmartSaleBoxMain.tblAdmin.getValueAt(row, 0).toString());
 				paths = SystemPathsClient.getSystemPathById(idPath);
 				if (paths != null) {
-					inflowsPdf = (String) SmartSaleBoxMain.tableAdmin.getValueAt(row, 1);
-					outflowsPdf = (String) SmartSaleBoxMain.tableAdmin.getValueAt(row, 2);
-					earningsPdf = (String) SmartSaleBoxMain.tableAdmin.getValueAt(row, 3);
-					productsPdf = (String) SmartSaleBoxMain.tableAdmin.getValueAt(row, 4);
-					salesPdf = (String) SmartSaleBoxMain.tableAdmin.getValueAt(row, 5);
+					inflowsPdf = (String) SmartSaleBoxMain.tblAdmin.getValueAt(row, 1);
+					outflowsPdf = (String) SmartSaleBoxMain.tblAdmin.getValueAt(row, 2);
+					earningsPdf = (String) SmartSaleBoxMain.tblAdmin.getValueAt(row, 3);
+					productsPdf = (String) SmartSaleBoxMain.tblAdmin.getValueAt(row, 4);
+					salesPdf = (String) SmartSaleBoxMain.tblAdmin.getValueAt(row, 5);
 					//// SETTING THE VALUES TO CAREER OBJECT
 					if (!inflowsPdf.isEmpty()) {
 						paths.setInflowsPdf(inflowsPdf);
