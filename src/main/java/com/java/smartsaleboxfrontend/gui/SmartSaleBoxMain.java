@@ -44,6 +44,7 @@ public class SmartSaleBoxMain extends JFrame {
 	
 	public static Integer noSale = 1;
 	public static List<Sales> salesList = new ArrayList<>();
+	public static List<Sales> bulkList = new ArrayList<>();
 	
 	private JPanel contentPane;
 	
@@ -1004,7 +1005,6 @@ public class SmartSaleBoxMain extends JFrame {
 		tblCartSale.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				System.out.println("Clicked");
 				SaveSaleProcess.addProductToSaleList(e);
 			}
 		});
@@ -1016,19 +1016,19 @@ public class SmartSaleBoxMain extends JFrame {
 		scrollCartSale.setViewportView(tblCartSale);
 		
 		/////////////// BEGINS SALE INFO MODEL BUILDING // Agregar Id prodcuto y Stock para el control de las tablas de stock
-		final String saleColumns[] = {"idSale","noSale","Description","Precio","Unidades","total" };
+		final String saleColumns[] = {"idSale","noSale","Description","Precio","Unidades","total","idProd","Tipo" };
 		tableModelSale = new DefaultTableModel(saleColumns, 0);
 		tblSale = new JTable(tableModelSale);
 		tblSale.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		tblSale.getColumnModel().getColumn(0).setPreferredWidth(50);
 		tblSale.getColumnModel().getColumn(1).setPreferredWidth(50);
 		tblSale.getColumnModel().getColumn(2).setPreferredWidth(180);
-		tblSale.getColumnModel().getColumn(3).setPreferredWidth(60);
+		tblSale.getColumnModel().getColumn(3).setPreferredWidth(70);
 		tblSale.getColumnModel().getColumn(4).setPreferredWidth(70);
-		tblSale.getColumnModel().getColumn(5).setPreferredWidth(60);
+		tblSale.getColumnModel().getColumn(5).setPreferredWidth(70);
+		tblSale.getColumnModel().getColumn(6).setPreferredWidth(50);
+		tblSale.getColumnModel().getColumn(7).setPreferredWidth(50);
 		scrollSale.setViewportView(tblSale);
-		
-		
 	}
 	
 }

@@ -23,6 +23,7 @@ public class SaveProductProcess {
 				newProduct.setEarning(Double.parseDouble(SmartSaleBoxMain.txtNewEarning.getText()));
 				newProduct.setStock(Integer.parseInt(SmartSaleBoxMain.txtNewStock.getText()));
 				newProduct.setBarCode(SmartSaleBoxMain.txtNewBarCode.getText());
+				newProduct.setType("GENERAL");
 				newProduct = ProductsClient.addProduct(newProduct);
 				if(newProduct.getIdProduct()!=null) {
 					JOptionPane.showMessageDialog(null, newProduct.getProduct()+PRODUCT_SAVED_SUCCESSFULLY);

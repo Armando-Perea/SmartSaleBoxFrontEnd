@@ -1,15 +1,9 @@
 package com.java.smartsaleboxfrontend.business.read;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-
 import javax.swing.JOptionPane;
 
 import com.java.smartsalebox.client.ProductsClient;
-import com.java.smartsalebox.client.SalesClient;
 import com.java.smartsalebox.models.Products;
-import com.java.smartsalebox.models.Sales;
 import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
 
 public class ReadCartSaleInfo {

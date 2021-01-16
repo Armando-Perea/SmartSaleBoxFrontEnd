@@ -21,7 +21,7 @@ public class ReadSaleInfo {
 			if(sales.length>0) {
 				SmartSaleBoxMain.tableModelSale.setRowCount(0);
 				for (Sales sal : sales) {
-					Object[] saletItems = {sal.getIdSale(),sal.getNoSale(),sal.getDescription(),sal.getPrice(),sal.getUnits(),sal.getTotal()};
+					Object[] saletItems = {sal.getIdSale(),sal.getNoSale(),sal.getDescription(),sal.getPrice(),sal.getUnits(),sal.getTotal(),sal.getIdProduct(),sal.getType()};
 					SmartSaleBoxMain.tableModelSale.addRow(saletItems);
 				//  {"idSale","noSale","Description","Precio","Unidades","total" };
 				}
