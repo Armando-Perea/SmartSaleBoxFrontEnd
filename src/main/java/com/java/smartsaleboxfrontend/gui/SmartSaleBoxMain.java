@@ -42,6 +42,8 @@ public class SmartSaleBoxMain extends JFrame {
 
 	private static final long serialVersionUID = -3289141083530735532L;
 	
+	public static BulkSaleMain bulkSaleMain = new BulkSaleMain();
+	
 	public static Integer noSale = 1;
 	public static List<Sales> salesList = new ArrayList<>();
 	public static List<Sales> bulkList = new ArrayList<>();
@@ -289,6 +291,12 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedSale.add(lblACobrar);
 		
 		JButton btnVentaKg = new JButton("Venta por Kg");
+		btnVentaKg.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				bulkSaleMain.setVisible(true);
+				bulkSaleMain.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			}
+		});
 		btnVentaKg.setBounds(644, 209, 150, 39);
 		tabbedSale.add(btnVentaKg);
 		

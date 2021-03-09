@@ -1,13 +1,11 @@
 package com.java.smartsaleboxfrontend.business.read;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
 import javax.swing.JOptionPane;
 
 import com.java.smartsalebox.client.BulkProductsClient;
 import com.java.smartsalebox.models.BulkProducts;
 import com.java.smartsaleboxfrontend.gui.BulkSaleMain;
+import com.java.smartsaleboxfrontend.utils.SmartSaleBoxOperations;
 
 public class ReadBulkSaleInfo {
 
@@ -53,7 +51,7 @@ public class ReadBulkSaleInfo {
 			kiloGrams = Double.parseDouble(BulkSaleMain.txtKiloGrams.getText());
 			kiloPrice = Double.parseDouble(BulkSaleMain.txtKiloPrice.getText());
 			saleQuantity = (kiloGrams*kiloPrice)/kilo;
-			BulkSaleMain.txtSaleQuantity.setText(roundDouble(saleQuantity));
+			BulkSaleMain.txtSaleQuantity.setText(SmartSaleBoxOperations.roundDouble(saleQuantity));
 		}catch(Exception ex) {
 			BulkSaleMain.txtKiloGrams.setText("0.00");
 			BulkSaleMain.txtSaleQuantity.setText("0.00");
@@ -68,18 +66,12 @@ public class ReadBulkSaleInfo {
 			saleQuantity = Double.parseDouble(BulkSaleMain.txtSaleQuantity.getText());
 			kiloPrice = Double.parseDouble(BulkSaleMain.txtKiloPrice.getText());
 			kiloGrams = (saleQuantity*kilo)/kiloPrice;
-			BulkSaleMain.txtKiloGrams.setText(roundDouble(kiloGrams));
+			BulkSaleMain.txtKiloGrams.setText(SmartSaleBoxOperations.roundDouble(kiloGrams));
 		}catch(Exception ex) {
 			BulkSaleMain.txtKiloGrams.setText("0.00");
 			BulkSaleMain.txtSaleQuantity.setText("0.00");
 		}
 
-	}
-
-	private static String roundDouble(double d) {
-		BigDecimal bigDecimal = new BigDecimal(Double.toString(d));
-		bigDecimal = bigDecimal.setScale(2, RoundingMode.HALF_UP);
-		return bigDecimal.toString();
 	}
 
 }

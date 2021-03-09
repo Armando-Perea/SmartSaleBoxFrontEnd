@@ -12,6 +12,7 @@ import com.java.smartsaleboxfrontend.business.read.ReadBulkSaleInfo;
 import com.java.smartsaleboxfrontend.business.read.ReadCartSaleInfo;
 import com.java.smartsaleboxfrontend.business.save.SaveBulkProductProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveSaleProcess;
+import com.java.smartsaleboxfrontend.utils.SmartSaleBoxClearFields;
 
 import java.awt.SystemColor;
 import javax.swing.JLabel;
@@ -26,10 +27,14 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class BulkSaleMain extends JFrame {
 
 	private static final long serialVersionUID = 3050354086576961853L;
+	
+	public static BulkSaleMain frame = new BulkSaleMain();
 	
 	public static JPanel BulkPane;
 	
@@ -39,6 +44,8 @@ public class BulkSaleMain extends JFrame {
 	public static JTextField txtKiloPrice;
 	public static JTextField txtSaleQuantity;
 	public static JTextField txtBulkProductSelected;
+	public static JTextField txtBulkSaleId;
+	public static JTextField txtBulkSaleStock;
 	
 	public static DefaultTableModel tableModelBulkSale;
 	public static JTable tblBulkSale;
@@ -51,7 +58,6 @@ public class BulkSaleMain extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					BulkSaleMain frame = new BulkSaleMain();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -125,6 +131,13 @@ public class BulkSaleMain extends JFrame {
 		MainBulkPanel.add(btnClearBulk);
 		
 		JButton btnAddBulkSale = new JButton("Ingresar");
+		btnAddBulkSale.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SaveSaleProcess.addBulkProductToSaleList();
+				SmartSaleBoxClearFields.clearBulkSaleMain(SmartSaleBoxMain.bulkSaleMain);
+				SmartSaleBoxMain.bulkSaleMain.dispose();
+			}
+		});
 		btnAddBulkSale.setBounds(389, 400, 101, 25);
 		MainBulkPanel.add(btnAddBulkSale);
 		
@@ -141,13 +154,13 @@ public class BulkSaleMain extends JFrame {
 				ReadBulkSaleInfo.calculatePrice();
 			}
 		});
-		txtKiloGrams.setBounds(114, 358, 77, 29);
+		txtKiloGrams.setBounds(113, 374, 77, 29);
 		MainBulkPanel.add(txtKiloGrams);
 		txtKiloGrams.setColumns(10);
 		
 		txtKiloPrice = new JTextField();
 		txtKiloPrice.setColumns(10);
-		txtKiloPrice.setBounds(277, 292, 77, 29);
+		txtKiloPrice.setBounds(281, 335, 77, 29);
 		MainBulkPanel.add(txtKiloPrice);
 		
 		txtSaleQuantity = new JTextField();
@@ -164,22 +177,22 @@ public class BulkSaleMain extends JFrame {
 			}
 		});
 		txtSaleQuantity.setColumns(10);
-		txtSaleQuantity.setBounds(114, 398, 77, 29);
+		txtSaleQuantity.setBounds(113, 414, 77, 29);
 		MainBulkPanel.add(txtSaleQuantity);
 		
 		JLabel lblProducto_2_6_1_1_1 = new JLabel("Gramos:");
 		lblProducto_2_6_1_1_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_6_1_1_1.setBounds(42, 357, 66, 28);
+		lblProducto_2_6_1_1_1.setBounds(41, 373, 66, 28);
 		MainBulkPanel.add(lblProducto_2_6_1_1_1);
 		
 		JLabel lblProducto_2_6_1_1_1_1 = new JLabel("En Venta: $");
 		lblProducto_2_6_1_1_1_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_6_1_1_1_1.setBounds(23, 398, 85, 28);
+		lblProducto_2_6_1_1_1_1.setBounds(22, 414, 85, 28);
 		MainBulkPanel.add(lblProducto_2_6_1_1_1_1);
 		
 		JLabel lblProducto_2_6_1_1_1_2 = new JLabel("Precio x Kilo $");
 		lblProducto_2_6_1_1_1_2.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_6_1_1_1_2.setBounds(165, 291, 117, 28);
+		lblProducto_2_6_1_1_1_2.setBounds(173, 334, 117, 28);
 		MainBulkPanel.add(lblProducto_2_6_1_1_1_2);
 		
 		JLabel lblProducto_2_6_1_1_2 = new JLabel("(F5)");
@@ -195,7 +208,7 @@ public class BulkSaleMain extends JFrame {
 		txtBulkProductSelected = new JTextField();
 		txtBulkProductSelected.setEnabled(false);
 		txtBulkProductSelected.setColumns(10);
-		txtBulkProductSelected.setBounds(23, 290, 132, 29);
+		txtBulkProductSelected.setBounds(23, 333, 132, 29);
 		MainBulkPanel.add(txtBulkProductSelected);
 		
 		JPanel bulkSalePanel = new JPanel();
@@ -225,8 +238,30 @@ public class BulkSaleMain extends JFrame {
 		
 		JLabel lblProducto_2_6_1_1_3 = new JLabel("grs.");
 		lblProducto_2_6_1_1_3.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_6_1_1_3.setBounds(196, 359, 57, 28);
+		lblProducto_2_6_1_1_3.setBounds(195, 375, 57, 28);
 		MainBulkPanel.add(lblProducto_2_6_1_1_3);
+		
+		txtBulkSaleId = new JTextField();
+		txtBulkSaleId.setEnabled(false);
+		txtBulkSaleId.setColumns(10);
+		txtBulkSaleId.setBounds(47, 292, 34, 29);
+		MainBulkPanel.add(txtBulkSaleId);
+		
+		JLabel lblProducto_2_6_1_1_1_3 = new JLabel("Id:");
+		lblProducto_2_6_1_1_1_3.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+		lblProducto_2_6_1_1_1_3.setBounds(23, 291, 25, 28);
+		MainBulkPanel.add(lblProducto_2_6_1_1_1_3);
+		
+		txtBulkSaleStock = new JTextField();
+		txtBulkSaleStock.setEnabled(false);
+		txtBulkSaleStock.setColumns(10);
+		txtBulkSaleStock.setBounds(165, 291, 101, 29);
+		MainBulkPanel.add(txtBulkSaleStock);
+		
+		JLabel lblProducto_2_6_1_1_1_3_1 = new JLabel("Stock:");
+		lblProducto_2_6_1_1_1_3_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+		lblProducto_2_6_1_1_1_3_1.setBounds(119, 291, 49, 28);
+		MainBulkPanel.add(lblProducto_2_6_1_1_1_3_1);
 	
 	}
 }

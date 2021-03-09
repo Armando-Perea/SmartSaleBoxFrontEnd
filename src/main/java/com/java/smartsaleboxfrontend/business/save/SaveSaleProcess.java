@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 import com.java.smartsalebox.client.SalesClient;
 import com.java.smartsalebox.models.Sales;
 import com.java.smartsaleboxfrontend.business.read.ReadSaleInfo;
+import com.java.smartsaleboxfrontend.gui.BulkSaleMain;
 import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
 
 public class SaveSaleProcess {
@@ -61,13 +62,11 @@ public class SaveSaleProcess {
 		} else if (stock < 10) {
 			JOptionPane.showMessageDialog(null, "Se recomienda abastecer producto " + saleObj.getDescription());
 			SalesClient.addSale(saleObj);
-			// Consider this for each producto type while applying the sale execution, this is temporary.
 			SmartSaleBoxMain.salesList.add(saleObj);
-			SmartSaleBoxMain.bulkList.add(saleObj);
-			//
 			ReadSaleInfo.getAllSaleTable();
 		} else {
 			SalesClient.addSale(saleObj);
+			SmartSaleBoxMain.salesList.add(saleObj);
 			ReadSaleInfo.getAllSaleTable();
 		}
 	}
@@ -93,6 +92,54 @@ public class SaveSaleProcess {
 
 	private static double getTotalSale(Integer units, Double price) {
 		return price * units;
+	}
+	
+	
+	public static void addBulkProductToSaleList() {
+		Sales saleObj = new Sales();
+		LocalDateTime myDateObj = LocalDateTime.now();
+		DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy", new Locale("es", "ES"));
+		String formattedDate = myDateObj.format(myFormatObj);
+		String product, price, idBulkProdSale, gramsCartSale, stockBulkProduct;
+		Integer stock, idProduct;
+		Double stockBulkAvailable;
+		
+		product = BulkSaleMain.txtBulkProductSelected.getText();
+		price = BulkSaleMain.txtSaleQuantity.getText();
+		gramsCartSale = BulkSaleMain.txtKiloGrams.getText();
+		idBulkProdSale = BulkSaleMain.txtBulkSaleId.getText();
+		stockBulkProduct = BulkSaleMain.txtBulkSaleStock.getText();
+		idProduct = Integer.parseInt(idBulkProdSale);
+		stockBulkAvailable = Double.parseDouble(stockBulkProduct);
+		stock = (int) Math.round(Double.parseDouble(gramsCartSale));
+		
+		saleObj.setIdSale(0);
+		saleObj.setNoSale(SmartSaleBoxMain.noSale);
+		saleObj.setDescription(product+" "+gramsCartSale+"grs.");
+		saleObj.setUnits(1);
+		saleObj.setPrice(Double.parseDouble(price));
+		saleObj.setTotal(saleObj.getPrice());
+		saleObj.setIdProduct(idProduct);
+		saleObj.setStock(stock);
+		saleObj.setType("BULK");
+		saleObj.setSaleDate(formattedDate);
+		saveNewBulkProductSale(saleObj, stockBulkAvailable);
+	}
+	
+	private static void saveNewBulkProductSale(Sales saleObj, Double stock) {
+		if (stock <= 0) {
+			JOptionPane.showMessageDialog(null,
+					"El producto " + saleObj.getDescription() + " se ha agotado, favor de abastecer producto");
+		} else if (stock < 1000) {
+			JOptionPane.showMessageDialog(null, "Se recomienda abastecer producto " + saleObj.getDescription());
+			SalesClient.addSale(saleObj);
+			SmartSaleBoxMain.bulkList.add(saleObj);
+			ReadSaleInfo.getAllSaleTable();
+		} else {
+			SalesClient.addSale(saleObj);
+			SmartSaleBoxMain.bulkList.add(saleObj);
+			ReadSaleInfo.getAllSaleTable();
+		}
 	}
 
 }

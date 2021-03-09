@@ -9,7 +9,7 @@ import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
 
 public class SaveBulkProductProcess {
 
-	  public final static String PRODUCT_SAVED_SUCCESSFULLY=" ha sido dado de alta con éxito!";
+		public final static String PRODUCT_SAVED_SUCCESSFULLY=" ha sido dado de alta con éxito!";
 	    public final static String PRODUCT_SAVED_FAILED="No es posible dar de alta Producto en este momento";
 	    private static final String NUMERIC_VALIDATION_ERROR = "Dato debe ser numérico, revise información";
 	   	private static final String VALIDATION_NUMBER = "java.lang.NumberFormatException";
@@ -19,18 +19,16 @@ public class SaveBulkProductProcess {
 			int columna = BulkSaleMain.tblBulkSale.columnAtPoint(evt.getPoint());
 			int datos = BulkSaleMain.tblBulkSale.getSelectedRow();
 			String product, price, idProdBulk, stockBulk;
-			Integer idProduct;
-			Double stock;
 
 			if ((fila > -1) && (columna > -1)) {
 				product = (BulkSaleMain.tableModelBulkSale.getValueAt(datos, 0)).toString();
 				price = (BulkSaleMain.tableModelBulkSale.getValueAt(datos, 1)).toString();
 				stockBulk = (BulkSaleMain.tableModelBulkSale.getValueAt(datos, 2)).toString();
 				idProdBulk = (BulkSaleMain.tableModelBulkSale.getValueAt(datos, 3)).toString();
-				stock = Double.parseDouble(stockBulk);
-				idProduct = Integer.parseInt(idProdBulk);
 				BulkSaleMain.txtBulkProductSelected.setText(product);
 				BulkSaleMain.txtKiloPrice.setText(price);
+				BulkSaleMain.txtBulkSaleId.setText(idProdBulk);
+				BulkSaleMain.txtBulkSaleStock.setText(stockBulk);
 			}
 		}
 	   	
