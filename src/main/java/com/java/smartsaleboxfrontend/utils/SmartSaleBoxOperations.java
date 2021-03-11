@@ -22,6 +22,8 @@ public class SmartSaleBoxOperations {
 	public final static String CASH_PAYMENT= "EFECTIVO";
 	public final static String CARD_PAYMENT = "TARJETA";
 	public final static String BOTH_PAYMENT = "AMBOS";
+	public final static String GENERAL_TYPE = "GENERAL";
+	public final static String BULK_TYPE = "BULK";
 	
 	public static String calculateProductEarning(Double salePrice, Double costPrice) {
 		Double earning = salePrice-costPrice;
@@ -112,8 +114,6 @@ public class SmartSaleBoxOperations {
 	
 	// AGREGAR MISMO PROCESO PARA BULK, CONSIDERAR CREAR UNA TABLA PARA GANANCIAS DE BULK
 	public void fillProductEarning(List<Sales> salesList) {
-//		List<CartSale> cartSaleList = Arrays.asList(CartSaleClient.getAllCartSale());
-//		System.out.println("Si hay elementos en el carrito de ventas: ");
 		salesList.forEach(System.out::println);
 		for(Sales cartSale : salesList) {
 			System.out.println("Obteniendo Producto por ID: ");
@@ -152,6 +152,7 @@ public class SmartSaleBoxOperations {
 	    productEarnings.setUnitEarning(product.getEarning());
 	    productEarnings.setTotalEarning(getTotalEarning(cartSale.getUnits(),product.getEarning()));
 	    productEarnings.setProductStock(stock);
+	    productEarnings.setProductType(GENERAL_TYPE);
 	 // ACTUALZIAR FECHA EN PRODUCT EARNING A STRING
 	    productEarnings.setSaleDate(formattedDate);
 	 // ACTUALZIAR FECHA EN PRODUCT EARNING A STRING

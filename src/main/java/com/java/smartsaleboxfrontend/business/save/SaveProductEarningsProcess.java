@@ -1,7 +1,5 @@
 package com.java.smartsaleboxfrontend.business.save;
 
-import java.sql.Date;
-
 import javax.swing.JOptionPane;
 
 import com.java.smartsalebox.client.ProductEarningsClient;
@@ -21,7 +19,7 @@ public class SaveProductEarningsProcess {
 				newProductEarning.setIdProductEarning(0);
 				newProductEarning.setProductName("TEST");
 				newProductEarning.setProductStock(50);
-				newProductEarning.setSaleDate(new Date(5L));
+				newProductEarning.setSaleDate("");
 				newProductEarning.setTotalEarning(500.00);
 				newProductEarning.setUnitEarning(250.00);
 				newProductEarning.setUnits(0);
