@@ -2,20 +2,26 @@ package com.java.smartsaleboxfrontend.business.save;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Locale;
 
 import javax.swing.JOptionPane;
 
+import com.java.smartsalebox.client.InflowClient;
 import com.java.smartsalebox.client.SalesClient;
+import com.java.smartsalebox.models.Inflow;
 import com.java.smartsalebox.models.Sales;
 import com.java.smartsaleboxfrontend.business.read.ReadSaleInfo;
 import com.java.smartsaleboxfrontend.gui.BulkSaleMain;
 import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
+import com.java.smartsaleboxfrontend.utils.SmartSaleBoxOperations;
 
 public class SaveSaleProcess {
 
 	public final static String SALE_SAVED_SUCCESSFULLY = " ha sido dado de alta con éxito!";
 	public final static String SALE_SAVED_FAILED = "No es posible dar de alta Venta en este momento";
+	public final static String GENERAL_TYPE = "GENERAL";
+	public final static String BULK_TYPE = "BULK";
 
 	public static void addProductToSaleList(java.awt.event.MouseEvent evt) {
 		Sales saleObj = new Sales();
@@ -46,7 +52,7 @@ public class SaveSaleProcess {
 				saleObj.setTotal(getTotalSale(saleObj.getUnits(), saleObj.getPrice()));
 				saleObj.setIdProduct(idProduct);
 				saleObj.setStock(stock);
-				saleObj.setType("GENERAL");
+				saleObj.setType(GENERAL_TYPE);
 				saleObj.setSaleDate(formattedDate);
 				saveNewProductSale(saleObj, stock);
 			} else {
@@ -116,21 +122,21 @@ public class SaveSaleProcess {
 		saleObj.setIdSale(0);
 		saleObj.setNoSale(SmartSaleBoxMain.noSale);
 		saleObj.setDescription(product+" "+gramsCartSale+"grs.");
-		saleObj.setUnits(1);
+		saleObj.setUnits((int) Math.round(stock));
 		saleObj.setPrice(Double.parseDouble(price));
 		saleObj.setTotal(saleObj.getPrice());
 		saleObj.setIdProduct(idProduct);
-		saleObj.setStock(stock);
-		saleObj.setType("BULK");
+		saleObj.setStock((int) Math.round(stockBulkAvailable));
+		saleObj.setType(BULK_TYPE);
 		saleObj.setSaleDate(formattedDate);
-		saveNewBulkProductSale(saleObj, stockBulkAvailable);
+		saveNewBulkProductSale(saleObj);
 	}
 	
-	private static void saveNewBulkProductSale(Sales saleObj, Double stock) {
-		if (stock <= 0) {
+	private static void saveNewBulkProductSale(Sales saleObj) {
+		if (saleObj.getStock() <= 0) {
 			JOptionPane.showMessageDialog(null,
 					"El producto " + saleObj.getDescription() + " se ha agotado, favor de abastecer producto");
-		} else if (stock < 1000) {
+		} else if (saleObj.getStock() < 1000) {
 			JOptionPane.showMessageDialog(null, "Se recomienda abastecer producto " + saleObj.getDescription());
 			SalesClient.addSale(saleObj);
 			SmartSaleBoxMain.bulkList.add(saleObj);
@@ -140,6 +146,50 @@ public class SaveSaleProcess {
 			SmartSaleBoxMain.bulkList.add(saleObj);
 			ReadSaleInfo.getAllSaleTable();
 		}
+	}
+	
+	public static boolean createNewSaleAndInflow(String paymentType) {
+		LocalDateTime myDateObj = LocalDateTime.now();
+		DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy", new Locale("es", "ES"));
+		String formattedDate = myDateObj.format(myFormatObj);
+		Double totalSale = Double.parseDouble(SmartSaleBoxMain.txtTotalSale.getText());
+		Double cardPayment = Double.parseDouble(SmartSaleBoxMain.txtCardPayment.getText());
+		Double cashPayment = Double.parseDouble(SmartSaleBoxMain.txtReceived.getText());
+		Inflow inflow = new Inflow();
+		inflow.setIdInflow(0);
+		inflow.setAttendee("TEST");
+		inflow.setConcept("VENTA PRODUCTOS");
+		inflow.setDescription("NO. VENTA #"+SmartSaleBoxMain.noSale);
+		inflow.setInflowDate(formattedDate);
+		if(paymentType.equals(SmartSaleBoxOperations.CARD_PAYMENT)) {
+			inflow.setPaymentType(paymentType);
+			inflow.setQuantity(cardPayment);
+			InflowClient.addInflow(inflow);
+			return true;
+		}else if(paymentType.equals(SmartSaleBoxOperations.CASH_PAYMENT)) {
+			inflow.setPaymentType(paymentType);
+			inflow.setQuantity(totalSale);
+			InflowClient.addInflow(inflow);
+			return true;
+		}
+		else if(paymentType.equals(SmartSaleBoxOperations.BOTH_PAYMENT)) {
+			inflow.setPaymentType(SmartSaleBoxOperations.CARD_PAYMENT);
+			inflow.setQuantity(cardPayment);
+			InflowClient.addInflow(inflow);
+			
+			inflow.setPaymentType(SmartSaleBoxOperations.CASH_PAYMENT);
+			inflow.setQuantity(cashPayment);
+			InflowClient.addInflow(inflow);
+			return true;
+		}
+		
+		// Actualizar Stock en Bulk y General
+		// Actualizar ganancias por producto
+		// Actualizar Cajon
+		// Aumentar No de venta +1
+		SmartSaleBoxMain.salesList = new ArrayList<>();
+		SmartSaleBoxMain.bulkList = new ArrayList<>();
+		return false;
 	}
 
 }

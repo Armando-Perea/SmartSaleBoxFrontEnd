@@ -53,7 +53,6 @@ public class SmartSaleBoxMain extends JFrame {
 	/// TABLES CREATION  /////
 	public static JTable tblSale;
 	public static JTable tblCartSale;
-	public static JTable tblCashPayment;
 	public static JTable tblSaleHistory;
 	public static JTable tblNewProduct;
 	public static JTable tblNewBulkProducts;
@@ -73,8 +72,7 @@ public class SmartSaleBoxMain extends JFrame {
 	// SCROLL SECTION
 	public static JScrollPane scrollCartSale;
 	public static JScrollPane scrollSale;
-	
-	public static JTextField txtSubTotal;
+	public static JTextField txtCardPayment;
 	public static JTextField txtTotalSale;
 	public static JTextField txtReceived;
 	public static JTextField txtChangeBack;
@@ -143,7 +141,7 @@ public class SmartSaleBoxMain extends JFrame {
 	public SmartSaleBoxMain() {
 		setTitle("Punto de Venta");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1068, 698);
+		setBounds(100, 100, 938, 698);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -159,7 +157,7 @@ public class SmartSaleBoxMain extends JFrame {
 		
 		JLabel lblNewLabel = new JLabel("@SmartSaleBox.");
 		lblNewLabel.setFont(new Font("Lucida Bright", Font.BOLD, 24));
-		lblNewLabel.setBounds(840, 8, 201, 28);
+		lblNewLabel.setBounds(726, 10, 201, 28);
 		tabbedSale.add(lblNewLabel);
 		
 		JLabel lblEnVenta = new JLabel("En venta");
@@ -168,7 +166,7 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedSale.add(lblEnVenta);
 		
 		JPanel salePanel = new JPanel();
-		salePanel.setBounds(53, 209, 484, 263);
+		salePanel.setBounds(53, 209, 464, 214);
 		tabbedSale.add(salePanel);
 		salePanel.setLayout(new BorderLayout(0, 0));
 		
@@ -191,48 +189,98 @@ public class SmartSaleBoxMain extends JFrame {
 		lblProducto.setBounds(53, 52, 97, 28);
 		tabbedSale.add(lblProducto);
 		
-		JLabel lblProducto_1 = new JLabel("SubTotal:");
-		lblProducto_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_1.setBounds(380, 484, 77, 28);
-		tabbedSale.add(lblProducto_1);
-		
 		JLabel lblProducto_2_1 = new JLabel("Total: $");
 		lblProducto_2_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_1.setBounds(793, 443, 64, 28);
+		lblProducto_2_1.setBounds(368, 435, 64, 28);
 		tabbedSale.add(lblProducto_2_1);
 		
-		JLabel lblProducto_2_1_1 = new JLabel("Recibido: $");
+		JLabel lblProducto_2_1_1 = new JLabel("  Efectivo: $");
 		lblProducto_2_1_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_1_1.setBounds(770, 471, 87, 28);
+		lblProducto_2_1_1.setBounds(421, 504, 87, 28);
 		tabbedSale.add(lblProducto_2_1_1);
 		
 		JLabel lblProducto_2_1_1_1 = new JLabel("Cambio: $");
 		lblProducto_2_1_1_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_1_1_1.setBounds(778, 499, 79, 28);
+		lblProducto_2_1_1_1.setBounds(438, 538, 79, 28);
 		tabbedSale.add(lblProducto_2_1_1_1);
 		
-		txtSubTotal = new JTextField();
-		txtSubTotal.setBounds(450, 486, 87, 28);
-		tabbedSale.add(txtSubTotal);
-		txtSubTotal.setColumns(10);
+		JLabel lblProducto_1_1 = new JLabel("Tarjeta: $");
+		lblProducto_1_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+		lblProducto_1_1.setBounds(440, 473, 77, 28);
+		tabbedSale.add(lblProducto_1_1);
 		
 		txtTotalSale = new JTextField();
+		txtTotalSale.setEditable(false);
+		txtTotalSale.setText("0.00");
+		txtTotalSale.setFont(new Font("Dialog", Font.BOLD, 14));
 		txtTotalSale.setColumns(10);
-		txtTotalSale.setBounds(852, 445, 87, 28);
+		txtTotalSale.setBounds(432, 437, 87, 28);
 		tabbedSale.add(txtTotalSale);
 		
+		txtCardPayment = new JTextField();
+		txtCardPayment.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				SmartSaleBoxOperations.saleReceivedCashProcess();
+			}
+		});
+		txtCardPayment.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				txtCardPayment.setText(null);
+			}
+		});
+		txtCardPayment.setFont(new Font("Dialog", Font.BOLD, 14));
+		txtCardPayment.setText("0.00");
+		txtCardPayment.setColumns(10);
+		txtCardPayment.setBounds(517, 475, 87, 28);
+		tabbedSale.add(txtCardPayment);
+		
 		txtReceived = new JTextField();
+		txtReceived.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				txtReceived.setText(null);
+			}
+		});
+		txtReceived.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				SmartSaleBoxOperations.saleReceivedCashProcess();
+			}
+		});
+		txtReceived.setFont(new Font("Dialog", Font.BOLD, 14));
+		txtReceived.setText("0.00");
 		txtReceived.setColumns(10);
-		txtReceived.setBounds(852, 473, 87, 28);
+		txtReceived.setBounds(517, 506, 87, 28);
 		tabbedSale.add(txtReceived);
 		
 		txtChangeBack = new JTextField();
+		txtChangeBack.setEditable(false);
+		txtChangeBack.setFont(new Font("Dialog", Font.BOLD, 14));
+		txtChangeBack.setText("0.00");
 		txtChangeBack.setColumns(10);
-		txtChangeBack.setBounds(852, 501, 87, 28);
+		txtChangeBack.setBounds(517, 540, 87, 28);
 		tabbedSale.add(txtChangeBack);
 		
 		JButton btnExecuteSale = new JButton("Cobrar");
-		btnExecuteSale.setBounds(822, 541, 117, 39);
+		btnExecuteSale.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(!SmartSaleBoxOperations.isValidSaleQuantity()) {
+					JOptionPane.showMessageDialog(null,"La cantidad recibida es menor, verifique!");
+				}else {
+					JOptionPane.showMessageDialog(null,"Procediendo a pago ...");
+					System.out.println("General Prod");
+					SmartSaleBoxMain.salesList.forEach(System.out::println);
+					System.out.println();
+					System.out.println("Bulk Prod");
+					SmartSaleBoxMain.bulkList.forEach(System.out::println);
+					SaveSaleProcess.createNewSaleAndInflow(SmartSaleBoxOperations.getPaymentType());
+					
+				}
+			}
+		});
+		btnExecuteSale.setBounds(620, 538, 115, 39);
 		tabbedSale.add(btnExecuteSale);
 		
 		JLabel lblEnVenta_1 = new JLabel("En Venta:");
@@ -242,7 +290,7 @@ public class SmartSaleBoxMain extends JFrame {
 		
 		JLabel lblConsultarProducto = new JLabel("Consultar Producto");
 		lblConsultarProducto.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblConsultarProducto.setBounds(708, 38, 150, 28);
+		lblConsultarProducto.setBounds(652, 40, 150, 28);
 		tabbedSale.add(lblConsultarProducto);
 		
 		txtSaleProductSaleName = new JTextField();
@@ -259,36 +307,23 @@ public class SmartSaleBoxMain extends JFrame {
 			}
 		});
 		txtSaleProductSaleName.setColumns(10);
-		txtSaleProductSaleName.setBounds(677, 78, 212, 28);
+		txtSaleProductSaleName.setBounds(624, 80, 212, 28);
 		tabbedSale.add(txtSaleProductSaleName);
 		
 		JLabel lblNombre = new JLabel("Nombre:");
 		lblNombre.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblNombre.setBounds(607, 78, 69, 28);
+		lblNombre.setBounds(555, 78, 69, 28);
 		tabbedSale.add(lblNombre);
 		
 		JLabel lblCdigo = new JLabel("Código:");
 		lblCdigo.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblCdigo.setBounds(612, 128, 64, 28);
+		lblCdigo.setBounds(555, 135, 64, 28);
 		tabbedSale.add(lblCdigo);
 		
 		txtProductCodeSearch = new JTextField();
 		txtProductCodeSearch.setColumns(10);
-		txtProductCodeSearch.setBounds(677, 128, 212, 28);
+		txtProductCodeSearch.setBounds(624, 135, 212, 28);
 		tabbedSale.add(txtProductCodeSearch);
-		
-		JPanel cashPaymentPanel = new JPanel();
-		cashPaymentPanel.setBounds(644, 326, 313, 97);
-		tabbedSale.add(cashPaymentPanel);
-		cashPaymentPanel.setLayout(new BorderLayout(0, 0));
-		
-		tblCashPayment = new JTable();
-		cashPaymentPanel.add(tblCashPayment, BorderLayout.CENTER);
-		
-		JLabel lblACobrar = new JLabel("A cobrar");
-		lblACobrar.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblACobrar.setBounds(644, 286, 87, 28);
-		tabbedSale.add(lblACobrar);
 		
 		JButton btnVentaKg = new JButton("Venta por Kg");
 		btnVentaKg.addActionListener(new ActionListener() {
@@ -297,26 +332,26 @@ public class SmartSaleBoxMain extends JFrame {
 				bulkSaleMain.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			}
 		});
-		btnVentaKg.setBounds(644, 209, 150, 39);
+		btnVentaKg.setBounds(585, 240, 150, 39);
 		tabbedSale.add(btnVentaKg);
 		
 		JButton btnClearSale = new JButton("Borrar Venta");
-		btnClearSale.setBounds(53, 484, 140, 39);
+		btnClearSale.setBounds(53, 446, 140, 39);
 		tabbedSale.add(btnClearSale);
 		
 		JLabel lblF = new JLabel("F9");
 		lblF.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblF.setBounds(811, 209, 49, 28);
+		lblF.setBounds(753, 254, 49, 28);
 		tabbedSale.add(lblF);
 		
 		JLabel lblF_2 = new JLabel("F5");
 		lblF_2.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblF_2.setBounds(107, 524, 49, 28);
+		lblF_2.setBounds(115, 490, 49, 28);
 		tabbedSale.add(lblF_2);
 		
 		JLabel lblF_1 = new JLabel("F12");
 		lblF_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblF_1.setBounds(871, 576, 49, 28);
+		lblF_1.setBounds(753, 538, 49, 28);
 		tabbedSale.add(lblF_1);
 		
 		JPanel tabbedSalesHistory = new JPanel();
@@ -1024,19 +1059,19 @@ public class SmartSaleBoxMain extends JFrame {
 		scrollCartSale.setViewportView(tblCartSale);
 		
 		/////////////// BEGINS SALE INFO MODEL BUILDING // Agregar Id prodcuto y Stock para el control de las tablas de stock
-		final String saleColumns[] = {"idSale","noSale","Description","Precio","Unidades","total","idProd","Tipo" };
+		final String saleColumns[] = {"noSale","Description","Precio","Unidades","total","idProd","Tipo","idSale"};
 		tableModelSale = new DefaultTableModel(saleColumns, 0);
 		tblSale = new JTable(tableModelSale);
 		tblSale.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		tblSale.getColumnModel().getColumn(0).setPreferredWidth(50);
-		tblSale.getColumnModel().getColumn(1).setPreferredWidth(50);
-		tblSale.getColumnModel().getColumn(2).setPreferredWidth(180);
+		tblSale.getColumnModel().getColumn(1).setPreferredWidth(180);
+		tblSale.getColumnModel().getColumn(2).setPreferredWidth(70);
 		tblSale.getColumnModel().getColumn(3).setPreferredWidth(70);
 		tblSale.getColumnModel().getColumn(4).setPreferredWidth(70);
-		tblSale.getColumnModel().getColumn(5).setPreferredWidth(70);
+		tblSale.getColumnModel().getColumn(5).setPreferredWidth(50);
 		tblSale.getColumnModel().getColumn(6).setPreferredWidth(50);
 		tblSale.getColumnModel().getColumn(7).setPreferredWidth(50);
 		scrollSale.setViewportView(tblSale);
+		
 	}
-	
 }
