@@ -2,7 +2,6 @@ package com.java.smartsaleboxfrontend.business.save;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Locale;
 
 import javax.swing.JOptionPane;
@@ -41,7 +40,8 @@ public class SaveSaleProcess {
 			stockCartSale = (SmartSaleBoxMain.tableModelCartSale.getValueAt(datos, 3)).toString();
 			stock = Integer.parseInt(stockCartSale);
 			idProduct = Integer.parseInt(idProdSale);
-			saleObj = SalesClient.getSaleByProductId(idProduct);
+			saleObj = SalesClient.getSaleByProductIdAndNoSale(idProduct, SmartSaleBoxMain.noSale);
+			System.out.println("Sale obj is null: "+saleObj);
 			if (saleObj == null) {
 				saleObj = new Sales();
 				saleObj.setIdSale(0);
@@ -69,11 +69,11 @@ public class SaveSaleProcess {
 			JOptionPane.showMessageDialog(null, "Se recomienda abastecer producto " + saleObj.getDescription());
 			SalesClient.addSale(saleObj);
 			SmartSaleBoxMain.salesList.add(saleObj);
-			ReadSaleInfo.getAllSaleTable();
+			ReadSaleInfo.getSalesByNoSale();
 		} else {
 			SalesClient.addSale(saleObj);
 			SmartSaleBoxMain.salesList.add(saleObj);
-			ReadSaleInfo.getAllSaleTable();
+			ReadSaleInfo.getSalesByNoSale();
 		}
 	}
 
@@ -86,12 +86,12 @@ public class SaveSaleProcess {
 			saleObj.setUnits(saleObj.getUnits() + 1);
 			saleObj.setTotal(getTotalSale(saleObj.getUnits(), saleObj.getPrice()));
 			SalesClient.updateSale(saleObj);
-			ReadSaleInfo.getAllSaleTable();
+			ReadSaleInfo.getSalesByNoSale();
 		} else {
 			saleObj.setUnits(saleObj.getUnits() + 1);
 			saleObj.setTotal(getTotalSale(saleObj.getUnits(), saleObj.getPrice()));
 			SalesClient.updateSale(saleObj);
-			ReadSaleInfo.getAllSaleTable();
+			ReadSaleInfo.getSalesByNoSale();
 		}
 
 	}
@@ -139,12 +139,10 @@ public class SaveSaleProcess {
 		} else if (saleObj.getStock() < 1000) {
 			JOptionPane.showMessageDialog(null, "Se recomienda abastecer producto " + saleObj.getDescription());
 			SalesClient.addSale(saleObj);
-			SmartSaleBoxMain.bulkList.add(saleObj);
-			ReadSaleInfo.getAllSaleTable();
+			ReadSaleInfo.getSalesByNoSale();
 		} else {
 			SalesClient.addSale(saleObj);
-			SmartSaleBoxMain.bulkList.add(saleObj);
-			ReadSaleInfo.getAllSaleTable();
+			ReadSaleInfo.getSalesByNoSale();
 		}
 	}
 	
@@ -170,6 +168,7 @@ public class SaveSaleProcess {
 			inflow.setPaymentType(paymentType);
 			inflow.setQuantity(totalSale);
 			InflowClient.addInflow(inflow);
+			SmartSaleBoxMain.cash=SmartSaleBoxMain.cash+totalSale;
 			return true;
 		}
 		else if(paymentType.equals(SmartSaleBoxOperations.BOTH_PAYMENT)) {
@@ -180,16 +179,11 @@ public class SaveSaleProcess {
 			inflow.setPaymentType(SmartSaleBoxOperations.CASH_PAYMENT);
 			inflow.setQuantity(cashPayment);
 			InflowClient.addInflow(inflow);
+			SmartSaleBoxMain.cash=SmartSaleBoxMain.cash+cashPayment;
 			return true;
 		}
-		
-		// Actualizar Stock en Bulk y General
-		// Actualizar ganancias por producto
-		// Actualizar Cajon
-		// Aumentar No de venta +1
-		SmartSaleBoxMain.salesList = new ArrayList<>();
-		SmartSaleBoxMain.bulkList = new ArrayList<>();
 		return false;
 	}
+	
 
 }

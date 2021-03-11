@@ -19,9 +19,6 @@ public class ReadCartSaleInfo {
 		return true;
 	}
 
-	/**
-	 * searchByStudentId search process to be shown at list table.
-	 */
 	public static void fillCartSaleTableByName(String product) {
 		Products[] products;
 		try {

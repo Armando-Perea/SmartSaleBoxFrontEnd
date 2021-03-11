@@ -4,10 +4,10 @@ import javax.swing.JOptionPane;
 
 import com.java.smartsalebox.client.CashClient;
 import com.java.smartsalebox.models.Cash;
+import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
 
 public class UpdateCashProcess {
 
-	// tblNewBulkProducts
 	private static final String CASH_UPDATED = "Cajón Actualizado con Éxito!";
 	private static final String CASH_NOT_FOUND = "Id no existe!";
 	private static final String CASH_UPDATE_FAILED = "No es posible actualizar cajón";
@@ -16,22 +16,18 @@ public class UpdateCashProcess {
 	private static final String VALIDATION_NUMBER = "java.lang.NumberFormatException";
 	private static final String VALIDATION_TOTAL = "java.lang.NumberFormatException";
 
-	/**
-	 * updateSelectedProductProcess executes the update process for the product
-	 * table.
-	 */
-	// {adm.getIdAdministrator(),adm.getName(),adm.getLastName(),adm.getPosition(),adm.getEmail(),adm.getPassword()};
-	public static void updateCash(Cash cash) {
+	public static void updateCashAndNoSale() {
 		int status = 0;
 		try {
-			cash = CashClient.getCashById(cash.getIdCash());
+			Cash cash = CashClient.getCashById(1);
 			if (cash != null) {
-
+				cash.setQuantity(SmartSaleBoxMain.cash);
+				cash.setNoSale(SmartSaleBoxMain.noSale + 1);
 				status = CashClient.updateCash(cash);
+				SmartSaleBoxMain.noSale++;
 				if (status > 0 && status < 300) {
 					JOptionPane.showMessageDialog(null, CASH_UPDATED, VALIDATION_UPDATE_TITLE,
 							JOptionPane.INFORMATION_MESSAGE);
-					// ReadAdministrationInfo.fillAllAdminTable();
 				} else {
 					JOptionPane.showMessageDialog(null, CASH_UPDATE_FAILED, VALIDATION_UPDATE_TITLE,
 							JOptionPane.INFORMATION_MESSAGE);

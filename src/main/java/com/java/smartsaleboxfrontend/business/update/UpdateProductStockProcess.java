@@ -3,11 +3,14 @@ package com.java.smartsaleboxfrontend.business.update;
 import javax.swing.JOptionPane;
 
 import com.java.smartsalebox.client.ControlProductStockClient;
+import com.java.smartsalebox.client.ProductsClient;
 import com.java.smartsalebox.models.ControlProductStock;
+import com.java.smartsalebox.models.Products;
+import com.java.smartsalebox.models.Sales;
+import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
 
 public class UpdateProductStockProcess {
 
-	// tblNewBulkProducts
 	private static final String STOCK_UPDATED = "Stock Actualizado con Éxito!";
 	private static final String STOCK_NOT_FOUND = "Id no existe!";
 	private static final String STOCK_UPDATE_FAILED = "No es posible actualizar Stock";
@@ -16,11 +19,14 @@ public class UpdateProductStockProcess {
 	private static final String VALIDATION_NUMBER = "java.lang.NumberFormatException";
 	private static final String VALIDATION_TOTAL = "java.lang.NumberFormatException";
 
-	/**
-	 * updateSelectedProductProcess executes the update process for the product
-	 * table.
-	 */
-	// {adm.getIdAdministrator(),adm.getName(),adm.getLastName(),adm.getPosition(),adm.getEmail(),adm.getPassword()};
+	public static void updateGeneralProductStock() {
+		for (Sales sale : SmartSaleBoxMain.salesList) {
+			Products product = ProductsClient.getProductById(sale.getIdProduct());
+			product.setStock(product.getStock() - sale.getUnits());
+			ProductsClient.updateProduct(product);
+		}
+	}
+
 	public static void updateProductStock(ControlProductStock productStock) {
 		int status = 0;
 		try {

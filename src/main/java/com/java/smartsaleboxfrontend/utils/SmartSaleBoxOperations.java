@@ -112,66 +112,16 @@ public class SmartSaleBoxOperations {
 		return CASH_PAYMENT;
 	}
 	
-	// AGREGAR MISMO PROCESO PARA BULK, CONSIDERAR CREAR UNA TABLA PARA GANANCIAS DE BULK
-	public void fillProductEarning(List<Sales> salesList) {
-		salesList.forEach(System.out::println);
-		for(Sales cartSale : salesList) {
-			System.out.println("Obteniendo Producto por ID: ");
-			Products product = ProductsClient.getProductById(cartSale.getIdProduct());
-			if(product != null) {
-				System.out.println("Producto Existe!");
-				System.out.println("Revisando si el producto ya esta registrado en la lista de ganancias");
-				List<ProductEarnings> productEarningsList = Arrays.asList(ProductEarningsClient.getProductEarningsByProductId(cartSale.getIdProduct()));
-				System.out.println("Si hay elementos en el reporte de ganancias: "+productEarningsList.size());
-				productEarningsList.forEach(System.out::println);
-					if(productEarningsList.get(0)==null) {
-						System.out.println("Nuevo Producto Para Informe de ganancias");
-						addEarning(product,cartSale,product.getStock());
-					}else {
-						System.out.println("Actualizando Producto para Informe de ganancias");
-						updateEarning(productEarningsList.get(0),cartSale,product.getStock());
-					}
-				
-			}else {
-				System.out.println("Producto No Existe!");
-			}
-		}
-		System.out.println("Proceso de reporte de ganancias terminado con exito!");
-	    
-	}
-	// ACTUALZIAR FECHA EN PRODUCT EARNING A STRING
-	public static void addEarning(Products product,Sales cartSale,Integer stock) {
-		LocalDateTime myDateObj = LocalDateTime.now();
-		DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy", new Locale("es", "ES"));
-		String formattedDate = myDateObj.format(myFormatObj);
-		ProductEarnings productEarnings = new ProductEarnings();
-	    productEarnings.setIdProductEarning(0);
-	    productEarnings.setIdProduct(product.getIdProduct());
-	    productEarnings.setProductName(product.getProduct());
-	    productEarnings.setUnits(cartSale.getUnits());
-	    productEarnings.setUnitEarning(product.getEarning());
-	    productEarnings.setTotalEarning(getTotalEarning(cartSale.getUnits(),product.getEarning()));
-	    productEarnings.setProductStock(stock);
-	    productEarnings.setProductType(GENERAL_TYPE);
-	 // ACTUALZIAR FECHA EN PRODUCT EARNING A STRING
-	    productEarnings.setSaleDate(formattedDate);
-	 // ACTUALZIAR FECHA EN PRODUCT EARNING A STRING
-	    ProductEarningsClient.addProductEarnings(productEarnings);
-	}
-	
-	public static void updateEarning(ProductEarnings productEarnings,Sales cartSale,Integer stock) {
-	    productEarnings.setUnits(sumNewQuantity(productEarnings.getUnits(),cartSale.getUnits()));
-	    productEarnings.setTotalEarning(getTotalEarning(productEarnings.getUnits(),productEarnings.getUnitEarning()));
-	    productEarnings.setProductStock(stock);
-	    ProductEarningsClient.updateProductEarnings(productEarnings);
-	}
-	
 	public static Integer sumNewQuantity(Integer quantity, Integer newQuantity) {
 		return quantity+newQuantity;
 	}
 	
 	public static Double getTotalEarning(Integer quantity, Double unitEarning) {
 		return quantity*unitEarning;
+	}
+	
+	public static Double getTotalBulkEarning(Integer quantity, Double kiloEarning) {
+		return (quantity*kiloEarning)/1000;
 	}
 
 }

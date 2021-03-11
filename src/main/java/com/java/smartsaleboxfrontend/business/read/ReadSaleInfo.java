@@ -1,6 +1,5 @@
 package com.java.smartsaleboxfrontend.business.read;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,9 +17,6 @@ public class ReadSaleInfo {
 	private static final String SALE_NOT_FOUND = "No hay ventas";
 	private static final String VALIDATION_UPDATE_TITLE = "Validacion";
 	
-	/**
-	 * getAllSaleTable search process to be shown at list table.
-	 */
 	public static void getSalesByNoSale() {
 		Sales[] sales;
 		try {
@@ -46,9 +42,6 @@ public class ReadSaleInfo {
 		}
 	}
 	
-	/**
-	 * getAllSaleTable search process to be shown at list table.
-	 */
 	public static void getAllSaleTable() {
 		Sales[] sales;
 		try {

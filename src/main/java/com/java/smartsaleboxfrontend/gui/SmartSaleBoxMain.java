@@ -10,11 +10,15 @@ import javax.swing.table.DefaultTableModel;
 
 import com.java.smartsalebox.models.Sales;
 import com.java.smartsaleboxfrontend.business.read.ReadCartSaleInfo;
-import com.java.smartsaleboxfrontend.business.read.ReadProductsInfo;
 import com.java.smartsaleboxfrontend.business.save.SaveBulkProductProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveEmailProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveProductProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveSaleProcess;
+import com.java.smartsaleboxfrontend.business.update.UpdateBulkStockProcess;
+import com.java.smartsaleboxfrontend.business.update.UpdateCashProcess;
+import com.java.smartsaleboxfrontend.business.update.UpdateProductEarningsProcess;
+import com.java.smartsaleboxfrontend.business.update.UpdateProductStockProcess;
+import com.java.smartsaleboxfrontend.utils.SmartSaleBoxClearFields;
 import com.java.smartsaleboxfrontend.utils.SmartSaleBoxOperations;
 
 import javax.swing.JTabbedPane;
@@ -45,6 +49,7 @@ public class SmartSaleBoxMain extends JFrame {
 	public static BulkSaleMain bulkSaleMain = new BulkSaleMain();
 	
 	public static Integer noSale = 1;
+	public static Double cash = 500.00;
 	public static List<Sales> salesList = new ArrayList<>();
 	public static List<Sales> bulkList = new ArrayList<>();
 	
@@ -270,13 +275,16 @@ public class SmartSaleBoxMain extends JFrame {
 					JOptionPane.showMessageDialog(null,"La cantidad recibida es menor, verifique!");
 				}else {
 					JOptionPane.showMessageDialog(null,"Procediendo a pago ...");
-					System.out.println("General Prod");
-					SmartSaleBoxMain.salesList.forEach(System.out::println);
-					System.out.println();
-					System.out.println("Bulk Prod");
-					SmartSaleBoxMain.bulkList.forEach(System.out::println);
-					SaveSaleProcess.createNewSaleAndInflow(SmartSaleBoxOperations.getPaymentType());
-					
+					if(SaveSaleProcess.createNewSaleAndInflow(SmartSaleBoxOperations.getPaymentType())) {
+						UpdateProductStockProcess.updateGeneralProductStock();
+						UpdateBulkStockProcess.updateBulkProductStock();
+						UpdateProductEarningsProcess.addGeneralProductEarning();
+						UpdateProductEarningsProcess.addBulkProductEarning();
+						UpdateCashProcess.updateCashAndNoSale();
+						SmartSaleBoxClearFields.clearSaleMain();
+					}else {
+						JOptionPane.showMessageDialog(null,"No es posible guardar la compra por el momento!");
+					}
 				}
 			}
 		});
@@ -1072,6 +1080,15 @@ public class SmartSaleBoxMain extends JFrame {
 		tblSale.getColumnModel().getColumn(6).setPreferredWidth(50);
 		tblSale.getColumnModel().getColumn(7).setPreferredWidth(50);
 		scrollSale.setViewportView(tblSale);
+		
+		JButton btnGetCashQuantity = new JButton("Consulta Cajón");
+		btnGetCashQuantity.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(null,"Cajón: $"+cash+" No. Venta: #"+noSale);
+			}
+		});
+		btnGetCashQuantity.setBounds(53, 561, 150, 36);
+		tabbedSale.add(btnGetCashQuantity);
 		
 	}
 }
