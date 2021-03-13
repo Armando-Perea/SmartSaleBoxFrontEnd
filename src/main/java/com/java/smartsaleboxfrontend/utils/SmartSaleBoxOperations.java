@@ -2,18 +2,6 @@ package com.java.smartsaleboxfrontend.utils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-
-import com.java.smartsalebox.client.CartSaleClient;
-import com.java.smartsalebox.client.ProductEarningsClient;
-import com.java.smartsalebox.client.ProductsClient;
-import com.java.smartsalebox.models.CartSale;
-import com.java.smartsalebox.models.ProductEarnings;
-import com.java.smartsalebox.models.Products;
 import com.java.smartsalebox.models.Sales;
 import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
 
@@ -58,7 +46,7 @@ public class SmartSaleBoxOperations {
 	}
 	
 	public static void saleReceivedCashProcess() {
-		if(SmartSaleBoxMain.txtReceived.getText().isEmpty()) {
+		if(SmartSaleBoxMain.txtReceived.getText().isEmpty() || SmartSaleBoxMain.txtCardPayment.getText().isEmpty()) {
 			SmartSaleBoxMain.txtChangeBack.setText("0.00");
 		}
 		else {
@@ -122,6 +110,22 @@ public class SmartSaleBoxOperations {
 	
 	public static Double getTotalBulkEarning(Integer quantity, Double kiloEarning) {
 		return (quantity*kiloEarning)/1000;
+	}
+	
+	public static boolean validateGetProdName() {
+		String name = SmartSaleBoxMain.txtSaleProductSaleName.getText();
+		if (name.isEmpty() || name == null) {
+			return false;
+		}
+		return true;
+	}
+	
+	public static boolean validateScannerReading() {
+		String name = SmartSaleBoxMain.txtProductCodeSearch.getText();
+		if (name.isEmpty() || name == null) {
+			return false;
+		}
+		return true;
 	}
 
 }

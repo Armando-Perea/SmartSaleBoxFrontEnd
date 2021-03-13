@@ -11,14 +11,6 @@ public class ReadCartSaleInfo {
 	private static final String PRODUCT_NOT_FOUND = "Producto no existe!";
 	private static final String VALIDATION_UPDATE_TITLE = "Validacion";
 
-	public static boolean validateGetProdName() {
-		String pwd = SmartSaleBoxMain.txtSaleProductSaleName.getText();
-		if (pwd.isEmpty() || pwd == null) {
-			return false;
-		}
-		return true;
-	}
-
 	public static void fillCartSaleTableByName(String product) {
 		Products[] products;
 		try {

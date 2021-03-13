@@ -7,8 +7,10 @@ import java.util.Locale;
 import javax.swing.JOptionPane;
 
 import com.java.smartsalebox.client.InflowClient;
+import com.java.smartsalebox.client.ProductsClient;
 import com.java.smartsalebox.client.SalesClient;
 import com.java.smartsalebox.models.Inflow;
+import com.java.smartsalebox.models.Products;
 import com.java.smartsalebox.models.Sales;
 import com.java.smartsaleboxfrontend.business.read.ReadSaleInfo;
 import com.java.smartsaleboxfrontend.gui.BulkSaleMain;
@@ -55,10 +57,44 @@ public class SaveSaleProcess {
 				saleObj.setType(GENERAL_TYPE);
 				saleObj.setSaleDate(formattedDate);
 				saveNewProductSale(saleObj, stock);
+				SmartSaleBoxMain.txtSaleProductSaleName.setText(null);
 			} else {
 				updateProductSale(saleObj, stock);
+				SmartSaleBoxMain.txtSaleProductSaleName.setText(null);
 			}
 		}
+	}
+	
+	public static void addProductToSaleListByScanner() {
+		Sales saleObj = new Sales();
+		Products product = new Products();
+		LocalDateTime myDateObj = LocalDateTime.now();
+		DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy", new Locale("es", "ES"));
+		String formattedDate = myDateObj.format(myFormatObj);
+
+		product = ProductsClient.getProductByBarCode(SmartSaleBoxMain.txtProductCodeSearch.getText());
+		System.out.println("Product: "+product.toString());
+		saleObj = SalesClient.getSaleByProductIdAndNoSale(product.getIdProduct(), SmartSaleBoxMain.noSale);
+		System.out.println("Sale obj is null? " + saleObj);
+		if (saleObj == null) {
+			saleObj = new Sales();
+			saleObj.setIdSale(0);
+			saleObj.setNoSale(SmartSaleBoxMain.noSale);
+			saleObj.setDescription(product.getProduct());
+			saleObj.setUnits(1);
+			saleObj.setPrice(product.getSalePrice());
+			saleObj.setTotal(getTotalSale(saleObj.getUnits(), saleObj.getPrice()));
+			saleObj.setIdProduct(product.getIdProduct());
+			saleObj.setStock(product.getStock());
+			saleObj.setType(GENERAL_TYPE);
+			saleObj.setSaleDate(formattedDate);
+			saveNewProductSale(saleObj, product.getStock());
+			SmartSaleBoxMain.txtProductCodeSearch.setText(null);
+		} else {
+			updateProductSale(saleObj, product.getStock());
+			SmartSaleBoxMain.txtProductCodeSearch.setText(null);
+		}
+
 	}
 
 	private static void saveNewProductSale(Sales saleObj, Integer stock) {

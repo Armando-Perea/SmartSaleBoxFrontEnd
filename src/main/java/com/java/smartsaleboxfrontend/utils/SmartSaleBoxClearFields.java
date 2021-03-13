@@ -27,6 +27,7 @@ public class SmartSaleBoxClearFields {
 		SmartSaleBoxMain.txtChangeBack.setText("0.00");
 		SmartSaleBoxMain.txtSaleProductSaleName.setText(null);
 		SmartSaleBoxMain.txtProductCodeSearch.setText(null);
+		SmartSaleBoxMain.txtCardPayment.setEnabled(false);
 	}
 
 }

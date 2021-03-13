@@ -9,6 +9,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import com.java.smartsalebox.models.Sales;
+import com.java.smartsaleboxfrontend.business.delete.DeleteSaleProcess;
 import com.java.smartsaleboxfrontend.business.read.ReadCartSaleInfo;
 import com.java.smartsaleboxfrontend.business.save.SaveBulkProductProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveEmailProcess;
@@ -223,6 +224,7 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedSale.add(txtTotalSale);
 		
 		txtCardPayment = new JTextField();
+		txtCardPayment.setEnabled(false);
 		txtCardPayment.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -232,7 +234,8 @@ public class SmartSaleBoxMain extends JFrame {
 		txtCardPayment.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				txtCardPayment.setText(null);
+				if(txtCardPayment.isEnabled())
+					txtCardPayment.setText(null);
 			}
 		});
 		txtCardPayment.setFont(new Font("Dialog", Font.BOLD, 14));
@@ -306,7 +309,7 @@ public class SmartSaleBoxMain extends JFrame {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					if (ReadCartSaleInfo.validateGetProdName()) {
+					if (SmartSaleBoxOperations.validateGetProdName()) {
 						ReadCartSaleInfo.fillCartSaleTableByName(txtSaleProductSaleName.getText());
 					} else {
 						JOptionPane.showMessageDialog(null, "Ingrese Producto por favor");
@@ -329,6 +332,24 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedSale.add(lblCdigo);
 		
 		txtProductCodeSearch = new JTextField();
+		txtProductCodeSearch.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				txtProductCodeSearch.setText(null);
+			}
+		});
+		txtProductCodeSearch.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					if (SmartSaleBoxOperations.validateScannerReading()) {
+						SaveSaleProcess.addProductToSaleListByScanner();
+					} else {
+						JOptionPane.showMessageDialog(null, "Ingrese código de barras por favor");
+					}
+				}
+			}
+		});
 		txtProductCodeSearch.setColumns(10);
 		txtProductCodeSearch.setBounds(624, 135, 212, 28);
 		tabbedSale.add(txtProductCodeSearch);
@@ -340,16 +361,21 @@ public class SmartSaleBoxMain extends JFrame {
 				bulkSaleMain.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			}
 		});
-		btnVentaKg.setBounds(585, 240, 150, 39);
+		btnVentaKg.setBounds(529, 254, 150, 28);
 		tabbedSale.add(btnVentaKg);
 		
 		JButton btnClearSale = new JButton("Borrar Venta");
+		btnClearSale.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DeleteSaleProcess.removeCurrentSaleProcess();
+			}
+		});
 		btnClearSale.setBounds(53, 446, 140, 39);
 		tabbedSale.add(btnClearSale);
 		
 		JLabel lblF = new JLabel("F9");
 		lblF.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblF.setBounds(753, 254, 49, 28);
+		lblF.setBounds(591, 279, 34, 28);
 		tabbedSale.add(lblF);
 		
 		JLabel lblF_2 = new JLabel("F5");
@@ -359,7 +385,7 @@ public class SmartSaleBoxMain extends JFrame {
 		
 		JLabel lblF_1 = new JLabel("F12");
 		lblF_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblF_1.setBounds(753, 538, 49, 28);
+		lblF_1.setBounds(652, 579, 49, 28);
 		tabbedSale.add(lblF_1);
 		
 		JPanel tabbedSalesHistory = new JPanel();
@@ -1084,11 +1110,29 @@ public class SmartSaleBoxMain extends JFrame {
 		JButton btnGetCashQuantity = new JButton("Consulta Cajón");
 		btnGetCashQuantity.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null,"Cajón: $"+cash+" No. Venta: #"+noSale);
+				JOptionPane.showMessageDialog(null,"Cajón: $"+cash+" \n No. Venta: #"+noSale);
 			}
 		});
 		btnGetCashQuantity.setBounds(53, 561, 150, 36);
 		tabbedSale.add(btnGetCashQuantity);
+		
+		JButton btnDeleteProduct = new JButton("Borrar Producto");
+		btnDeleteProduct.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DeleteSaleProcess.removeSelectedSaleProcess();
+			}
+		});
+		btnDeleteProduct.setBounds(529, 380, 150, 28);
+		tabbedSale.add(btnDeleteProduct);
+		
+		JButton btnEnableCardPayment = new JButton("Tarjeta");
+		btnEnableCardPayment.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				txtCardPayment.setEnabled(true);
+			}
+		});
+		btnEnableCardPayment.setBounds(616, 476, 85, 25);
+		tabbedSale.add(btnEnableCardPayment);
 		
 	}
 }
