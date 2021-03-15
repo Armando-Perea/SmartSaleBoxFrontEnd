@@ -8,6 +8,7 @@ import com.java.smartsalebox.models.BulkProducts;
 import com.java.smartsalebox.models.ControlBulkStock;
 import com.java.smartsalebox.models.Sales;
 import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
+import com.java.smartsaleboxfrontend.utils.SmartSaleBoxOperations;
 
 public class UpdateBulkStockProcess {
 

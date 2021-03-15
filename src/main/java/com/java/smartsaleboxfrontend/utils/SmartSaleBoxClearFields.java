@@ -29,5 +29,11 @@ public class SmartSaleBoxClearFields {
 		SmartSaleBoxMain.txtProductCodeSearch.setText(null);
 		SmartSaleBoxMain.txtCardPayment.setEnabled(false);
 	}
+	
+	public static void clearSaleHistory() {
+		SmartSaleBoxMain.tableModelSaleHistory.setRowCount(0);
+		SmartSaleBoxMain.txtTotalSaleHistory.setText("0.00");
+		SmartSaleBoxMain.txtHistoryNoSale.setText(null);
+	}
 
 }

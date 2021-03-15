@@ -2,6 +2,9 @@ package com.java.smartsaleboxfrontend.utils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+
+import com.java.smartsalebox.models.Inflow;
+import com.java.smartsalebox.models.Outflow;
 import com.java.smartsalebox.models.Sales;
 import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
 
@@ -126,6 +129,26 @@ public class SmartSaleBoxOperations {
 			return false;
 		}
 		return true;
+	}
+	
+	public static String getTotalInflows(Inflow[] inflows) {
+		double quantity=0.0;
+		String finalTotal;
+		for (Inflow ins : inflows) {
+			quantity = quantity+ins.getQuantity();
+		}
+		finalTotal = String.valueOf(quantity);
+		return finalTotal;
+	}
+	
+	public static String getTotalOutflows(Outflow[] outflows) {
+		double quantity=0.0;
+		String finalTotal;
+		for (Outflow outs : outflows) {
+			quantity = quantity+outs.getQuantity();
+		}
+		finalTotal = String.valueOf(quantity);
+		return finalTotal;
 	}
 
 }
