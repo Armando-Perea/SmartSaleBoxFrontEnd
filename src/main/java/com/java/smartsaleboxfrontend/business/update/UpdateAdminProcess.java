@@ -6,7 +6,7 @@ import com.java.smartsalebox.client.AdministratorClient;
 import com.java.smartsalebox.models.Administrator;
 import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
 
-public class UpdateEmployeeProcess {
+public class UpdateAdminProcess {
 
 	// tblAdminInfoSearch
 
@@ -36,7 +36,7 @@ public class UpdateEmployeeProcess {
 		try {
 			if (row > -1) {
 				employeeId = Integer.parseInt(SmartSaleBoxMain.tblAdmin.getValueAt(row, 0).toString());
-				employee = AdministratorClient.getEmployeeById(employeeId);
+				employee = AdministratorClient.getAdminById(employeeId);
 				if (employee != null) {
 					employeeName = (String) SmartSaleBoxMain.tblAdmin.getValueAt(row, 1);
 					employeeLast = (String) SmartSaleBoxMain.tblAdmin.getValueAt(row, 2);
@@ -45,28 +45,27 @@ public class UpdateEmployeeProcess {
 					employeeRole = (String) SmartSaleBoxMain.tblAdmin.getValueAt(row, 5);
 					//// SETTING THE VALUES TO CAREER OBJECT
 					if (!employeeName.isEmpty()) {
-						employee.setEmployeeName(employeeName);
+						employee.setAdminName(employeeName);
 					}
 					if (!employeeLast.isEmpty()) {
-						employee.setEmployeeLastName(employeeLast);
+						employee.setAdminLastName(employeeLast);
 					}
 					if (!employeePhone.isEmpty()) {
-						employee.setEmployeePhone(employeePhone);
+						employee.setAdminPhone(employeePhone);
 					}
 
 					if (!employeePassword.isEmpty()) {
-						employee.setEmployeePassword(employeePassword);
+						employee.setAdminPassword(employeePassword);
 					}
 
 					if (!employeeRole.isEmpty()) {
-						employee.setEmployeeRole(employeeRole);
+						employee.setAdminRole(employeeRole);
 					}
 
-					status = AdministratorClient.updateEmployee(employee);
+					status = AdministratorClient.updateAdmin(employee);
 					if (status > 0 && status < 300) {
 						JOptionPane.showMessageDialog(null, ADMINISTRATOR_UPDATED, VALIDATION_UPDATE_TITLE,
 								JOptionPane.INFORMATION_MESSAGE);
-						// ReadAdministrationInfo.fillAllAdminTable();
 					} else {
 						JOptionPane.showMessageDialog(null, ADMINISTRATOR_UPDATE_FAILED, VALIDATION_UPDATE_TITLE,
 								JOptionPane.INFORMATION_MESSAGE);

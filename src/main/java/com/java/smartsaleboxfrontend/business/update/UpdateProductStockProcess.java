@@ -39,7 +39,6 @@ public class UpdateProductStockProcess {
 				if (status > 0 && status < 300) {
 					JOptionPane.showMessageDialog(null, STOCK_UPDATED, VALIDATION_UPDATE_TITLE,
 							JOptionPane.INFORMATION_MESSAGE);
-					// ReadAdministrationInfo.fillAllAdminTable();
 				} else {
 					JOptionPane.showMessageDialog(null, STOCK_UPDATE_FAILED, VALIDATION_UPDATE_TITLE,
 							JOptionPane.INFORMATION_MESSAGE);

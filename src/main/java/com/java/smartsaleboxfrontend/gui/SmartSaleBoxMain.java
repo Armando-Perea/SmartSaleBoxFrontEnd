@@ -14,6 +14,7 @@ import com.java.smartsaleboxfrontend.business.read.ReadCartSaleInfo;
 import com.java.smartsaleboxfrontend.business.read.ReadInflowProcess;
 import com.java.smartsaleboxfrontend.business.read.ReadOutflowProcess;
 import com.java.smartsaleboxfrontend.business.read.ReadSaleInfo;
+import com.java.smartsaleboxfrontend.business.save.LoginInitializer;
 import com.java.smartsaleboxfrontend.business.save.SaveBulkProductProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveEmailProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveInflowProcess;
@@ -55,8 +56,10 @@ public class SmartSaleBoxMain extends JFrame {
 	
 	public static BulkSaleMain bulkSaleMain = new BulkSaleMain();
 	
-	public static Integer noSale = 1;
+	public static Integer noSale = 0;
 	public static Double cash = 500.00;
+	public static String adminName;
+	public static String ticketTitle;
 	public static List<Sales> salesList = new ArrayList<>();
 	public static List<Sales> bulkList = new ArrayList<>();
 	
@@ -156,10 +159,14 @@ public class SmartSaleBoxMain extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public SmartSaleBoxMain() {
+		LoginInitializer.authenticationProcess();
+		initializeSmartSaleBoxComponents();
+		LoginInitializer.initializeBalanceAndHistory();
+		LoginInitializer.checkPendingSales();
+	}
+	
+	public void initializeSmartSaleBoxComponents() {
 		setTitle("Punto de Venta");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1063, 718);
@@ -291,7 +298,10 @@ public class SmartSaleBoxMain extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if(!SmartSaleBoxOperations.isValidSaleQuantity()) {
 					JOptionPane.showMessageDialog(null,"La cantidad recibida es menor, verifique!");
-				}else {
+				}else if(!SmartSaleBoxOperations.isValidCashChange()) {
+					JOptionPane.showMessageDialog(null,"El cambio a dar excede la cantidad \ndisponible en cajón $"+cash+" , \nintroduzca más efectivo en caja!");
+				}
+				else {
 					if(SaveSaleProcess.createNewSaleAndInflow(SmartSaleBoxOperations.getPaymentType())) {
 						UpdateProductStockProcess.updateGeneralProductStock();
 						UpdateBulkStockProcess.updateBulkProductStock();
@@ -906,69 +916,6 @@ public class SmartSaleBoxMain extends JFrame {
 		btnCalcularCorte.setBounds(210, 489, 153, 44);
 		closurePanel.add(btnCalcularCorte);
 		
-		JPanel EmailConfigPanel = new JPanel();
-		EmailConfigPanel.setBackground(SystemColor.window);
-		tabbedAdminOptions.addTab("Configuración Email", null, EmailConfigPanel, null);
-		EmailConfigPanel.setLayout(null);
-		
-		JLabel lblConfiguracinEmail = new JLabel("Configuración Email");
-		lblConfiguracinEmail.setFont(new Font("Lucida Bright", Font.BOLD, 18));
-		lblConfiguracinEmail.setBounds(135, 136, 192, 28);
-		EmailConfigPanel.add(lblConfiguracinEmail);
-		
-		JLabel lblNewLabel_1_1_3 = new JLabel("@SmartSaleBox.");
-		lblNewLabel_1_1_3.setFont(new Font("Lucida Bright", Font.BOLD, 24));
-		lblNewLabel_1_1_3.setBounds(835, 12, 201, 28);
-		EmailConfigPanel.add(lblNewLabel_1_1_3);
-		
-		JLabel lblProducto_2_5_2_1 = new JLabel("Email:");
-		lblProducto_2_5_2_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_5_2_1.setBounds(78, 226, 63, 28);
-		EmailConfigPanel.add(lblProducto_2_5_2_1);
-		
-		txtEmailNew = new JTextField();
-		txtEmailNew.setColumns(10);
-		txtEmailNew.setBounds(146, 225, 216, 34);
-		EmailConfigPanel.add(txtEmailNew);
-		
-		JLabel lblProducto_2_5_2_1_1 = new JLabel("Password:");
-		lblProducto_2_5_2_1_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_5_2_1_1.setBounds(64, 289, 86, 28);
-		EmailConfigPanel.add(lblProducto_2_5_2_1_1);
-		
-		JButton btnSaveEmail = new JButton("Guardar Email");
-		btnSaveEmail.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				SaveEmailProcess.createNewEmail();
-			}
-		});
-		btnSaveEmail.setBounds(169, 355, 153, 34);
-		EmailConfigPanel.add(btnSaveEmail);
-		
-		JScrollPane paneEmail = new JScrollPane();
-		paneEmail.setBounds(498, 225, 498, 168);
-		EmailConfigPanel.add(paneEmail);
-		
-		tblEmail = new JTable();
-		paneEmail.setViewportView(tblEmail);
-		
-		JButton btnUpdateEmail = new JButton("Actualizar");
-		btnUpdateEmail.setBounds(509, 420, 117, 25);
-		EmailConfigPanel.add(btnUpdateEmail);
-		
-		JLabel lblConsultaEmail = new JLabel("Consulta Email");
-		lblConsultaEmail.setFont(new Font("Lucida Bright", Font.BOLD, 18));
-		lblConsultaEmail.setBounds(647, 173, 153, 28);
-		EmailConfigPanel.add(lblConsultaEmail);
-		
-		pwdEmailNew = new JPasswordField();
-		pwdEmailNew.setBounds(146, 289, 211, 34);
-		EmailConfigPanel.add(pwdEmailNew);
-		
-		JButton btnDeleteEmail = new JButton("Borrar");
-		btnDeleteEmail.setBounds(879, 420, 117, 25);
-		EmailConfigPanel.add(btnDeleteEmail);
-		
 		JPanel inOutControlPanel = new JPanel();
 		inOutControlPanel.setBackground(SystemColor.window);
 		tabbedAdminOptions.addTab("Entradas/Salidas", null, inOutControlPanel, null);
@@ -1042,6 +989,69 @@ public class SmartSaleBoxMain extends JFrame {
 		cmbPaymentTypeInOut.setModel(new DefaultComboBoxModel(new String[] {"EFECTIVO", "TARJETA"}));
 		cmbPaymentTypeInOut.setBounds(387, 250, 180, 38);
 		inOutControlPanel.add(cmbPaymentTypeInOut);
+		
+		JPanel EmailConfigPanel = new JPanel();
+		EmailConfigPanel.setBackground(SystemColor.window);
+		tabbedAdminOptions.addTab("Configuración Email", null, EmailConfigPanel, null);
+		EmailConfigPanel.setLayout(null);
+		
+		JLabel lblConfiguracinEmail = new JLabel("Configuración Email");
+		lblConfiguracinEmail.setFont(new Font("Lucida Bright", Font.BOLD, 18));
+		lblConfiguracinEmail.setBounds(135, 136, 192, 28);
+		EmailConfigPanel.add(lblConfiguracinEmail);
+		
+		JLabel lblNewLabel_1_1_3 = new JLabel("@SmartSaleBox.");
+		lblNewLabel_1_1_3.setFont(new Font("Lucida Bright", Font.BOLD, 24));
+		lblNewLabel_1_1_3.setBounds(835, 12, 201, 28);
+		EmailConfigPanel.add(lblNewLabel_1_1_3);
+		
+		JLabel lblProducto_2_5_2_1 = new JLabel("Email:");
+		lblProducto_2_5_2_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+		lblProducto_2_5_2_1.setBounds(78, 226, 63, 28);
+		EmailConfigPanel.add(lblProducto_2_5_2_1);
+		
+		txtEmailNew = new JTextField();
+		txtEmailNew.setColumns(10);
+		txtEmailNew.setBounds(146, 225, 216, 34);
+		EmailConfigPanel.add(txtEmailNew);
+		
+		JLabel lblProducto_2_5_2_1_1 = new JLabel("Password:");
+		lblProducto_2_5_2_1_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+		lblProducto_2_5_2_1_1.setBounds(64, 289, 86, 28);
+		EmailConfigPanel.add(lblProducto_2_5_2_1_1);
+		
+		JButton btnSaveEmail = new JButton("Guardar Email");
+		btnSaveEmail.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SaveEmailProcess.createNewEmail();
+			}
+		});
+		btnSaveEmail.setBounds(169, 355, 153, 34);
+		EmailConfigPanel.add(btnSaveEmail);
+		
+		JScrollPane paneEmail = new JScrollPane();
+		paneEmail.setBounds(498, 225, 498, 168);
+		EmailConfigPanel.add(paneEmail);
+		
+		tblEmail = new JTable();
+		paneEmail.setViewportView(tblEmail);
+		
+		JButton btnUpdateEmail = new JButton("Actualizar");
+		btnUpdateEmail.setBounds(509, 420, 117, 25);
+		EmailConfigPanel.add(btnUpdateEmail);
+		
+		JLabel lblConsultaEmail = new JLabel("Consulta Email");
+		lblConsultaEmail.setFont(new Font("Lucida Bright", Font.BOLD, 18));
+		lblConsultaEmail.setBounds(647, 173, 153, 28);
+		EmailConfigPanel.add(lblConsultaEmail);
+		
+		pwdEmailNew = new JPasswordField();
+		pwdEmailNew.setBounds(146, 289, 211, 34);
+		EmailConfigPanel.add(pwdEmailNew);
+		
+		JButton btnDeleteEmail = new JButton("Borrar");
+		btnDeleteEmail.setBounds(879, 420, 117, 25);
+		EmailConfigPanel.add(btnDeleteEmail);
 		
 		JPanel adminConfigPanel = new JPanel();
 		adminConfigPanel.setBackground(SystemColor.window);
@@ -1122,7 +1132,7 @@ public class SmartSaleBoxMain extends JFrame {
 		JButton btnGetCashQuantity = new JButton("Consulta Cajón");
 		btnGetCashQuantity.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null,"Cajón: $"+cash+" \n No. Venta: #"+noSale);
+				JOptionPane.showMessageDialog(null,"Negocio: #"+ticketTitle+"\n Cajón: $"+cash+" \n No. Venta: #"+noSale);
 			}
 		});
 		btnGetCashQuantity.setBounds(53, 561, 150, 36);

@@ -92,6 +92,15 @@ public class SmartSaleBoxOperations {
 		return false;
 	}
 	
+	public static boolean isValidCashChange() {
+		try {
+			return SmartSaleBoxMain.cash > Double.parseDouble(SmartSaleBoxMain.txtChangeBack.getText());
+		} catch (NumberFormatException nf) {
+			System.out.println("Number Format not valid, no letters allowed at change field");
+			return false;
+		}
+	}
+	
 	public static String getPaymentType() {
 		Double paymentCard = Double.parseDouble(SmartSaleBoxMain.txtCardPayment.getText());
 		Double paymentCash = Double.parseDouble(SmartSaleBoxMain.txtReceived.getText());

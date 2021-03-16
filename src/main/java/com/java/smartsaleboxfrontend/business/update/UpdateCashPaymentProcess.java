@@ -1,15 +1,11 @@
 package com.java.smartsaleboxfrontend.business.update;
 
 import javax.swing.JOptionPane;
-
-import com.java.smartsalebox.client.CashClient;
 import com.java.smartsalebox.client.CashPaymentClient;
-import com.java.smartsalebox.models.Cash;
 import com.java.smartsalebox.models.CashPayment;
 
 public class UpdateCashPaymentProcess {
 
-	// tblNewBulkProducts
 	private static final String CASH_PAYMENT_UPDATED = "Pago Actualizado con Éxito!";
 	private static final String CASH_PAYMENT_NOT_FOUND = "Id no existe!";
 	private static final String CASH_PAYMENT_UPDATE_FAILED = "No es posible actualizar Pago";
@@ -18,11 +14,6 @@ public class UpdateCashPaymentProcess {
 	private static final String VALIDATION_NUMBER = "java.lang.NumberFormatException";
 	private static final String VALIDATION_TOTAL = "java.lang.NumberFormatException";
 
-	/**
-	 * updateSelectedProductProcess executes the update process for the product
-	 * table.
-	 */
-	// {adm.getIdAdministrator(),adm.getName(),adm.getLastName(),adm.getPosition(),adm.getEmail(),adm.getPassword()};
 	public static void updateCashPayment(CashPayment cashPayment) {
 		int status = 0;
 		try {

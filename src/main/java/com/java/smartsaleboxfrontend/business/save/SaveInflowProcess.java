@@ -9,11 +9,12 @@ import javax.swing.JOptionPane;
 import com.java.smartsalebox.client.InflowClient;
 import com.java.smartsalebox.models.Inflow;
 import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
+import com.java.smartsaleboxfrontend.utils.SmartSaleBoxClearFields;
 
 public class SaveInflowProcess {
 	
-	public final static String OPERATION_SAVED_SUCCESSFULLY="Operación con éxito";
-    public final static String OPERATION_SAVED_FAILED="No es posible crear Stock granel en este momento";
+	public final static String OPERATION_SAVED_SUCCESSFULLY="Operación generada con éxito";
+    public final static String OPERATION_SAVED_FAILED="No es posible operación en este momento";
     private static final String NUMERIC_VALIDATION_ERROR = "Dato debe ser numérico, revise información";
    	private static final String VALIDATION_NUMBER = "java.lang.NumberFormatException";
 	
@@ -24,7 +25,7 @@ public class SaveInflowProcess {
 		String formattedDate = myDateObj.format(myFormatObj);
 			try {	
 				newInflow.setIdInflow(0);
-				newInflow.setAttendee("PUTIN");
+				newInflow.setAttendee(SmartSaleBoxMain.adminName);
 				newInflow.setConcept(SmartSaleBoxMain.txtInOutConcept.getText());
 				newInflow.setDescription("Operación en No. Venta: "+SmartSaleBoxMain.noSale);
 				newInflow.setInflowDate(formattedDate);
@@ -34,6 +35,8 @@ public class SaveInflowProcess {
 				newInflow = InflowClient.addInflow(newInflow);
 				if(newInflow.getIdInflow()!=null) {
 					JOptionPane.showMessageDialog(null, OPERATION_SAVED_SUCCESSFULLY);
+					SmartSaleBoxClearFields.clearInflowsOutflowsSection();
+					LoginInitializer.initializeBalanceAndHistory();
 				}else {
 					JOptionPane.showMessageDialog(null,OPERATION_SAVED_FAILED);
 				}

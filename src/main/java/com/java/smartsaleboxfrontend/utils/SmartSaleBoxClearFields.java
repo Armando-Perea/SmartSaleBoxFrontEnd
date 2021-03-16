@@ -35,5 +35,12 @@ public class SmartSaleBoxClearFields {
 		SmartSaleBoxMain.txtTotalSaleHistory.setText("0.00");
 		SmartSaleBoxMain.txtHistoryNoSale.setText(null);
 	}
+	
+	public static void clearInflowsOutflowsSection() {
+		SmartSaleBoxMain.cmbOperationType.setSelectedIndex(0);
+		SmartSaleBoxMain.cmbPaymentTypeInOut.setSelectedIndex(0);
+		SmartSaleBoxMain.txtInOutConcept.setText(null);
+		SmartSaleBoxMain.txtInOutQuantity.setText(null);
+	}
 
 }

@@ -23,6 +23,7 @@ public class SaveSaleProcess {
 	public final static String SALE_SAVED_FAILED = "No es posible dar de alta Venta en este momento";
 	public final static String GENERAL_TYPE = "GENERAL";
 	public final static String BULK_TYPE = "BULK";
+	public final static String PRODUCT_SALE = "Venta producto";
 
 	public static void addProductToSaleList(java.awt.event.MouseEvent evt) {
 		Sales saleObj = new Sales();
@@ -191,9 +192,9 @@ public class SaveSaleProcess {
 		Double cashPayment = Double.parseDouble(SmartSaleBoxMain.txtReceived.getText());
 		Inflow inflow = new Inflow();
 		inflow.setIdInflow(0);
-		inflow.setAttendee("TEST");
-		inflow.setConcept("VENTA PRODUCTOS");
-		inflow.setDescription("NO. VENTA #"+SmartSaleBoxMain.noSale);
+		inflow.setAttendee(SmartSaleBoxMain.adminName);
+		inflow.setConcept(PRODUCT_SALE);
+		inflow.setDescription("No. Venta #"+SmartSaleBoxMain.noSale);
 		inflow.setInflowDate(formattedDate);
 		if(paymentType.equals(SmartSaleBoxOperations.CARD_PAYMENT)) {
 			inflow.setPaymentType(paymentType);

@@ -17,8 +17,8 @@ public class ReadSaleInfo {
 	private static final String SALE_NOT_FOUND = "No hay ventas";
 	private static final String VALIDATION_UPDATE_TITLE = "Validacion";
 	
-	public static void getSalesByNoSale() {
-		Sales[] sales;
+	public static Sales[] getSalesByNoSale() {
+		Sales[] sales = null;
 		try {
 			sales = SalesClient.getSaleByNoSale(SmartSaleBoxMain.noSale);
 			if(sales.length>0) {
@@ -33,12 +33,13 @@ public class ReadSaleInfo {
 				SmartSaleBoxMain.scrollCartSale.setViewportView(SmartSaleBoxMain.tblCartSale);
 				SmartSaleBoxMain.txtTotalSale.setText(SmartSaleBoxOperations.getTotalSale(sales));
 			}else {
-				JOptionPane.showMessageDialog(null,SALE_NOT_FOUND,VALIDATION_UPDATE_TITLE, JOptionPane.INFORMATION_MESSAGE);
 				SmartSaleBoxClearFields.clearSaleMain();
 			}
+			return sales;
 		}catch(Exception ex) {
 			System.out.println("getAllSaleTable error catch: "+ex);
 			SmartSaleBoxClearFields.clearSaleMain();
+			return sales;
 		}
 	}
 	
