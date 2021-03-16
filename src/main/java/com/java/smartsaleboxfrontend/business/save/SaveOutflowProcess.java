@@ -1,19 +1,18 @@
 package com.java.smartsaleboxfrontend.business.save;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-
 import javax.swing.JOptionPane;
 
 import com.java.smartsalebox.client.OutflowClient;
 import com.java.smartsalebox.models.Outflow;
+import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
 
 public class SaveOutflowProcess {
 
-	public final static String PRODUCT_SAVED_SUCCESSFULLY="Stock generado con éxito";
-    public final static String PRODUCT_SAVED_FAILED="No es posible crear Stock granel en este momento";
+	public final static String OPERATION_SAVED_SUCCESSFULLY="Operación con éxito";
+    public final static String OPERATION_SAVED_FAILED="No es posible crear Stock granel en este momento";
     private static final String NUMERIC_VALIDATION_ERROR = "Dato debe ser numérico, revise información";
    	private static final String VALIDATION_NUMBER = "java.lang.NumberFormatException";
 	
@@ -24,28 +23,27 @@ public class SaveOutflowProcess {
 		String formattedDate = myDateObj.format(myFormatObj);
 			try {	
 				newOutflow.setIdOutflow(0);
-				newOutflow.setAttendee("");
-				newOutflow.setConcept("");
-				newOutflow.setDescription("");
+				newOutflow.setAttendee("PUTIN");
+				newOutflow.setConcept(SmartSaleBoxMain.txtInOutConcept.getText());
+				newOutflow.setDescription("Operación en No. Venta: "+SmartSaleBoxMain.noSale);
 				newOutflow.setOutflowDate(formattedDate);
-				newOutflow.setPaymentType("");
-				newOutflow.setQuantity(0.00);
+				newOutflow.setPaymentType((String)SmartSaleBoxMain.cmbPaymentTypeInOut.getSelectedItem());
+				newOutflow.setQuantity(Double.parseDouble(SmartSaleBoxMain.txtInOutQuantity.getText()));
 
 				newOutflow = OutflowClient.addOutflow(newOutflow);
 				if(newOutflow.getIdOutflow()!=null) {
-					JOptionPane.showMessageDialog(null, PRODUCT_SAVED_SUCCESSFULLY);
+					JOptionPane.showMessageDialog(null, OPERATION_SAVED_SUCCESSFULLY);
 				}else {
-					JOptionPane.showMessageDialog(null,PRODUCT_SAVED_FAILED);
+					JOptionPane.showMessageDialog(null,OPERATION_SAVED_FAILED);
 				}
 			}catch(Exception ex) {
-				System.out.println("ISSUE: "+ex);
+				System.out.println("ISSUE createNewOutflow: "+ex);
 				if(ex.toString().contains(VALIDATION_NUMBER)) {
 				JOptionPane.showMessageDialog(null, NUMERIC_VALIDATION_ERROR,"Validation", JOptionPane.WARNING_MESSAGE);	
 				}else {
-				JOptionPane.showMessageDialog(null, "Se produjo una excepción al guardar","Validation", JOptionPane.WARNING_MESSAGE);	
+				JOptionPane.showMessageDialog(null, "Excepción al guardar operación","Validation", JOptionPane.WARNING_MESSAGE);	
 				}
 			}
-
 		return newOutflow.getIdOutflow();
 	}
 	

@@ -2,9 +2,9 @@ package com.java.smartsaleboxfrontend.business.save;
 
 import javax.swing.JOptionPane;
 
-import com.java.smartsalebox.client.EmployeeClient;
+import com.java.smartsalebox.client.AdministratorClient;
 import com.java.smartsalebox.client.ProductsClient;
-import com.java.smartsalebox.models.Employee;
+import com.java.smartsalebox.models.Administrator;
 import com.java.smartsalebox.models.Products;
 import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
 
@@ -16,7 +16,7 @@ public class SaveEmployeeProcess {
 	   	private static final String VALIDATION_NUMBER = "java.lang.NumberFormatException";
 		
 		public static Integer createNewAdmin() {
-			Employee newEmployee = new Employee();
+			Administrator newEmployee = new Administrator();
 				try {	
 					newEmployee.setIdEmployee(0);
 					newEmployee.setEmployeeName(SmartSaleBoxMain.txtAdminName.getText());
@@ -24,7 +24,7 @@ public class SaveEmployeeProcess {
 					newEmployee.setEmployeePhone(SmartSaleBoxMain.txtAdminName.getText());
 					newEmployee.setEmployeeRole((String) SmartSaleBoxMain.cmbAdminRole.getSelectedItem());
 					newEmployee.setEmployeePassword(new String(SmartSaleBoxMain.pwdAdmin1.getPassword()));
-					newEmployee = EmployeeClient.addEmployee(newEmployee);
+					newEmployee = AdministratorClient.addEmployee(newEmployee);
 					if(newEmployee.getIdEmployee()!=null) {
 						JOptionPane.showMessageDialog(null, newEmployee.getEmployeeName()+ADMIN_SAVED_SUCCESSFULLY);
 					}else {

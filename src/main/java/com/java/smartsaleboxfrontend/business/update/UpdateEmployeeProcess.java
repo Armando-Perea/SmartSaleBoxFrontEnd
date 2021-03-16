@@ -2,8 +2,8 @@ package com.java.smartsaleboxfrontend.business.update;
 
 import javax.swing.JOptionPane;
 
-import com.java.smartsalebox.client.EmployeeClient;
-import com.java.smartsalebox.models.Employee;
+import com.java.smartsalebox.client.AdministratorClient;
+import com.java.smartsalebox.models.Administrator;
 import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
 
 public class UpdateEmployeeProcess {
@@ -31,12 +31,12 @@ public class UpdateEmployeeProcess {
 		int status = 0;
 		String employeeName, employeeLast, employeePhone, employeePassword, employeeRole;
 
-		Employee employee = new Employee();
+		Administrator employee = new Administrator();
 		row = SmartSaleBoxMain.tblAdmin.getSelectedRow();
 		try {
 			if (row > -1) {
 				employeeId = Integer.parseInt(SmartSaleBoxMain.tblAdmin.getValueAt(row, 0).toString());
-				employee = EmployeeClient.getEmployeeById(employeeId);
+				employee = AdministratorClient.getEmployeeById(employeeId);
 				if (employee != null) {
 					employeeName = (String) SmartSaleBoxMain.tblAdmin.getValueAt(row, 1);
 					employeeLast = (String) SmartSaleBoxMain.tblAdmin.getValueAt(row, 2);
@@ -62,7 +62,7 @@ public class UpdateEmployeeProcess {
 						employee.setEmployeeRole(employeeRole);
 					}
 
-					status = EmployeeClient.updateEmployee(employee);
+					status = AdministratorClient.updateEmployee(employee);
 					if (status > 0 && status < 300) {
 						JOptionPane.showMessageDialog(null, ADMINISTRATOR_UPDATED, VALIDATION_UPDATE_TITLE,
 								JOptionPane.INFORMATION_MESSAGE);

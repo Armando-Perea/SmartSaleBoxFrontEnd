@@ -16,6 +16,8 @@ import com.java.smartsaleboxfrontend.business.read.ReadOutflowProcess;
 import com.java.smartsaleboxfrontend.business.read.ReadSaleInfo;
 import com.java.smartsaleboxfrontend.business.save.SaveBulkProductProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveEmailProcess;
+import com.java.smartsaleboxfrontend.business.save.SaveInflowProcess;
+import com.java.smartsaleboxfrontend.business.save.SaveOutflowProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveProductProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveSaleProcess;
 import com.java.smartsaleboxfrontend.business.update.UpdateBulkStockProcess;
@@ -45,6 +47,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.DefaultComboBoxModel;
 
 public class SmartSaleBoxMain extends JFrame {
 
@@ -134,6 +137,8 @@ public class SmartSaleBoxMain extends JFrame {
 	public static JPasswordField pwdEmailNew;
 	
 	public static JComboBox<String> cmbAdminRole;
+	public static JComboBox<String> cmbOperationType;
+	public static JComboBox<String> cmbPaymentTypeInOut;
 
 	/**
 	 * Launch the application.
@@ -901,59 +906,6 @@ public class SmartSaleBoxMain extends JFrame {
 		btnCalcularCorte.setBounds(210, 489, 153, 44);
 		closurePanel.add(btnCalcularCorte);
 		
-		JPanel inOutControlPanel = new JPanel();
-		inOutControlPanel.setBackground(SystemColor.window);
-		tabbedAdminOptions.addTab("Entradas/Salidas", null, inOutControlPanel, null);
-		inOutControlPanel.setLayout(null);
-		
-		JLabel lblNewLabel_1_1_4 = new JLabel("@SmartSaleBox.");
-		lblNewLabel_1_1_4.setFont(new Font("Lucida Bright", Font.BOLD, 24));
-		lblNewLabel_1_1_4.setBounds(835, 12, 201, 28);
-		inOutControlPanel.add(lblNewLabel_1_1_4);
-		
-		JLabel lblControlEntradassalidas = new JLabel("Control Entradas/Salidas");
-		lblControlEntradassalidas.setFont(new Font("Lucida Bright", Font.BOLD, 18));
-		lblControlEntradassalidas.setBounds(28, 12, 244, 28);
-		inOutControlPanel.add(lblControlEntradassalidas);
-		
-		JLabel lblGenerarEntradasalida = new JLabel("Generar Entrada/Salida");
-		lblGenerarEntradasalida.setFont(new Font("Lucida Bright", Font.BOLD, 18));
-		lblGenerarEntradasalida.setBounds(357, 105, 228, 28);
-		inOutControlPanel.add(lblGenerarEntradasalida);
-		
-		JLabel lblProducto_2_5_2_2 = new JLabel("Tipo Operación:");
-		lblProducto_2_5_2_2.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_5_2_2.setBounds(259, 186, 123, 28);
-		inOutControlPanel.add(lblProducto_2_5_2_2);
-		
-		JLabel lblProducto_2_5_2_2_1 = new JLabel("Concepto:");
-		lblProducto_2_5_2_2_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_5_2_2_1.setBounds(305, 264, 78, 28);
-		inOutControlPanel.add(lblProducto_2_5_2_2_1);
-		
-		JLabel lblProducto_2_5_2_2_1_1 = new JLabel("Cantitdad: $");
-		lblProducto_2_5_2_2_1_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_5_2_2_1_1.setBounds(298, 337, 97, 28);
-		inOutControlPanel.add(lblProducto_2_5_2_2_1_1);
-		
-		JButton btnGenerateOperation = new JButton("Generar Operación");
-		btnGenerateOperation.setBounds(387, 433, 174, 35);
-		inOutControlPanel.add(btnGenerateOperation);
-		
-		txtInOutConcept = new JTextField();
-		txtInOutConcept.setBounds(387, 262, 180, 35);
-		inOutControlPanel.add(txtInOutConcept);
-		txtInOutConcept.setColumns(10);
-		
-		txtInOutQuantity = new JTextField();
-		txtInOutQuantity.setColumns(10);
-		txtInOutQuantity.setBounds(385, 335, 180, 35);
-		inOutControlPanel.add(txtInOutQuantity);
-		
-		JComboBox cmbOperationType = new JComboBox();
-		cmbOperationType.setBounds(387, 176, 180, 38);
-		inOutControlPanel.add(cmbOperationType);
-		
 		JPanel EmailConfigPanel = new JPanel();
 		EmailConfigPanel.setBackground(SystemColor.window);
 		tabbedAdminOptions.addTab("Configuración Email", null, EmailConfigPanel, null);
@@ -1016,6 +968,80 @@ public class SmartSaleBoxMain extends JFrame {
 		JButton btnDeleteEmail = new JButton("Borrar");
 		btnDeleteEmail.setBounds(879, 420, 117, 25);
 		EmailConfigPanel.add(btnDeleteEmail);
+		
+		JPanel inOutControlPanel = new JPanel();
+		inOutControlPanel.setBackground(SystemColor.window);
+		tabbedAdminOptions.addTab("Entradas/Salidas", null, inOutControlPanel, null);
+		inOutControlPanel.setLayout(null);
+		
+		JLabel lblNewLabel_1_1_4 = new JLabel("@SmartSaleBox.");
+		lblNewLabel_1_1_4.setFont(new Font("Lucida Bright", Font.BOLD, 24));
+		lblNewLabel_1_1_4.setBounds(835, 12, 201, 28);
+		inOutControlPanel.add(lblNewLabel_1_1_4);
+		
+		JLabel lblControlEntradassalidas = new JLabel("Control Entradas/Salidas");
+		lblControlEntradassalidas.setFont(new Font("Lucida Bright", Font.BOLD, 18));
+		lblControlEntradassalidas.setBounds(28, 12, 244, 28);
+		inOutControlPanel.add(lblControlEntradassalidas);
+		
+		JLabel lblGenerarEntradasalida = new JLabel("Generar Entrada/Salida");
+		lblGenerarEntradasalida.setFont(new Font("Lucida Bright", Font.BOLD, 18));
+		lblGenerarEntradasalida.setBounds(357, 105, 228, 28);
+		inOutControlPanel.add(lblGenerarEntradasalida);
+		
+		JLabel lblProducto_2_5_2_2 = new JLabel("Tipo Operación:");
+		lblProducto_2_5_2_2.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+		lblProducto_2_5_2_2.setBounds(259, 186, 123, 28);
+		inOutControlPanel.add(lblProducto_2_5_2_2);
+		
+		JLabel lblProducto_2_5_2_2_1 = new JLabel("Concepto:");
+		lblProducto_2_5_2_2_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+		lblProducto_2_5_2_2_1.setBounds(305, 341, 78, 28);
+		inOutControlPanel.add(lblProducto_2_5_2_2_1);
+		
+		JLabel lblProducto_2_5_2_2_1_1 = new JLabel("Cantitdad: $");
+		lblProducto_2_5_2_2_1_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+		lblProducto_2_5_2_2_1_1.setBounds(298, 414, 97, 28);
+		inOutControlPanel.add(lblProducto_2_5_2_2_1_1);
+		
+		JButton btnGenerateOperation = new JButton("Generar Operación");
+		btnGenerateOperation.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(cmbOperationType.getSelectedIndex()==0) {
+					SaveInflowProcess.createNewInflow();
+				}else if(cmbOperationType.getSelectedIndex()==1) {
+					SaveOutflowProcess.createNewOutflow();
+				}
+			}
+		});
+		btnGenerateOperation.setBounds(393, 486, 174, 35);
+		inOutControlPanel.add(btnGenerateOperation);
+		
+		txtInOutConcept = new JTextField();
+		txtInOutConcept.setBounds(387, 339, 180, 35);
+		inOutControlPanel.add(txtInOutConcept);
+		txtInOutConcept.setColumns(10);
+		
+		txtInOutQuantity = new JTextField();
+		txtInOutQuantity.setFont(new Font("Dialog", Font.BOLD, 14));
+		txtInOutQuantity.setColumns(10);
+		txtInOutQuantity.setBounds(385, 412, 180, 35);
+		inOutControlPanel.add(txtInOutQuantity);
+		
+		cmbOperationType = new JComboBox();
+		cmbOperationType.setModel(new DefaultComboBoxModel(new String[] {"ENTRADA", "SALIDA"}));
+		cmbOperationType.setBounds(387, 176, 180, 38);
+		inOutControlPanel.add(cmbOperationType);
+		
+		JLabel Tipo = new JLabel("Denominación:");
+		Tipo.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+		Tipo.setBounds(259, 254, 123, 28);
+		inOutControlPanel.add(Tipo);
+		
+		cmbPaymentTypeInOut = new JComboBox();
+		cmbPaymentTypeInOut.setModel(new DefaultComboBoxModel(new String[] {"EFECTIVO", "TARJETA"}));
+		cmbPaymentTypeInOut.setBounds(387, 250, 180, 38);
+		inOutControlPanel.add(cmbPaymentTypeInOut);
 		
 		JPanel adminConfigPanel = new JPanel();
 		adminConfigPanel.setBackground(SystemColor.window);
@@ -1120,52 +1146,49 @@ public class SmartSaleBoxMain extends JFrame {
 		btnEnableCardPayment.setBounds(616, 476, 85, 25);
 		tabbedSale.add(btnEnableCardPayment);
 		
-		/////////////// BEGINS CART SALE MODEL BUILDING
-		final String cartSaleColumns[] = { "idProd", "Producto", "Precio", "Stock" };
-		tableModelCartSale = new DefaultTableModel(cartSaleColumns, 0);
-		tblCartSale = new JTable(tableModelCartSale);
-		tblCartSale.addMouseListener(new MouseAdapter() {
+	final String cartSaleColumns[] = { "idProd", "Producto", "Precio", "Stock" };
+	tableModelCartSale = new DefaultTableModel(cartSaleColumns, 0);
+	tblCartSale = new JTable(tableModelCartSale);
+	tblCartSale.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				SaveSaleProcess.addProductToSaleList(e);
-			}
-		});
-		tblCartSale.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		tblCartSale.getColumnModel().getColumn(0).setPreferredWidth(50);
-		tblCartSale.getColumnModel().getColumn(1).setPreferredWidth(230);
-		tblCartSale.getColumnModel().getColumn(2).setPreferredWidth(100);
-		tblCartSale.getColumnModel().getColumn(3).setPreferredWidth(100);
-		scrollCartSale.setViewportView(tblCartSale);
+		}
+	});
+	tblCartSale.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+	tblCartSale.getColumnModel().getColumn(0).setPreferredWidth(50);
+	tblCartSale.getColumnModel().getColumn(1).setPreferredWidth(230);
+	tblCartSale.getColumnModel().getColumn(2).setPreferredWidth(100);
+	tblCartSale.getColumnModel().getColumn(3).setPreferredWidth(100);
+	scrollCartSale.setViewportView(tblCartSale);
 		
-		/////////////// BEGINS SALE INFO MODEL BUILDING // Agregar Id prodcuto y Stock para el control de las tablas de stock
-		final String saleColumns[] = {"noSale","Description","Precio","Unidades","total","idProd","Tipo","idSale"};
-		tableModelSale = new DefaultTableModel(saleColumns, 0);
-		tblSale = new JTable(tableModelSale);
-		tblSale.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		tblSale.getColumnModel().getColumn(0).setPreferredWidth(50);
-		tblSale.getColumnModel().getColumn(1).setPreferredWidth(180);
-		tblSale.getColumnModel().getColumn(2).setPreferredWidth(70);
-		tblSale.getColumnModel().getColumn(3).setPreferredWidth(70);
-		tblSale.getColumnModel().getColumn(4).setPreferredWidth(70);
-		tblSale.getColumnModel().getColumn(5).setPreferredWidth(50);
-		tblSale.getColumnModel().getColumn(6).setPreferredWidth(50);
-		tblSale.getColumnModel().getColumn(7).setPreferredWidth(50);
-		scrollSale.setViewportView(tblSale);
+	final String saleColumns[] = {"noSale","Description","Precio","Unidades","total","idProd","Tipo","idSale"};
+	tableModelSale = new DefaultTableModel(saleColumns, 0);
+	tblSale = new JTable(tableModelSale);
+	tblSale.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+	tblSale.getColumnModel().getColumn(0).setPreferredWidth(50);
+	tblSale.getColumnModel().getColumn(1).setPreferredWidth(180);
+	tblSale.getColumnModel().getColumn(2).setPreferredWidth(70);
+	tblSale.getColumnModel().getColumn(3).setPreferredWidth(70);
+	tblSale.getColumnModel().getColumn(4).setPreferredWidth(70);
+	tblSale.getColumnModel().getColumn(5).setPreferredWidth(50);
+	tblSale.getColumnModel().getColumn(6).setPreferredWidth(50);
+	tblSale.getColumnModel().getColumn(7).setPreferredWidth(50);
+	scrollSale.setViewportView(tblSale);
 		
-		/////////////// BEGINS SALE INFO MODEL BUILDING // Agregar Id prodcuto y Stock
-		/////////////// para el control de las tablas de stock
-		final String inflowsColumns[] =  { "Id", "Concepto", "Descripción", "Cantidad", "Tipo pago","Atendió","Fecha" };
-		tableModelInflows = new DefaultTableModel(inflowsColumns, 0);
-		tblInflows = new JTable(tableModelInflows);
-		tblInflows.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		tblInflows.getColumnModel().getColumn(0).setPreferredWidth(50);
-		tblInflows.getColumnModel().getColumn(1).setPreferredWidth(180);
-		tblInflows.getColumnModel().getColumn(2).setPreferredWidth(70);
-		tblInflows.getColumnModel().getColumn(3).setPreferredWidth(70);
-		tblInflows.getColumnModel().getColumn(4).setPreferredWidth(70);
-		tblInflows.getColumnModel().getColumn(5).setPreferredWidth(50);
-		tblInflows.getColumnModel().getColumn(6).setPreferredWidth(50);
-		scrollInflows.setViewportView(tblInflows);
+	final String inflowsColumns[] = { "Id", "Concepto", "Descripción", "Cantidad", "Tipo pago", "Atendió",
+				"Fecha" };
+	tableModelInflows = new DefaultTableModel(inflowsColumns, 0);
+	tblInflows = new JTable(tableModelInflows);
+	tblInflows.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+	tblInflows.getColumnModel().getColumn(0).setPreferredWidth(50);
+	tblInflows.getColumnModel().getColumn(1).setPreferredWidth(180);
+	tblInflows.getColumnModel().getColumn(2).setPreferredWidth(70);
+	tblInflows.getColumnModel().getColumn(3).setPreferredWidth(70);
+	tblInflows.getColumnModel().getColumn(4).setPreferredWidth(70);
+	tblInflows.getColumnModel().getColumn(5).setPreferredWidth(50);
+	tblInflows.getColumnModel().getColumn(6).setPreferredWidth(50);
+	scrollInflows.setViewportView(tblInflows);
 		
 
 	final String outflowsColumns[] =  { "Id", "Concepto", "Descripción", "Cantidad", "Tipo pago","Atendió","Fecha" };
@@ -1195,7 +1218,4 @@ public class SmartSaleBoxMain extends JFrame {
 	scrollSaleHistory.setViewportView(tblSaleHistory);
 		
 	}
-	
-	
-	
 }
