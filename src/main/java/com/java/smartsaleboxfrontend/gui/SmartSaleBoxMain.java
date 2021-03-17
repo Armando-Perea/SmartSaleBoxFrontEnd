@@ -9,10 +9,13 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import com.java.smartsalebox.models.Sales;
+import com.java.smartsaleboxfrontend.business.delete.DeleteProductProcess;
 import com.java.smartsaleboxfrontend.business.delete.DeleteSaleProcess;
+import com.java.smartsaleboxfrontend.business.read.ReadBulkSaleInfo;
 import com.java.smartsaleboxfrontend.business.read.ReadCartSaleInfo;
 import com.java.smartsaleboxfrontend.business.read.ReadInflowProcess;
 import com.java.smartsaleboxfrontend.business.read.ReadOutflowProcess;
+import com.java.smartsaleboxfrontend.business.read.ReadProductsInfo;
 import com.java.smartsaleboxfrontend.business.read.ReadSaleInfo;
 import com.java.smartsaleboxfrontend.business.save.LoginInitializer;
 import com.java.smartsaleboxfrontend.business.save.SaveBulkProductProcess;
@@ -24,6 +27,7 @@ import com.java.smartsaleboxfrontend.business.save.SaveSaleProcess;
 import com.java.smartsaleboxfrontend.business.update.UpdateBulkStockProcess;
 import com.java.smartsaleboxfrontend.business.update.UpdateCashProcess;
 import com.java.smartsaleboxfrontend.business.update.UpdateProductEarningsProcess;
+import com.java.smartsaleboxfrontend.business.update.UpdateProductProcess;
 import com.java.smartsaleboxfrontend.business.update.UpdateProductStockProcess;
 import com.java.smartsaleboxfrontend.utils.SmartSaleBoxClearFields;
 import com.java.smartsaleboxfrontend.utils.SmartSaleBoxOperations;
@@ -94,6 +98,9 @@ public class SmartSaleBoxMain extends JFrame {
 	public static JScrollPane scrollSaleHistory;
 	public static JScrollPane scrollInflows;
 	public static JScrollPane scrollOutflows;
+	public static JScrollPane scrollGetProduct;
+	public static JScrollPane scrollNewBulk;
+	
 	public static JTextField txtCardPayment;
 	public static JTextField txtTotalSale;
 	public static JTextField txtReceived;
@@ -106,6 +113,7 @@ public class SmartSaleBoxMain extends JFrame {
 	public static JTextField txtTotalInflows;
 	public static JTextField txtTotalOutflows;
 	
+	public static JTextField txtGetProductNameSearch;
 	public static JTextField txtNewProductName;
 	public static JTextField txtNewCostPrice;
 	public static JTextField txtNewSalePrice;
@@ -113,6 +121,7 @@ public class SmartSaleBoxMain extends JFrame {
 	public static JTextField txtNewStock;
 	public static JTextField txtNewBarCode;
 	
+	public static JTextField txtBulkProdSearch;
 	public static JTextField txtNewBulkProductName;
 	public static JTextField txtNewBulkCostPrice;
 	public static JTextField txtNewBulkKiloPrice;
@@ -500,12 +509,12 @@ public class SmartSaleBoxMain extends JFrame {
 		lblConsultaProducto_1.setBounds(645, 58, 189, 28);
 		tabbedProducts_1.add(lblConsultaProducto_1);
 		
-		JScrollPane paneGetProduct = new JScrollPane();
-		paneGetProduct.setBounds(443, 133, 565, 370);
-		tabbedProducts_1.add(paneGetProduct);
+		scrollGetProduct = new JScrollPane();
+		scrollGetProduct.setBounds(443, 133, 565, 370);
+		tabbedProducts_1.add(scrollGetProduct);
 		
 		tblNewProduct = new JTable();
-		paneGetProduct.setViewportView(tblNewProduct);
+		scrollGetProduct.setViewportView(tblNewProduct);
 		
 		JLabel lblProducto_2_6 = new JLabel("Producto:");
 		lblProducto_2_6.setFont(new Font("Lucida Bright", Font.BOLD, 14));
@@ -590,12 +599,53 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedProducts_1.add(txtNewBarCode);
 		
 		JButton btnUpdateProd = new JButton("Actualizar");
+		btnUpdateProd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				UpdateProductProcess.updateSelectedProduct();
+			}
+		});
 		btnUpdateProd.setBounds(465, 515, 117, 34);
 		tabbedProducts_1.add(btnUpdateProd);
 		
 		JButton btnDeleteProd = new JButton("Borrar");
+		btnDeleteProd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DeleteProductProcess.removeSelectedProduct();
+			}
+		});
 		btnDeleteProd.setBounds(891, 515, 117, 34);
 		tabbedProducts_1.add(btnDeleteProd);
+		
+		JButton btnShowAllprods = new JButton("Mostrar Todos");
+		btnShowAllprods.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ReadProductsInfo.fillProductTable();
+			}
+		});
+		btnShowAllprods.setBounds(672, 543, 137, 34);
+		tabbedProducts_1.add(btnShowAllprods);
+		
+		txtGetProductNameSearch = new JTextField();
+		txtGetProductNameSearch.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					if (SmartSaleBoxOperations.validateGetProdNameSearch()) {
+						ReadProductsInfo.fillProductTableByName(txtGetProductNameSearch.getText());
+					} else {
+						JOptionPane.showMessageDialog(null, "Ingrese Producto por favor");
+					}
+				}
+			}
+		});
+		txtGetProductNameSearch.setColumns(10);
+		txtGetProductNameSearch.setBounds(582, 87, 270, 34);
+		tabbedProducts_1.add(txtGetProductNameSearch);
+		
+		JLabel lblProducto_2_6_1 = new JLabel("Producto:");
+		lblProducto_2_6_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+		lblProducto_2_6_1.setBounds(503, 87, 85, 28);
+		tabbedProducts_1.add(lblProducto_2_6_1);
 		
 		JPanel panel_2 = new JPanel();
 		tabbedPane_1.addTab("Productos a Granel", null, panel_2, null);
@@ -618,15 +668,15 @@ public class SmartSaleBoxMain extends JFrame {
 		
 		JLabel lblConsultaProductoGranel = new JLabel("Consulta Producto Granel");
 		lblConsultaProductoGranel.setFont(new Font("Lucida Bright", Font.BOLD, 18));
-		lblConsultaProductoGranel.setBounds(645, 58, 263, 28);
+		lblConsultaProductoGranel.setBounds(628, 52, 263, 28);
 		tabbedProducts_2.add(lblConsultaProductoGranel);
 		
-		JScrollPane paneNewBulk = new JScrollPane();
-		paneNewBulk.setBounds(443, 133, 565, 380);
-		tabbedProducts_2.add(paneNewBulk);
+		scrollNewBulk = new JScrollPane();
+		scrollNewBulk.setBounds(443, 133, 565, 380);
+		tabbedProducts_2.add(scrollNewBulk);
 		
 		tblNewBulkProducts = new JTable();
-		paneNewBulk.setViewportView(tblNewBulkProducts);
+		scrollNewBulk.setViewportView(tblNewBulkProducts);
 		
 		JLabel lblProducto_2_7 = new JLabel("Producto:");
 		lblProducto_2_7.setFont(new Font("Lucida Bright", Font.BOLD, 14));
@@ -736,6 +786,37 @@ public class SmartSaleBoxMain extends JFrame {
 		JButton btnDeleteBulkProd = new JButton("Borrar");
 		btnDeleteBulkProd.setBounds(879, 525, 117, 34);
 		tabbedProducts_2.add(btnDeleteBulkProd);
+		
+		JButton btnShowAllBulkProd = new JButton("Mostrar Todos");
+		btnShowAllBulkProd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ReadBulkSaleInfo.fillProductBulkTable();
+			}
+		});
+		btnShowAllBulkProd.setBounds(663, 543, 143, 34);
+		tabbedProducts_2.add(btnShowAllBulkProd);
+		
+		txtBulkProdSearch = new JTextField();
+		txtBulkProdSearch.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					if (SmartSaleBoxOperations.validateGetBulkProdNameSearch()) {
+						ReadBulkSaleInfo.fillProductBulkTableByName(txtBulkProdSearch.getText());
+					} else {
+						JOptionPane.showMessageDialog(null, "Ingrese Producto por favor");
+					}
+				}
+			}
+		});
+		txtBulkProdSearch.setColumns(10);
+		txtBulkProdSearch.setBounds(605, 87, 270, 34);
+		tabbedProducts_2.add(txtBulkProdSearch);
+		
+		JLabel lblProducto_2_7_1 = new JLabel("Producto:");
+		lblProducto_2_7_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+		lblProducto_2_7_1.setBounds(525, 87, 85, 28);
+		tabbedProducts_2.add(lblProducto_2_7_1);
 		
 		JPanel tabbedAdmin = new JPanel();
 		tabbedPane.addTab("Administración", null, tabbedAdmin, null);
@@ -1226,6 +1307,34 @@ public class SmartSaleBoxMain extends JFrame {
 	tblSaleHistory.getColumnModel().getColumn(5).setPreferredWidth(50);
 	tblSaleHistory.getColumnModel().getColumn(6).setPreferredWidth(50);
 	scrollSaleHistory.setViewportView(tblSaleHistory);
+	
+	
+	final String productColumns[] = {"idProduct","Producto","PrecioCosto","PrecioVenta","Ganancia","Stock","CódigoBarras"};
+	tableModelNewProduct = new DefaultTableModel(productColumns, 0);
+	tblNewProduct = new JTable(tableModelNewProduct);
+	tblNewProduct.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+	tblNewProduct.getColumnModel().getColumn(0).setPreferredWidth(50);
+	tblNewProduct.getColumnModel().getColumn(1).setPreferredWidth(150);
+	tblNewProduct.getColumnModel().getColumn(2).setPreferredWidth(80);
+	tblNewProduct.getColumnModel().getColumn(3).setPreferredWidth(80);
+	tblNewProduct.getColumnModel().getColumn(4).setPreferredWidth(80);
+	tblNewProduct.getColumnModel().getColumn(5).setPreferredWidth(80);
+	tblNewProduct.getColumnModel().getColumn(6).setPreferredWidth(80);
+	scrollSaleHistory.setViewportView(tblNewProduct);
+	
+	final String bulkProductColumns[] = {"idProduct","Producto","PrecioCosto","PrecioKilo","Stock grs.","GananciaxKilo","GananciaGranel","CódigoBarras"};
+	tableModelNewBulkProducts = new DefaultTableModel(bulkProductColumns, 0);
+	tblNewBulkProducts = new JTable(tableModelNewBulkProducts);
+	tblNewBulkProducts.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+	tblNewBulkProducts.getColumnModel().getColumn(0).setPreferredWidth(50);
+	tblNewBulkProducts.getColumnModel().getColumn(1).setPreferredWidth(130);
+	tblNewBulkProducts.getColumnModel().getColumn(2).setPreferredWidth(80);
+	tblNewBulkProducts.getColumnModel().getColumn(3).setPreferredWidth(80);
+	tblNewBulkProducts.getColumnModel().getColumn(4).setPreferredWidth(80);
+	tblNewBulkProducts.getColumnModel().getColumn(5).setPreferredWidth(80);
+	tblNewBulkProducts.getColumnModel().getColumn(6).setPreferredWidth(80);
+	tblNewBulkProducts.getColumnModel().getColumn(7).setPreferredWidth(80);
+	scrollNewBulk.setViewportView(tblNewBulkProducts);
 		
 	}
 }

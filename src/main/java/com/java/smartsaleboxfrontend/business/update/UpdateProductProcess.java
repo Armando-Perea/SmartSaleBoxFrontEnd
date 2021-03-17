@@ -4,6 +4,7 @@ import javax.swing.JOptionPane;
 
 import com.java.smartsalebox.client.ProductsClient;
 import com.java.smartsalebox.models.Products;
+import com.java.smartsaleboxfrontend.business.read.ReadProductsInfo;
 import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
 
 public class UpdateProductProcess {
@@ -22,8 +23,8 @@ public class UpdateProductProcess {
 	 * updateSelectedProductProcess executes the update process for the product
 	 * table.
 	 */
-	// {adm.getIdAdministrator(),adm.getName(),adm.getLastName(),adm.getPosition(),adm.getEmail(),adm.getPassword()};
-	public static void updateBulkProduct() {
+	// {"idProduct","Producto","Tipo","PrecioCosto","PrecioVenta","Ganancia","Stock","CódigoBarras"};
+	public static void updateSelectedProduct() {
 		int row;
 		Integer productId, stock;
 		int status = 0;
@@ -38,10 +39,10 @@ public class UpdateProductProcess {
 				product = ProductsClient.getProductById(productId);
 				if (product != null) {
 					prodName = (String) SmartSaleBoxMain.tblNewProduct.getValueAt(row, 1);
-					costPrice = Double.parseDouble((String) SmartSaleBoxMain.tblNewProduct.getValueAt(row, 2));
-					saleprice = Double.parseDouble((String) SmartSaleBoxMain.tblNewProduct.getValueAt(row, 3));
-					earning = Double.parseDouble((String) SmartSaleBoxMain.tblNewProduct.getValueAt(row, 4));
-					stock = Integer.parseInt((String) SmartSaleBoxMain.tblNewProduct.getValueAt(row, 5));
+					costPrice = Double.parseDouble(SmartSaleBoxMain.tblNewProduct.getValueAt(row, 2).toString());
+					saleprice = Double.parseDouble(SmartSaleBoxMain.tblNewProduct.getValueAt(row, 3).toString());
+					earning = Double.parseDouble(SmartSaleBoxMain.tblNewProduct.getValueAt(row, 4).toString());
+					stock = Integer.parseInt(SmartSaleBoxMain.tblNewProduct.getValueAt(row, 5).toString());
 					barCode = (String) SmartSaleBoxMain.tblNewProduct.getValueAt(row, 6);
 					//// SETTING THE VALUES TO CAREER OBJECT
 					if (!prodName.isEmpty()) {
@@ -55,7 +56,7 @@ public class UpdateProductProcess {
 					}
 
 					if (!earning.isNaN()) {
-						product.setEarning(earning);
+						product.setEarning(saleprice-costPrice);
 					}
 
 					if (stock > -1) {
@@ -70,7 +71,7 @@ public class UpdateProductProcess {
 					if (status > 0 && status < 300) {
 						JOptionPane.showMessageDialog(null, PRODUCT_UPDATED, VALIDATION_UPDATE_TITLE,
 								JOptionPane.INFORMATION_MESSAGE);
-						// ReadAdministrationInfo.fillAllAdminTable();
+						ReadProductsInfo.fillProductTable();
 					} else {
 						JOptionPane.showMessageDialog(null, PRODUCT_UPDATE_FAILED, VALIDATION_UPDATE_TITLE,
 								JOptionPane.INFORMATION_MESSAGE);

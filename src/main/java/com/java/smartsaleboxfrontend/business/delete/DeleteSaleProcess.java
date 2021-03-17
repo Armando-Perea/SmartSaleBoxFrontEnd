@@ -10,6 +10,7 @@ import com.java.smartsaleboxfrontend.utils.SmartSaleBoxClearFields;
 
 public class DeleteSaleProcess {
 	
+	private static final String SELECT_PRODUCT = "Seleccione un producto a eliminar por favor";
 	/**
 	 * removeSelectedSaleProcess executes the removal process for the tempSale table.
 	 */
@@ -30,7 +31,7 @@ public class DeleteSaleProcess {
 				ReadSaleInfo.getSalesByNoSale();
 			}
 		} else {
-			JOptionPane.showMessageDialog(null, "Seleccione un producto a eliminar por favor","WARNING_MESSAGE", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null, SELECT_PRODUCT,"Advertencia", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 	

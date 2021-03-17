@@ -132,6 +132,23 @@ public class SmartSaleBoxOperations {
 		return true;
 	}
 	
+	public static boolean validateGetProdNameSearch() {
+		String name = SmartSaleBoxMain.txtGetProductNameSearch.getText();
+		if (name.isEmpty() || name == null) {
+			return false;
+		}
+		return true;
+	}
+	
+	public static boolean validateGetBulkProdNameSearch() {
+		String name = SmartSaleBoxMain.txtBulkProdSearch.getText();
+		if (name.isEmpty() || name == null) {
+			return false;
+		}
+		return true;
+	}
+	
+	
 	public static boolean validateScannerReading() {
 		String name = SmartSaleBoxMain.txtProductCodeSearch.getText();
 		if (name.isEmpty() || name == null) {
