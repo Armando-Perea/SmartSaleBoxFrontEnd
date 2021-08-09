@@ -4,12 +4,14 @@ import javax.swing.JOptionPane;
 
 import com.java.smartsalebox.client.EmailConfigClient;
 import com.java.smartsalebox.models.EmailConfig;
+import com.java.smartsaleboxfrontend.business.read.ReadEmailInfo;
 import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
+import com.java.smartsaleboxfrontend.utils.SmartSaleBoxClearFields;
 
 public class SaveEmailProcess {
 
 	public final static String EMAIL_SAVED_SUCCESSFULLY = " ha sido dado de alta con éxito!";
-	public final static String EMAIL_SAVED_FAILED = "No es posible dar de alta Eamil en este momento";
+	public final static String EMAIL_SAVED_FAILED = "No es posible dar de alta Email en este momento";
 	private static final String NUMERIC_VALIDATION_ERROR = "Dato debe ser numérico, revise información";
 	private static final String VALIDATION_NUMBER = "java.lang.NumberFormatException";
 	private static final String IS_VALID_EMAIL = "Email no válido";
@@ -25,6 +27,8 @@ public class SaveEmailProcess {
 				emailConfig = EmailConfigClient.addEmailConfig(emailConfig);
 				if (emailConfig.getIdEmail() != null) {
 					JOptionPane.showMessageDialog(null, emailConfig.getEmail() + EMAIL_SAVED_SUCCESSFULLY);
+					SmartSaleBoxClearFields.clearEmailProcess();
+					ReadEmailInfo.getAllEmailTable();
 				} else {
 					JOptionPane.showMessageDialog(null, EMAIL_SAVED_FAILED);
 				}

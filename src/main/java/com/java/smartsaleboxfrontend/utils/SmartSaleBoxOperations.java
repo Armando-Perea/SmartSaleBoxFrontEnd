@@ -112,6 +112,15 @@ public class SmartSaleBoxOperations {
 		return CASH_PAYMENT;
 	}
 	
+	public static boolean validateAdminPasswords() {
+		String pass1 = new String(SmartSaleBoxMain.pwdAdmin1.getPassword());
+		String pass2 = new String(SmartSaleBoxMain.pwdAdmin2.getPassword());
+		if (pass1.equals(pass2)) {
+			return true;
+		}
+		return false;
+	}
+	
 	public static Integer sumNewQuantity(Integer quantity, Integer newQuantity) {
 		return quantity+newQuantity;
 	}
@@ -148,6 +157,61 @@ public class SmartSaleBoxOperations {
 		return true;
 	}
 	
+	public static boolean validateGetSaleHistoryByNoSale() {
+		String noSale = SmartSaleBoxMain.txtHistoryNoSale.getText();
+		if (noSale.isEmpty() || noSale == null) {
+			return false;
+		}
+		return true;
+	}
+
+	public static boolean validateEmailConfig() {
+		
+		String email = SmartSaleBoxMain.txtEmailNew.getText();
+		String pass = new String(SmartSaleBoxMain.pwdAdmin1.getPassword());
+		
+		if (email.isEmpty() || email == null &&
+				pass.isEmpty() || pass == null	) {
+			return false;
+		}
+		return true;
+	}
+	
+	public static boolean validateAdminFields() {
+		String name = SmartSaleBoxMain.txtAdminName.getText();
+		String lastName = SmartSaleBoxMain.txtAdminLast.getText();
+		String phone = SmartSaleBoxMain.txtAdminPhone.getText();
+		String role = ((String) SmartSaleBoxMain.cmbAdminRole.getSelectedItem());
+		String pass = new String(SmartSaleBoxMain.pwdAdmin1.getPassword());
+		
+		if (name.isEmpty() || name == null && 
+			lastName.isEmpty() || lastName == null &&
+			phone.isEmpty() || phone == null &&
+			role.isEmpty() || role == null &&
+			pass.isEmpty() || pass == null) {
+			return false;
+		}
+		return true;
+	}
+	
+	public static boolean validateSystemPaths() {
+		
+		String closure = SmartSaleBoxMain.txtSystemPathsClosure.getText();
+		String inflows = SmartSaleBoxMain.txtSystemPathsInflows.getText();
+		String outflows = SmartSaleBoxMain.txtSystemPathsOutflows.getText();
+		String earnings = SmartSaleBoxMain.txtSystemPathsEarnings.getText();
+		String products = SmartSaleBoxMain.txtSystemPathsProducts.getText();
+		String sales = SmartSaleBoxMain.txtSystemPathsSales.getText();
+		if (closure.isEmpty() || closure == null &&
+			inflows.isEmpty() || closure == null &&
+			outflows.isEmpty() || closure == null &&
+			earnings.isEmpty() || closure == null &&
+			products.isEmpty() || closure == null &&
+			sales.isEmpty() || closure == null ) {
+			return false;
+		}
+		return true;
+	}
 	
 	public static boolean validateScannerReading() {
 		String name = SmartSaleBoxMain.txtProductCodeSearch.getText();

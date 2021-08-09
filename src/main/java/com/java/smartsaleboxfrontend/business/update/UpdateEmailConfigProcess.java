@@ -4,46 +4,71 @@ import javax.swing.JOptionPane;
 
 import com.java.smartsalebox.client.EmailConfigClient;
 import com.java.smartsalebox.models.EmailConfig;
+import com.java.smartsaleboxfrontend.business.read.ReadEmailInfo;
+import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
+import com.java.smartsaleboxfrontend.utils.SmartSaleBoxClearFields;
 
 public class UpdateEmailConfigProcess {
 
-	// tblNewBulkProducts
-	private static final String EMAIL_UPDATED = "Pago Actualizado con Éxito!";
-	private static final String EMAIL_NOT_FOUND = "Id no existe!";
-	private static final String EMAIL_UPDATE_FAILED = "No es posible actualizar Pago";
+	private static final String EMAIL_UPDATED = "Email Actualizado con Éxito!";
+	private static final String EMAIL_NOT_FOUND = "Empleado no existe!";
+	private static final String EMAIL_UPDATE_FAILED = "No es posible actualizar Empleado";
+	private static final String SELECT_EMAIL = "Seleccione un Email en la Tabla";
 	private static final String NUMERIC_VALIDATION_ERROR = "Dato debe ser numérico, revise información";
 	private static final String VALIDATION_UPDATE_TITLE = "Validacion";
+	private static final String VALIDATION_DATA = "Dato No Valido para Actualizar";
 	private static final String VALIDATION_NUMBER = "java.lang.NumberFormatException";
 	private static final String VALIDATION_TOTAL = "java.lang.NumberFormatException";
 
-	/**
-	 * updateSelectedProductProcess executes the update process for the product
-	 * table.
-	 */
-	// {adm.getIdAdministrator(),adm.getName(),adm.getLastName(),adm.getPosition(),adm.getEmail(),adm.getPassword()};
-	public static void updateEmailConfig(EmailConfig emailConfig) {
+	public static void updateEmailConfig() {
+		int row;
+		Integer emailId;
 		int status = 0;
+		String email;
+		String isActive;
+		EmailConfig emailConfig = new EmailConfig();
+		row = SmartSaleBoxMain.tblEmail.getSelectedRow();
 		try {
-			emailConfig = EmailConfigClient.getEmailConfigById(emailConfig.getIdEmail());
-			if (emailConfig != null) {
-
-				status = EmailConfigClient.updateEmailConfig(emailConfig);
-				if (status > 0 && status < 300) {
-					JOptionPane.showMessageDialog(null, EMAIL_UPDATED, VALIDATION_UPDATE_TITLE,
-							JOptionPane.INFORMATION_MESSAGE);
-					// ReadAdministrationInfo.fillAllAdminTable();
+			if (row > -1) {
+				emailId = Integer.parseInt(SmartSaleBoxMain.tblEmail.getValueAt(row, 0).toString());
+				emailConfig = EmailConfigClient.getEmailConfigById(emailId);
+				if (emailConfig != null) {
+					email = (String) SmartSaleBoxMain.tblEmail.getValueAt(row, 1);
+					isActive = (String) SmartSaleBoxMain.tblEmail.getValueAt(row, 2);
+					if (!email.isEmpty()) {
+						emailConfig.setEmail(email);
+					}
+					if (isActive.toLowerCase().equals("true") || isActive.toLowerCase().equals("si")) {
+						emailConfig.setIsActiveService(true);
+					}else {
+						emailConfig.setIsActiveService(false);
+					}
+					status = EmailConfigClient.updateEmailConfig(emailConfig);
+					if (status > 0 && status < 300) {
+						JOptionPane.showMessageDialog(null, EMAIL_UPDATED, VALIDATION_UPDATE_TITLE,
+								JOptionPane.INFORMATION_MESSAGE);
+						SmartSaleBoxClearFields.clearEmailProcess();
+						ReadEmailInfo.getAllEmailTable();
+					} else {
+						JOptionPane.showMessageDialog(null, EMAIL_UPDATE_FAILED, VALIDATION_UPDATE_TITLE,
+								JOptionPane.INFORMATION_MESSAGE);
+						SmartSaleBoxClearFields.clearEmailProcess();
+						ReadEmailInfo.getAllEmailTable();
+					}
 				} else {
-					JOptionPane.showMessageDialog(null, EMAIL_UPDATE_FAILED, VALIDATION_UPDATE_TITLE,
+					JOptionPane.showMessageDialog(null, EMAIL_NOT_FOUND, VALIDATION_UPDATE_TITLE,
 							JOptionPane.INFORMATION_MESSAGE);
 				}
 			} else {
-				JOptionPane.showMessageDialog(null, EMAIL_NOT_FOUND, VALIDATION_UPDATE_TITLE,
-						JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(null, SELECT_EMAIL, VALIDATION_UPDATE_TITLE, JOptionPane.WARNING_MESSAGE);
 			}
 		} catch (Exception ex) {
 			System.out.println("ISSUE: " + ex);
 			if (ex.toString().contains(VALIDATION_NUMBER) || ex.toString().contains(VALIDATION_TOTAL)) {
 				JOptionPane.showMessageDialog(null, NUMERIC_VALIDATION_ERROR, VALIDATION_UPDATE_TITLE,
+						JOptionPane.WARNING_MESSAGE);
+			} else {
+				JOptionPane.showMessageDialog(null, VALIDATION_DATA, VALIDATION_UPDATE_TITLE,
 						JOptionPane.WARNING_MESSAGE);
 			}
 		}

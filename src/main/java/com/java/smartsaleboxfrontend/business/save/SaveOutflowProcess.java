@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 
 import com.java.smartsalebox.client.OutflowClient;
 import com.java.smartsalebox.models.Outflow;
+import com.java.smartsaleboxfrontend.business.update.UpdateCashProcess;
 import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
 import com.java.smartsaleboxfrontend.utils.SmartSaleBoxClearFields;
 
@@ -41,17 +42,18 @@ public class SaveOutflowProcess {
 							SmartSaleBoxMain.cash = SmartSaleBoxMain.cash-outflowQuantity;
 							SmartSaleBoxClearFields.clearInflowsOutflowsSection();
 							LoginInitializer.initializeBalanceAndHistory();
+							UpdateCashProcess.updateCashAndNoSale();
+							SmartSaleBoxMain.noSale--;
 							JOptionPane.showMessageDialog(null, OPERATION_SAVED_SUCCESSFULLY+"\nCajón Actualizado: $"+SmartSaleBoxMain.cash);
 						}else {
 							JOptionPane.showMessageDialog(null,OPERATION_SAVED_FAILED);
 						}
 					}else if(SmartSaleBoxMain.cmbPaymentTypeInOut.getSelectedItem().toString().equals("EFECTIVO") && SmartSaleBoxMain.cash<outflowQuantity){
 						JOptionPane.showMessageDialog(null,NOT_ENOUGH_CASH+" $"+SmartSaleBoxMain.cash);
-					}else {
+					}else if(SmartSaleBoxMain.cmbPaymentTypeInOut.getSelectedItem().toString().equals("TARJETA")){
 						newOutflow = OutflowClient.addOutflow(newOutflow);
 						if(newOutflow.getIdOutflow()!=null) {
 							JOptionPane.showMessageDialog(null, OPERATION_SAVED_SUCCESSFULLY);
-							SmartSaleBoxMain.cash = SmartSaleBoxMain.cash-outflowQuantity;
 							SmartSaleBoxClearFields.clearInflowsOutflowsSection();
 							LoginInitializer.initializeBalanceAndHistory();
 						}else {

@@ -42,5 +42,31 @@ public class SmartSaleBoxClearFields {
 		SmartSaleBoxMain.txtInOutConcept.setText(null);
 		SmartSaleBoxMain.txtInOutQuantity.setText(null);
 	}
+	
+	public static void clearAdminProcess() {
+		SmartSaleBoxMain.tableModelAdmin.setRowCount(0);
+		SmartSaleBoxMain.txtAdminName.setText(null);
+		SmartSaleBoxMain.txtAdminLast.setText(null);
+		SmartSaleBoxMain.txtAdminPhone.setText(null);
+		SmartSaleBoxMain.pwdAdmin1.setText(null);
+		SmartSaleBoxMain.pwdAdmin2.setText(null);
+		SmartSaleBoxMain.cmbAdminRole.setSelectedIndex(0);
+	}
+	
+	public static void clearEmailProcess() {
+		SmartSaleBoxMain.tableModelEmail.setRowCount(0);
+		SmartSaleBoxMain.txtEmailNew.setText(null);
+		SmartSaleBoxMain.pwdEmailNew.setText(null);
+	}
+	
+	public static void clearSystemPathsProcess() {
+		SmartSaleBoxMain.tableModelPaths.setRowCount(0);
+		SmartSaleBoxMain.txtSystemPathsClosure.setText(null);
+		SmartSaleBoxMain.txtSystemPathsInflows.setText(null);
+		SmartSaleBoxMain.txtSystemPathsOutflows.setText(null);
+		SmartSaleBoxMain.txtSystemPathsEarnings.setText(null);
+		SmartSaleBoxMain.txtSystemPathsSales.setText(null);
+		SmartSaleBoxMain.txtSystemPathsProducts.setText(null);
+	}
 
 }

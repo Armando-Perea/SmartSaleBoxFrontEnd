@@ -9,26 +9,37 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import com.java.smartsalebox.models.Sales;
+import com.java.smartsaleboxfrontend.business.delete.DeleteAdministratorProcess;
+import com.java.smartsaleboxfrontend.business.delete.DeleteEmailConfigProcess;
 import com.java.smartsaleboxfrontend.business.delete.DeleteProductProcess;
 import com.java.smartsaleboxfrontend.business.delete.DeleteSaleProcess;
+import com.java.smartsaleboxfrontend.business.delete.DeleteSystemPathsProcess;
+import com.java.smartsaleboxfrontend.business.read.ReadAdminInfo;
 import com.java.smartsaleboxfrontend.business.read.ReadBulkSaleInfo;
 import com.java.smartsaleboxfrontend.business.read.ReadCartSaleInfo;
+import com.java.smartsaleboxfrontend.business.read.ReadEmailInfo;
 import com.java.smartsaleboxfrontend.business.read.ReadInflowProcess;
 import com.java.smartsaleboxfrontend.business.read.ReadOutflowProcess;
 import com.java.smartsaleboxfrontend.business.read.ReadProductsInfo;
 import com.java.smartsaleboxfrontend.business.read.ReadSaleInfo;
+import com.java.smartsaleboxfrontend.business.read.ReadSystemPathsInfo;
 import com.java.smartsaleboxfrontend.business.save.LoginInitializer;
+import com.java.smartsaleboxfrontend.business.save.SaveAdminProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveBulkProductProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveEmailProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveInflowProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveOutflowProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveProductProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveSaleProcess;
+import com.java.smartsaleboxfrontend.business.save.SaveSystemPathsProcess;
+import com.java.smartsaleboxfrontend.business.update.UpdateAdminProcess;
 import com.java.smartsaleboxfrontend.business.update.UpdateBulkStockProcess;
 import com.java.smartsaleboxfrontend.business.update.UpdateCashProcess;
+import com.java.smartsaleboxfrontend.business.update.UpdateEmailConfigProcess;
 import com.java.smartsaleboxfrontend.business.update.UpdateProductEarningsProcess;
 import com.java.smartsaleboxfrontend.business.update.UpdateProductProcess;
 import com.java.smartsaleboxfrontend.business.update.UpdateProductStockProcess;
+import com.java.smartsaleboxfrontend.business.update.UpdateSystemPathsProcess;
 import com.java.smartsaleboxfrontend.utils.SmartSaleBoxClearFields;
 import com.java.smartsaleboxfrontend.utils.SmartSaleBoxOperations;
 
@@ -79,6 +90,7 @@ public class SmartSaleBoxMain extends JFrame {
 	public static JTable tblAdmin;
 	public static JTable tblInflows;
 	public static JTable tblOutflows;
+	public static JTable tblPaths;
 	
 	/// TABLE MODEL CREATION  /////
 	public static DefaultTableModel tableModelSale;  
@@ -91,8 +103,8 @@ public class SmartSaleBoxMain extends JFrame {
 	public static DefaultTableModel tableModelAdmin;
 	public static DefaultTableModel tableModelInflows;
 	public static DefaultTableModel tableModelOutflows;
+	public static DefaultTableModel tableModelPaths;
 	
-	// SCROLL SECTION
 	public static JScrollPane scrollCartSale;
 	public static JScrollPane scrollSale;
 	public static JScrollPane scrollSaleHistory;
@@ -100,6 +112,9 @@ public class SmartSaleBoxMain extends JFrame {
 	public static JScrollPane scrollOutflows;
 	public static JScrollPane scrollGetProduct;
 	public static JScrollPane scrollNewBulk;
+	public static JScrollPane scrollAdmin;
+	public static JScrollPane scrollEmail;
+	public static JScrollPane scrollPaths;
 	
 	public static JTextField txtCardPayment;
 	public static JTextField txtTotalSale;
@@ -142,6 +157,8 @@ public class SmartSaleBoxMain extends JFrame {
 	public static JTextField txtEmailNew;
 	
 	public static JTextField txtAdminName;
+	public static JTextField txtAdminLast;
+	public static JTextField txtAdminPhone;
 	public static JPasswordField pwdAdmin1;
 	public static JPasswordField pwdAdmin2;
 	public static JTextField txtInOutConcept;
@@ -151,6 +168,13 @@ public class SmartSaleBoxMain extends JFrame {
 	public static JComboBox<String> cmbAdminRole;
 	public static JComboBox<String> cmbOperationType;
 	public static JComboBox<String> cmbPaymentTypeInOut;
+	
+	public static JTextField txtSystemPathsClosure;
+	public static JTextField txtSystemPathsInflows;
+	public static JTextField txtSystemPathsOutflows;
+	public static JTextField txtSystemPathsEarnings;
+	public static JTextField txtSystemPathsSales;
+	public static JTextField txtSystemPathsProducts;
 
 	/**
 	 * Launch the application.
@@ -452,6 +476,15 @@ public class SmartSaleBoxMain extends JFrame {
 		txtHistoryNoSale.setColumns(10);
 		
 		JButton btnHistorySearchSale = new JButton("Consultar");
+		btnHistorySearchSale.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (SmartSaleBoxOperations.validateGetSaleHistoryByNoSale()) {
+					ReadSaleInfo.getSaleHistoryByNoSale();
+				} else {
+					JOptionPane.showMessageDialog(null, "Ingrese número de venta por favor");
+				}
+			}
+		});
 		btnHistorySearchSale.setBounds(225, 85, 109, 25);
 		tabbedSalesHistory.add(btnHistorySearchSale);
 		
@@ -1104,20 +1137,29 @@ public class SmartSaleBoxMain extends JFrame {
 		JButton btnSaveEmail = new JButton("Guardar Email");
 		btnSaveEmail.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				SaveEmailProcess.createNewEmail();
+				if(SmartSaleBoxOperations.validateEmailConfig()) {
+					SaveEmailProcess.createNewEmail();
+				}else {
+					JOptionPane.showMessageDialog(null, "Favor de llenar los campos");
+				}
 			}
 		});
 		btnSaveEmail.setBounds(169, 355, 153, 34);
 		EmailConfigPanel.add(btnSaveEmail);
 		
-		JScrollPane paneEmail = new JScrollPane();
-		paneEmail.setBounds(498, 225, 498, 168);
-		EmailConfigPanel.add(paneEmail);
+		scrollEmail = new JScrollPane();
+		scrollEmail.setBounds(498, 225, 498, 168);
+		EmailConfigPanel.add(scrollEmail);
 		
 		tblEmail = new JTable();
-		paneEmail.setViewportView(tblEmail);
+		scrollEmail.setViewportView(tblEmail);
 		
 		JButton btnUpdateEmail = new JButton("Actualizar");
+		btnUpdateEmail.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				UpdateEmailConfigProcess.updateEmailConfig();
+			}
+		});
 		btnUpdateEmail.setBounds(509, 420, 117, 25);
 		EmailConfigPanel.add(btnUpdateEmail);
 		
@@ -1131,6 +1173,11 @@ public class SmartSaleBoxMain extends JFrame {
 		EmailConfigPanel.add(pwdEmailNew);
 		
 		JButton btnDeleteEmail = new JButton("Borrar");
+		btnDeleteEmail.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DeleteEmailConfigProcess.removeSelectedEmail();
+			}
+		});
 		btnDeleteEmail.setBounds(879, 420, 117, 25);
 		EmailConfigPanel.add(btnDeleteEmail);
 		
@@ -1156,59 +1203,99 @@ public class SmartSaleBoxMain extends JFrame {
 		
 		JLabel lblProducto_2_5_2_1_2 = new JLabel("Nombre:");
 		lblProducto_2_5_2_1_2.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_5_2_1_2.setBounds(125, 227, 63, 28);
+		lblProducto_2_5_2_1_2.setBounds(124, 197, 63, 28);
 		adminConfigPanel.add(lblProducto_2_5_2_1_2);
 		
 		JLabel lblProducto_2_5_2_1_1_1 = new JLabel("Password:");
 		lblProducto_2_5_2_1_1_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_5_2_1_1_1.setBounds(112, 355, 86, 28);
+		lblProducto_2_5_2_1_1_1.setBounds(124, 415, 86, 28);
 		adminConfigPanel.add(lblProducto_2_5_2_1_1_1);
 		
 		txtAdminName = new JTextField();
 		txtAdminName.setColumns(10);
-		txtAdminName.setBounds(191, 226, 216, 34);
+		txtAdminName.setBounds(187, 196, 216, 34);
 		adminConfigPanel.add(txtAdminName);
 		
 		JButton btnSaveAdmin = new JButton("Guardar");
-		btnSaveAdmin.setBounds(204, 470, 153, 34);
+		btnSaveAdmin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(SmartSaleBoxOperations.validateAdminFields()) {
+					SaveAdminProcess.createNewAdmin();
+				}else {
+					JOptionPane.showMessageDialog(null, "Favor de llenar los campos");
+				}
+			}
+		});
+		btnSaveAdmin.setBounds(199, 526, 153, 34);
 		adminConfigPanel.add(btnSaveAdmin);
 		
 		JLabel lblProducto_2_5_2_1_2_1 = new JLabel("Puesto:");
 		lblProducto_2_5_2_1_2_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_5_2_1_2_1.setBounds(135, 291, 63, 28);
+		lblProducto_2_5_2_1_2_1.setBounds(145, 359, 63, 28);
 		adminConfigPanel.add(lblProducto_2_5_2_1_2_1);
 		
 		pwdAdmin1 = new JPasswordField();
-		pwdAdmin1.setBounds(191, 354, 192, 34);
+		pwdAdmin1.setBounds(203, 414, 192, 34);
 		adminConfigPanel.add(pwdAdmin1);
 		
 		JLabel lblProducto_2_5_2_1_1_1_1 = new JLabel("Confirma Password:");
 		lblProducto_2_5_2_1_1_1_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_5_2_1_1_1_1.setBounds(40, 410, 148, 28);
+		lblProducto_2_5_2_1_1_1_1.setBounds(52, 470, 148, 28);
 		adminConfigPanel.add(lblProducto_2_5_2_1_1_1_1);
 		
 		pwdAdmin2 = new JPasswordField();
-		pwdAdmin2.setBounds(191, 409, 192, 34);
+		pwdAdmin2.setBounds(203, 469, 192, 34);
 		adminConfigPanel.add(pwdAdmin2);
 		
 		cmbAdminRole = new JComboBox();
-		cmbAdminRole.setBounds(191, 289, 216, 34);
+		cmbAdminRole.setModel(new DefaultComboBoxModel(new String[] {"Administrador"}));
+		cmbAdminRole.setBounds(201, 357, 216, 34);
 		adminConfigPanel.add(cmbAdminRole);
 		
-		JScrollPane paneAdmin = new JScrollPane();
-		paneAdmin.setBounds(466, 227, 553, 251);
-		adminConfigPanel.add(paneAdmin);
+		scrollAdmin = new JScrollPane();
+		scrollAdmin.setBounds(466, 227, 553, 251);
+		adminConfigPanel.add(scrollAdmin);
 		
 		tblAdmin = new JTable();
-		paneAdmin.setViewportView(tblAdmin);
+		scrollAdmin.setViewportView(tblAdmin);
 		
 		JButton btnUpdateAdmin = new JButton("Actualizar");
+		btnUpdateAdmin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				UpdateAdminProcess.updateEmployee();
+			}
+		});
 		btnUpdateAdmin.setBounds(476, 490, 153, 34);
 		adminConfigPanel.add(btnUpdateAdmin);
 		
 		JButton btnDeleteAdmin = new JButton("Borrar");
-		btnDeleteAdmin.setBounds(866, 490, 123, 34);
+		btnDeleteAdmin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DeleteAdministratorProcess.removeSelectedAdmin();
+			}
+		});
+		btnDeleteAdmin.setBounds(896, 490, 123, 34);
 		adminConfigPanel.add(btnDeleteAdmin);
+		
+		JLabel lblProducto_2_5_2_1_2_2 = new JLabel("Apellido:");
+		lblProducto_2_5_2_1_2_2.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+		lblProducto_2_5_2_1_2_2.setBounds(112, 256, 77, 28);
+		adminConfigPanel.add(lblProducto_2_5_2_1_2_2);
+		
+		JLabel lblProducto_2_5_2_1_2_2_1 = new JLabel("Telefono:");
+		lblProducto_2_5_2_1_2_2_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+		lblProducto_2_5_2_1_2_2_1.setBounds(111, 307, 76, 28);
+		adminConfigPanel.add(lblProducto_2_5_2_1_2_2_1);
+		
+		txtAdminLast = new JTextField();
+		txtAdminLast.setColumns(10);
+		txtAdminLast.setBounds(187, 255, 216, 34);
+		adminConfigPanel.add(txtAdminLast);
+		
+		txtAdminPhone = new JTextField();
+		txtAdminPhone.setColumns(10);
+		txtAdminPhone.setBounds(187, 301, 216, 34);
+		adminConfigPanel.add(txtAdminPhone);
 		
 		JButton btnGetCashQuantity = new JButton("Consulta Cajón");
 		btnGetCashQuantity.addActionListener(new ActionListener() {
@@ -1236,6 +1323,156 @@ public class SmartSaleBoxMain extends JFrame {
 		});
 		btnEnableCardPayment.setBounds(616, 476, 85, 25);
 		tabbedSale.add(btnEnableCardPayment);
+		
+		JButton btnGetAllAdmin = new JButton("Mostrar Todos");
+		btnGetAllAdmin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ReadAdminInfo.getAllAdminTable();
+			}
+		});
+		btnGetAllAdmin.setBounds(676, 490, 153, 34);
+		adminConfigPanel.add(btnGetAllAdmin);
+		
+		JButton btnShowAllEmail = new JButton("Mostrar Todos");
+		btnShowAllEmail.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ReadEmailInfo.getAllEmailTable();
+			}
+		});
+		btnShowAllEmail.setBounds(681, 420, 137, 25);
+		EmailConfigPanel.add(btnShowAllEmail);
+		
+		JPanel SystemPathsConfigPanel = new JPanel();
+		SystemPathsConfigPanel.setLayout(null);
+		SystemPathsConfigPanel.setBackground(SystemColor.window);
+		tabbedAdminOptions.addTab("Configuración Directorios", null, SystemPathsConfigPanel, null);
+		
+		JLabel lblConfiguracinDirectorios = new JLabel("Configuración Directorios");
+		lblConfiguracinDirectorios.setFont(new Font("Lucida Bright", Font.BOLD, 18));
+		lblConfiguracinDirectorios.setBounds(135, 36, 253, 28);
+		SystemPathsConfigPanel.add(lblConfiguracinDirectorios);
+		
+		JLabel lblNewLabel_1_1_3_2 = new JLabel("@SmartSaleBox.");
+		lblNewLabel_1_1_3_2.setFont(new Font("Lucida Bright", Font.BOLD, 24));
+		lblNewLabel_1_1_3_2.setBounds(835, 12, 201, 28);
+		SystemPathsConfigPanel.add(lblNewLabel_1_1_3_2);
+		
+		JLabel lblProducto_2_5_2_1_3 = new JLabel("Cierre:");
+		lblProducto_2_5_2_1_3.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+		lblProducto_2_5_2_1_3.setBounds(61, 205, 62, 28);
+		SystemPathsConfigPanel.add(lblProducto_2_5_2_1_3);
+		
+		JButton btnGuardarDirectorio = new JButton("Guardar Directorio");
+		btnGuardarDirectorio.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(SmartSaleBoxOperations.validateSystemPaths()) {
+					SaveSystemPathsProcess.createPaths();
+				}else {
+					JOptionPane.showMessageDialog(null, "Favor de llenar los campos");
+				}
+			}
+		});
+		btnGuardarDirectorio.setBounds(148, 495, 192, 34);
+		SystemPathsConfigPanel.add(btnGuardarDirectorio);
+		
+		scrollPaths = new JScrollPane();
+		scrollPaths.setBounds(450, 194, 546, 199);
+		SystemPathsConfigPanel.add(scrollPaths);
+		
+		tblPaths = new JTable();
+		scrollPaths.setViewportView(tblPaths);
+		
+		JButton btnUpdateEmail_1 = new JButton("Actualizar");
+		btnUpdateEmail_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				UpdateSystemPathsProcess.updateSystemPaths();
+			}
+		});
+		btnUpdateEmail_1.setBounds(472, 405, 117, 25);
+		SystemPathsConfigPanel.add(btnUpdateEmail_1);
+		
+		JLabel lblConsultaDirectorios = new JLabel("Consulta Directorios");
+		lblConsultaDirectorios.setFont(new Font("Lucida Bright", Font.BOLD, 18));
+		lblConsultaDirectorios.setBounds(619, 132, 211, 28);
+		SystemPathsConfigPanel.add(lblConsultaDirectorios);
+		
+		JButton btnDeleteEmail_1 = new JButton("Borrar");
+		btnDeleteEmail_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DeleteSystemPathsProcess.removeSelectedPath();
+			}
+		});
+		btnDeleteEmail_1.setBounds(858, 405, 117, 25);
+		SystemPathsConfigPanel.add(btnDeleteEmail_1);
+		
+		JButton btnShowAllEmail_1 = new JButton("Mostrar Todos");
+		btnShowAllEmail_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ReadSystemPathsInfo.getAllSystemPathsTable();
+			}
+		});
+		btnShowAllEmail_1.setBounds(662, 418, 137, 25);
+		SystemPathsConfigPanel.add(btnShowAllEmail_1);
+		
+		JLabel lblSeRecomiendaCrear = new JLabel("*** Se recomienda crear una carpeta  C:\\SmartSaleBox");
+		lblSeRecomiendaCrear.setFont(new Font("Lucida Bright", Font.BOLD, 12));
+		lblSeRecomiendaCrear.setBounds(47, 95, 364, 28);
+		SystemPathsConfigPanel.add(lblSeRecomiendaCrear);
+		
+		txtSystemPathsClosure = new JTextField();
+		txtSystemPathsClosure.setColumns(10);
+		txtSystemPathsClosure.setBounds(113, 204, 298, 34);
+		SystemPathsConfigPanel.add(txtSystemPathsClosure);
+		
+		txtSystemPathsInflows = new JTextField();
+		txtSystemPathsInflows.setColumns(10);
+		txtSystemPathsInflows.setBounds(113, 250, 298, 34);
+		SystemPathsConfigPanel.add(txtSystemPathsInflows);
+		
+		txtSystemPathsOutflows = new JTextField();
+		txtSystemPathsOutflows.setColumns(10);
+		txtSystemPathsOutflows.setBounds(113, 293, 298, 34);
+		SystemPathsConfigPanel.add(txtSystemPathsOutflows);
+		
+		txtSystemPathsEarnings = new JTextField();
+		txtSystemPathsEarnings.setColumns(10);
+		txtSystemPathsEarnings.setBounds(113, 336, 298, 34);
+		SystemPathsConfigPanel.add(txtSystemPathsEarnings);
+		
+		txtSystemPathsSales = new JTextField();
+		txtSystemPathsSales.setColumns(10);
+		txtSystemPathsSales.setBounds(113, 431, 298, 34);
+		SystemPathsConfigPanel.add(txtSystemPathsSales);
+		
+		JLabel lblProducto_2_5_2_1_3_1 = new JLabel("Entradas:");
+		lblProducto_2_5_2_1_3_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+		lblProducto_2_5_2_1_3_1.setBounds(47, 245, 66, 28);
+		SystemPathsConfigPanel.add(lblProducto_2_5_2_1_3_1);
+		
+		JLabel lblProducto_2_5_2_1_3_2 = new JLabel("Salidas:");
+		lblProducto_2_5_2_1_3_2.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+		lblProducto_2_5_2_1_3_2.setBounds(51, 293, 62, 28);
+		SystemPathsConfigPanel.add(lblProducto_2_5_2_1_3_2);
+		
+		JLabel lblProducto_2_5_2_1_3_3 = new JLabel("Ganancias:");
+		lblProducto_2_5_2_1_3_3.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+		lblProducto_2_5_2_1_3_3.setBounds(29, 337, 77, 28);
+		SystemPathsConfigPanel.add(lblProducto_2_5_2_1_3_3);
+		
+		JLabel lblProducto_2_5_2_1_3_4 = new JLabel("Products:");
+		lblProducto_2_5_2_1_3_4.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+		lblProducto_2_5_2_1_3_4.setBounds(39, 382, 74, 28);
+		SystemPathsConfigPanel.add(lblProducto_2_5_2_1_3_4);
+		
+		JLabel lblProducto_2_5_2_1_3_4_1 = new JLabel("Ventas:");
+		lblProducto_2_5_2_1_3_4_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+		lblProducto_2_5_2_1_3_4_1.setBounds(51, 437, 62, 28);
+		SystemPathsConfigPanel.add(lblProducto_2_5_2_1_3_4_1);
+		
+		txtSystemPathsProducts = new JTextField();
+		txtSystemPathsProducts.setColumns(10);
+		txtSystemPathsProducts.setBounds(113, 382, 298, 34);
+		SystemPathsConfigPanel.add(txtSystemPathsProducts);
 		
 	final String cartSaleColumns[] = { "idProd", "Producto", "Precio", "Stock" };
 	tableModelCartSale = new DefaultTableModel(cartSaleColumns, 0);
@@ -1336,5 +1573,38 @@ public class SmartSaleBoxMain extends JFrame {
 	tblNewBulkProducts.getColumnModel().getColumn(7).setPreferredWidth(80);
 	scrollNewBulk.setViewportView(tblNewBulkProducts);
 		
+	final String AdminColumns[] = {"idAdmin","Nombre","Apellido","Telefono","Puesto"};
+	tableModelAdmin = new DefaultTableModel(AdminColumns, 0);
+	tblAdmin = new JTable(tableModelAdmin);
+	tblAdmin.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+	tblAdmin.getColumnModel().getColumn(0).setPreferredWidth(60);
+	tblAdmin.getColumnModel().getColumn(1).setPreferredWidth(120);
+	tblAdmin.getColumnModel().getColumn(2).setPreferredWidth(120);
+	tblAdmin.getColumnModel().getColumn(3).setPreferredWidth(120);
+	tblAdmin.getColumnModel().getColumn(4).setPreferredWidth(100);
+	scrollAdmin.setViewportView(tblAdmin);
+	
+	final String EmailColumns[] = {"idEmail","Email","Activado?"};
+	tableModelEmail = new DefaultTableModel(EmailColumns, 0);
+	tblEmail = new JTable(tableModelEmail);
+	tblEmail.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+	tblEmail.getColumnModel().getColumn(0).setPreferredWidth(100);
+	tblEmail.getColumnModel().getColumn(1).setPreferredWidth(150);
+	tblEmail.getColumnModel().getColumn(2).setPreferredWidth(150);
+	scrollEmail.setViewportView(tblEmail);
+	
+	final String SystemPathsColumns[] = {"id","Cierre","Entradas","Salidas","Ganancias","Productos","Ventas"};
+	tableModelPaths = new DefaultTableModel(SystemPathsColumns, 0);
+	tblPaths = new JTable(tableModelPaths);
+	tblPaths.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+	tblPaths.getColumnModel().getColumn(0).setPreferredWidth(100);
+	tblPaths.getColumnModel().getColumn(1).setPreferredWidth(150);
+	tblPaths.getColumnModel().getColumn(2).setPreferredWidth(150);
+	tblPaths.getColumnModel().getColumn(3).setPreferredWidth(150);
+	tblPaths.getColumnModel().getColumn(4).setPreferredWidth(150);
+	tblPaths.getColumnModel().getColumn(5).setPreferredWidth(150);
+	scrollPaths.setViewportView(tblPaths);
+	
 	}
+	
 }

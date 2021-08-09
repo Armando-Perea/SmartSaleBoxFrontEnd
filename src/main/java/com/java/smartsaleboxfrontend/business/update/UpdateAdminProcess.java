@@ -4,7 +4,9 @@ import javax.swing.JOptionPane;
 
 import com.java.smartsalebox.client.AdministratorClient;
 import com.java.smartsalebox.models.Administrator;
+import com.java.smartsaleboxfrontend.business.read.ReadAdminInfo;
 import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
+import com.java.smartsaleboxfrontend.utils.SmartSaleBoxClearFields;
 
 public class UpdateAdminProcess {
 
@@ -29,7 +31,7 @@ public class UpdateAdminProcess {
 		int row;
 		Integer employeeId;
 		int status = 0;
-		String employeeName, employeeLast, employeePhone, employeePassword, employeeRole;
+		String employeeName, employeeLast, employeePhone, employeeRole;
 
 		Administrator employee = new Administrator();
 		row = SmartSaleBoxMain.tblAdmin.getSelectedRow();
@@ -41,8 +43,7 @@ public class UpdateAdminProcess {
 					employeeName = (String) SmartSaleBoxMain.tblAdmin.getValueAt(row, 1);
 					employeeLast = (String) SmartSaleBoxMain.tblAdmin.getValueAt(row, 2);
 					employeePhone = (String) SmartSaleBoxMain.tblAdmin.getValueAt(row, 3);
-					employeePassword = (String) SmartSaleBoxMain.tblAdmin.getValueAt(row, 4);
-					employeeRole = (String) SmartSaleBoxMain.tblAdmin.getValueAt(row, 5);
+					employeeRole = (String) SmartSaleBoxMain.tblAdmin.getValueAt(row, 4);
 					//// SETTING THE VALUES TO CAREER OBJECT
 					if (!employeeName.isEmpty()) {
 						employee.setAdminName(employeeName);
@@ -53,11 +54,6 @@ public class UpdateAdminProcess {
 					if (!employeePhone.isEmpty()) {
 						employee.setAdminPhone(employeePhone);
 					}
-
-					if (!employeePassword.isEmpty()) {
-						employee.setAdminPassword(employeePassword);
-					}
-
 					if (!employeeRole.isEmpty()) {
 						employee.setAdminRole(employeeRole);
 					}
@@ -66,9 +62,13 @@ public class UpdateAdminProcess {
 					if (status > 0 && status < 300) {
 						JOptionPane.showMessageDialog(null, ADMINISTRATOR_UPDATED, VALIDATION_UPDATE_TITLE,
 								JOptionPane.INFORMATION_MESSAGE);
+						SmartSaleBoxClearFields.clearAdminProcess();
+						ReadAdminInfo.getAllAdminTable();
 					} else {
 						JOptionPane.showMessageDialog(null, ADMINISTRATOR_UPDATE_FAILED, VALIDATION_UPDATE_TITLE,
 								JOptionPane.INFORMATION_MESSAGE);
+						SmartSaleBoxClearFields.clearAdminProcess();
+						ReadAdminInfo.getAllAdminTable();
 					}
 				} else {
 					JOptionPane.showMessageDialog(null, ADMINISTRATOR_NOT_FOUND, VALIDATION_UPDATE_TITLE,

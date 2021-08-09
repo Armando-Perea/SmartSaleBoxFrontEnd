@@ -43,6 +43,31 @@ public class ReadSaleInfo {
 		}
 	}
 	
+	public static Sales[] getSaleHistoryByNoSale() {
+		Sales[] sales = null;
+		Integer noSaleHistory= Integer.parseInt(SmartSaleBoxMain.txtHistoryNoSale.getText());
+		try {
+			sales = SalesClient.getSaleByNoSale(noSaleHistory);
+			if(sales.length>0) {
+				SmartSaleBoxMain.tableModelSaleHistory.setRowCount(0);
+				for (Sales sal : sales) {
+					Object[] saletItems = {sal.getNoSale(),sal.getDescription(),sal.getPrice(),sal.getUnits(),sal.getTotal(),sal.getIdProduct(),sal.getType(),sal.getIdSale()};
+					SmartSaleBoxMain.tableModelSaleHistory.addRow(saletItems);
+				}
+				SmartSaleBoxMain.scrollSaleHistory.setViewportView(SmartSaleBoxMain.tblSaleHistory);
+				SmartSaleBoxMain.txtTotalSaleHistory.setText(SmartSaleBoxOperations.getTotalSale(sales));
+			}else {
+				JOptionPane.showMessageDialog(null,SALE_NOT_FOUND,VALIDATION_UPDATE_TITLE, JOptionPane.INFORMATION_MESSAGE);
+				SmartSaleBoxClearFields.clearSaleHistory();
+			}
+			return sales;
+		}catch(Exception ex) {
+			System.out.println("getSaleHistoryByNoSale error catch: "+ex);
+			SmartSaleBoxClearFields.clearSaleMain();
+			return sales;
+		}
+	}
+	
 	public static void getAllSaleTable() {
 		Sales[] sales;
 		try {
