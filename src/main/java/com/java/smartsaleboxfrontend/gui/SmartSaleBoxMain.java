@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import com.java.smartsalebox.client.ReportClient;
 import com.java.smartsalebox.models.Sales;
 import com.java.smartsaleboxfrontend.business.delete.DeleteAdministratorProcess;
 import com.java.smartsaleboxfrontend.business.delete.DeleteEmailConfigProcess;
@@ -1013,6 +1014,14 @@ public class SmartSaleBoxMain extends JFrame {
 		closurePanel.add(textField_8);
 		
 		JButton btnNewButton = new JButton("Generar Corte");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String message = ReportClient.generateClosureReports();
+				if(!"OK".equals(message)) {
+					JOptionPane.showMessageDialog(null,message);
+				}
+			}
+		});
 		btnNewButton.setBounds(675, 489, 153, 44);
 		closurePanel.add(btnNewButton);
 		

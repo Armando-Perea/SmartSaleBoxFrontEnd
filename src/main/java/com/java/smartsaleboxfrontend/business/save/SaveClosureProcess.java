@@ -1,7 +1,5 @@
 package com.java.smartsaleboxfrontend.business.save;
 
-import java.sql.Date;
-
 import javax.swing.JOptionPane;
 
 import com.java.smartsalebox.client.ClosureClient;
@@ -22,7 +20,7 @@ public class SaveClosureProcess {
 				newClosure.setCardPayments(0.00);
 				newClosure.setCashPayments(0.00);
 				newClosure.setClosureCash(0.00);
-				newClosure.setClosureDate(new Date(5L));
+				newClosure.setClosureDate("Fecha de hoy");
 				newClosure.setEarning(0.00);
 				newClosure.setInitCash(0.00);
 				newClosure.setProducts(0.00);
