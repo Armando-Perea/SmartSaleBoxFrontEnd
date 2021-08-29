@@ -8,7 +8,10 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import com.java.smartsalebox.client.EmailConfigClient;
 import com.java.smartsalebox.client.ReportClient;
+import com.java.smartsalebox.mail.SendClosureMail;
+import com.java.smartsalebox.models.Closure;
 import com.java.smartsalebox.models.Sales;
 import com.java.smartsaleboxfrontend.business.delete.DeleteAdministratorProcess;
 import com.java.smartsaleboxfrontend.business.delete.DeleteEmailConfigProcess;
@@ -18,6 +21,7 @@ import com.java.smartsaleboxfrontend.business.delete.DeleteSystemPathsProcess;
 import com.java.smartsaleboxfrontend.business.read.ReadAdminInfo;
 import com.java.smartsaleboxfrontend.business.read.ReadBulkSaleInfo;
 import com.java.smartsaleboxfrontend.business.read.ReadCartSaleInfo;
+import com.java.smartsaleboxfrontend.business.read.ReadClosureCalculation;
 import com.java.smartsaleboxfrontend.business.read.ReadEmailInfo;
 import com.java.smartsaleboxfrontend.business.read.ReadInflowProcess;
 import com.java.smartsaleboxfrontend.business.read.ReadOutflowProcess;
@@ -27,6 +31,7 @@ import com.java.smartsaleboxfrontend.business.read.ReadSystemPathsInfo;
 import com.java.smartsaleboxfrontend.business.save.LoginInitializer;
 import com.java.smartsaleboxfrontend.business.save.SaveAdminProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveBulkProductProcess;
+import com.java.smartsaleboxfrontend.business.save.SaveClosureProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveEmailProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveInflowProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveOutflowProcess;
@@ -50,6 +55,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
+import java.awt.HeadlessException;
+
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -146,15 +153,15 @@ public class SmartSaleBoxMain extends JFrame {
 	public static JTextField txtNewBulkKiloEarning;
 	public static JTextField txtNewBulkEarning;
 	
-	public static JTextField textField;
-	public static JTextField textField_1;
-	public static JTextField textField_2;
-	public static JTextField textField_3;
-	public static JTextField textField_4;
-	public static JTextField textField_5;
-	public static JTextField textField_6;
-	public static JTextField textField_8;
-	public static JTextField textField_9;
+	public static JTextField txtInitialCashClosure;
+	public static JTextField txtTotalCashClosure;
+	public static JTextField txtTotalCardClosure;
+	public static JTextField txtTotalCashBoxClosure;
+	public static JTextField txtTotalInflowsClosure;
+	public static JTextField txtTotalCashOutClosure;
+	public static JTextField txtTotalCardOutClosure;
+	public static JTextField txtTotalOutflowsClosure;
+	public static JTextField txtTotalProductClosure;
 	public static JTextField txtEmailNew;
 	
 	public static JTextField txtAdminName;
@@ -176,6 +183,7 @@ public class SmartSaleBoxMain extends JFrame {
 	public static JTextField txtSystemPathsEarnings;
 	public static JTextField txtSystemPathsSales;
 	public static JTextField txtSystemPathsProducts;
+	public static JTextField txtTotalEarningsClosure;
 
 	/**
 	 * Launch the application.
@@ -968,76 +976,126 @@ public class SmartSaleBoxMain extends JFrame {
 		lblEntradas.setBounds(191, 62, 93, 28);
 		closurePanel.add(lblEntradas);
 		
-		textField = new JTextField();
-		textField.setColumns(10);
-		textField.setBounds(233, 139, 114, 34);
-		closurePanel.add(textField);
+		txtInitialCashClosure = new JTextField();
+		txtInitialCashClosure.setEnabled(false);
+		txtInitialCashClosure.setFont(new Font("Dialog", Font.BOLD, 14));
+		txtInitialCashClosure.setColumns(10);
+		txtInitialCashClosure.setBounds(233, 139, 114, 34);
+		closurePanel.add(txtInitialCashClosure);
 		
-		textField_1 = new JTextField();
-		textField_1.setColumns(10);
-		textField_1.setBounds(233, 202, 114, 34);
-		closurePanel.add(textField_1);
+		txtTotalCashClosure = new JTextField();
+		txtTotalCashClosure.setEnabled(false);
+		txtTotalCashClosure.setFont(new Font("Dialog", Font.BOLD, 14));
+		txtTotalCashClosure.setColumns(10);
+		txtTotalCashClosure.setBounds(233, 202, 114, 34);
+		closurePanel.add(txtTotalCashClosure);
 		
-		textField_2 = new JTextField();
-		textField_2.setColumns(10);
-		textField_2.setBounds(233, 271, 114, 34);
-		closurePanel.add(textField_2);
+		txtTotalCardClosure = new JTextField();
+		txtTotalCardClosure.setEnabled(false);
+		txtTotalCardClosure.setFont(new Font("Dialog", Font.BOLD, 14));
+		txtTotalCardClosure.setColumns(10);
+		txtTotalCardClosure.setBounds(233, 271, 114, 34);
+		closurePanel.add(txtTotalCardClosure);
 		
-		textField_3 = new JTextField();
-		textField_3.setColumns(10);
-		textField_3.setBounds(706, 139, 114, 34);
-		closurePanel.add(textField_3);
+		txtTotalCashBoxClosure = new JTextField();
+		txtTotalCashBoxClosure.setEnabled(false);
+		txtTotalCashBoxClosure.setFont(new Font("Dialog", Font.BOLD, 14));
+		txtTotalCashBoxClosure.setColumns(10);
+		txtTotalCashBoxClosure.setBounds(706, 139, 114, 34);
+		closurePanel.add(txtTotalCashBoxClosure);
 		
-		textField_4 = new JTextField();
-		textField_4.setColumns(10);
-		textField_4.setBounds(233, 348, 114, 34);
-		closurePanel.add(textField_4);
+		txtTotalInflowsClosure = new JTextField();
+		txtTotalInflowsClosure.setEnabled(false);
+		txtTotalInflowsClosure.setFont(new Font("Dialog", Font.BOLD, 14));
+		txtTotalInflowsClosure.setColumns(10);
+		txtTotalInflowsClosure.setBounds(233, 348, 114, 34);
+		closurePanel.add(txtTotalInflowsClosure);
 		
-		textField_5 = new JTextField();
-		textField_5.setColumns(10);
-		textField_5.setBounds(706, 207, 114, 34);
-		closurePanel.add(textField_5);
+		txtTotalCashOutClosure = new JTextField();
+		txtTotalCashOutClosure.setEnabled(false);
+		txtTotalCashOutClosure.setFont(new Font("Dialog", Font.BOLD, 14));
+		txtTotalCashOutClosure.setColumns(10);
+		txtTotalCashOutClosure.setBounds(706, 207, 114, 34);
+		closurePanel.add(txtTotalCashOutClosure);
 		
-		textField_6 = new JTextField();
-		textField_6.setColumns(10);
-		textField_6.setBounds(706, 276, 114, 34);
-		closurePanel.add(textField_6);
+		txtTotalCardOutClosure = new JTextField();
+		txtTotalCardOutClosure.setEnabled(false);
+		txtTotalCardOutClosure.setFont(new Font("Dialog", Font.BOLD, 14));
+		txtTotalCardOutClosure.setColumns(10);
+		txtTotalCardOutClosure.setBounds(706, 276, 114, 34);
+		closurePanel.add(txtTotalCardOutClosure);
 		
 		JLabel lblSalidas_1 = new JLabel("Salidas");
 		lblSalidas_1.setFont(new Font("Lucida Bright", Font.BOLD, 18));
 		lblSalidas_1.setBounds(702, 62, 93, 28);
 		closurePanel.add(lblSalidas_1);
 		
-		textField_8 = new JTextField();
-		textField_8.setColumns(10);
-		textField_8.setBounds(706, 348, 114, 34);
-		closurePanel.add(textField_8);
+		txtTotalOutflowsClosure = new JTextField();
+		txtTotalOutflowsClosure.setEnabled(false);
+		txtTotalOutflowsClosure.setFont(new Font("Dialog", Font.BOLD, 14));
+		txtTotalOutflowsClosure.setColumns(10);
+		txtTotalOutflowsClosure.setBounds(706, 348, 114, 34);
+		closurePanel.add(txtTotalOutflowsClosure);
 		
 		JButton btnNewButton = new JButton("Generar Corte");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String message = ReportClient.generateClosureReports();
-				if(!"OK".equals(message)) {
-					JOptionPane.showMessageDialog(null,message);
+				if(SmartSaleBoxOperations.validateClosure()) {
+				Closure newClosure = SaveClosureProcess.createNewClosure();
+				if(newClosure.getIdClosure()!=null) {
+					if(ReportClient.generateClosureReports()) {
+						JOptionPane.showMessageDialog(null,"Reportes PDFs Generados");
+						try {
+							if(EmailConfigClient.sendEmailReports(newClosure)) {
+								JOptionPane.showMessageDialog(null,"Email enviado a Administrador");
+							}else {
+								JOptionPane.showMessageDialog(null,"Email no pudo ser enviado, favor de enviar manualmente a Administrador");
+							}
+						} catch (Exception ex) {
+							JOptionPane.showMessageDialog(null,"Corte Generado sin envio de Email por error conexion a Internet");
+						} 
+					}
 				}
+			}else {
+				JOptionPane.showMessageDialog(null,"Calcule Primero el Corte");
 			}
+		}
 		});
-		btnNewButton.setBounds(675, 489, 153, 44);
+		btnNewButton.setBounds(517, 533, 153, 44);
 		closurePanel.add(btnNewButton);
 		
-		JLabel lblProducto_2_5_6_2 = new JLabel("Ganacia productos: $");
+		JLabel lblProducto_2_5_6_2 = new JLabel("Total Venta Producto: $");
 		lblProducto_2_5_6_2.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_5_6_2.setBounds(74, 411, 153, 28);
+		lblProducto_2_5_6_2.setBounds(58, 411, 180, 28);
 		closurePanel.add(lblProducto_2_5_6_2);
 		
-		textField_9 = new JTextField();
-		textField_9.setColumns(10);
-		textField_9.setBounds(233, 410, 114, 34);
-		closurePanel.add(textField_9);
+		txtTotalProductClosure = new JTextField();
+		txtTotalProductClosure.setEnabled(false);
+		txtTotalProductClosure.setFont(new Font("Dialog", Font.BOLD, 14));
+		txtTotalProductClosure.setColumns(10);
+		txtTotalProductClosure.setBounds(233, 410, 114, 34);
+		closurePanel.add(txtTotalProductClosure);
 		
 		JButton btnCalcularCorte = new JButton("Calcular Corte");
-		btnCalcularCorte.setBounds(210, 489, 153, 44);
+		btnCalcularCorte.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ReadClosureCalculation.setClosureCalculationInfo();
+			}
+		});
+		btnCalcularCorte.setBounds(324, 533, 153, 44);
 		closurePanel.add(btnCalcularCorte);
+		
+		txtTotalEarningsClosure = new JTextField();
+		txtTotalEarningsClosure.setEnabled(false);
+		txtTotalEarningsClosure.setFont(new Font("Dialog", Font.BOLD, 14));
+		txtTotalEarningsClosure.setColumns(10);
+		txtTotalEarningsClosure.setBounds(496, 465, 114, 34);
+		closurePanel.add(txtTotalEarningsClosure);
+		
+		JLabel lblProducto_2_5_6_2_1 = new JLabel("Total Ganancias: $");
+		lblProducto_2_5_6_2_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+		lblProducto_2_5_6_2_1.setBounds(352, 466, 142, 28);
+		closurePanel.add(lblProducto_2_5_6_2_1);
 		
 		JPanel inOutControlPanel = new JPanel();
 		inOutControlPanel.setBackground(SystemColor.window);
@@ -1615,5 +1673,4 @@ public class SmartSaleBoxMain extends JFrame {
 	scrollPaths.setViewportView(tblPaths);
 	
 	}
-	
 }

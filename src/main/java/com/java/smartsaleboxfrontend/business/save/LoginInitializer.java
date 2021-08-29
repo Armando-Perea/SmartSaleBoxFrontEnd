@@ -109,8 +109,8 @@ public class LoginInitializer {
 		Inflow inflow = new Inflow();
 		newInflow.setIdInflow(0);
 		newInflow.setAttendee(SmartSaleBoxMain.adminName);
-		newInflow.setConcept("NUEVO TURNO");
-		newInflow.setDescription("INICIO CAJA");
+		newInflow.setConcept("INICIO CAJA");
+		newInflow.setDescription("NUEVO TURNO");
 		newInflow.setInflowDate(formattedDate);
 		newInflow.setPaymentType("EFECTIVO");
 		newInflow.setQuantity(cash);

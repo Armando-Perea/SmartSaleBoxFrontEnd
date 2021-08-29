@@ -1,9 +1,14 @@
 package com.java.smartsaleboxfrontend.business.save;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
 import javax.swing.JOptionPane;
 
 import com.java.smartsalebox.client.ClosureClient;
 import com.java.smartsalebox.models.Closure;
+import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
 
 public class SaveClosureProcess {
 
@@ -12,21 +17,25 @@ public class SaveClosureProcess {
     private static final String NUMERIC_VALIDATION_ERROR = "Dato debe ser numérico, revise información";
    	private static final String VALIDATION_NUMBER = "java.lang.NumberFormatException";
 	
-	public static Integer createNewClosure() {
+	public static Closure createNewClosure() {
+		
+		LocalDateTime myDateObj = LocalDateTime.now();  
+        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy", new Locale("es","ES"));
+        String closureDate = myDateObj.format(myFormatObj);
+		
 		Closure newClosure = new Closure();
 			try {	
 				newClosure.setIdClosure(0);
-				newClosure.setAttendee("PUTIN VLADIMIR");
-				newClosure.setCardPayments(0.00);
-				newClosure.setCashPayments(0.00);
-				newClosure.setClosureCash(0.00);
-				newClosure.setClosureDate("Fecha de hoy");
-				newClosure.setEarning(0.00);
-				newClosure.setInitCash(0.00);
-				newClosure.setProducts(0.00);
-				newClosure.setTotalInflow(0.00);
-				newClosure.setTotalOutflow(0.00);
-
+				newClosure.setAttendee(SmartSaleBoxMain.adminName);
+				newClosure.setCardPayments(Double.parseDouble(SmartSaleBoxMain.txtTotalCardClosure.getText()));
+				newClosure.setCashPayments(Double.parseDouble(SmartSaleBoxMain.txtTotalCashClosure.getText()));
+				newClosure.setClosureCash(Double.parseDouble(SmartSaleBoxMain.txtTotalCashBoxClosure.getText()));
+				newClosure.setClosureDate(closureDate);
+				newClosure.setEarning(Double.parseDouble(SmartSaleBoxMain.txtTotalEarningsClosure.getText()));
+				newClosure.setInitCash(Double.parseDouble(SmartSaleBoxMain.txtInitialCashClosure.getText()));
+				newClosure.setProducts(Double.parseDouble(SmartSaleBoxMain.txtTotalProductClosure.getText()));
+				newClosure.setTotalInflow(Double.parseDouble(SmartSaleBoxMain.txtTotalInflowsClosure.getText()));
+				newClosure.setTotalOutflow(Double.parseDouble(SmartSaleBoxMain.txtTotalOutflowsClosure.getText()));
 				newClosure = ClosureClient.addClosure(newClosure);
 				if(newClosure.getIdClosure()!=null) {
 					JOptionPane.showMessageDialog(null, CASH_SAVED_SUCCESSFULLY);
@@ -41,8 +50,7 @@ public class SaveClosureProcess {
 				JOptionPane.showMessageDialog(null, "Se produjo una excepción al guardar","Validation", JOptionPane.WARNING_MESSAGE);	
 				}
 			}
-
-		return newClosure.getIdClosure();
+		return newClosure;
 	}
 	
 }

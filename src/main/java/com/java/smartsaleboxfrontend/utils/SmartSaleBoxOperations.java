@@ -6,6 +6,7 @@ import java.math.RoundingMode;
 import com.java.smartsalebox.models.Inflow;
 import com.java.smartsalebox.models.Outflow;
 import com.java.smartsalebox.models.Sales;
+import java.text.DecimalFormat;
 import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
 
 public class SmartSaleBoxOperations {
@@ -46,6 +47,11 @@ public class SmartSaleBoxOperations {
 		BigDecimal bigDecimal = new BigDecimal(Double.toString(d));
 		bigDecimal = bigDecimal.setScale(0, RoundingMode.CEILING);
 		return bigDecimal.toString();
+	}
+	
+	public static String getTwoDecimalFormat(double quantity) {
+		DecimalFormat df2 = new DecimalFormat("#.##");
+		return df2.format(quantity);
 	}
 	
 	public static void saleReceivedCashProcess() {
@@ -208,6 +214,29 @@ public class SmartSaleBoxOperations {
 			earnings.isEmpty() || closure == null &&
 			products.isEmpty() || closure == null &&
 			sales.isEmpty() || closure == null ) {
+			return false;
+		}
+		return true;
+	}
+	
+public static boolean validateClosure() {
+		
+		String txtTotalCardClosure = SmartSaleBoxMain.txtTotalCardClosure.getText();
+		String txtTotalCashClosure = SmartSaleBoxMain.txtTotalCashClosure.getText();
+		String txtTotalCashBoxClosure = SmartSaleBoxMain.txtTotalCashBoxClosure.getText();
+		String txtTotalEarningsClosure = SmartSaleBoxMain.txtTotalEarningsClosure.getText();
+		String txtInitialCashClosure = SmartSaleBoxMain.txtInitialCashClosure.getText();
+		String txtTotalProductClosure = SmartSaleBoxMain.txtTotalProductClosure.getText();
+		String txtTotalInflowsClosure = SmartSaleBoxMain.txtTotalInflowsClosure.getText();
+		String txtTotalOutflowsClosure = SmartSaleBoxMain.txtTotalOutflowsClosure.getText();
+		if (txtTotalCardClosure.isEmpty() || txtTotalCardClosure == null &&
+			txtTotalCashClosure.isEmpty() || txtTotalCashClosure == null &&
+			txtTotalCashBoxClosure.isEmpty() || txtTotalCashBoxClosure == null &&
+			txtTotalEarningsClosure.isEmpty() || txtTotalEarningsClosure == null &&
+			txtInitialCashClosure.isEmpty() || txtInitialCashClosure == null &&
+			txtTotalProductClosure.isEmpty() || txtTotalProductClosure == null &&
+			txtTotalInflowsClosure.isEmpty() || txtTotalInflowsClosure == null &&
+			txtTotalOutflowsClosure.isEmpty() || txtTotalOutflowsClosure == null) {
 			return false;
 		}
 		return true;
