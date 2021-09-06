@@ -1,12 +1,7 @@
 package com.java.smartsaleboxfrontend.business.save;
 
-import java.sql.Date;
-
 import javax.swing.JOptionPane;
-
-import com.java.smartsalebox.client.ClosureClient;
 import com.java.smartsalebox.client.ControlBulkStockClient;
-import com.java.smartsalebox.models.Closure;
 import com.java.smartsalebox.models.ControlBulkStock;
 
 public class SaveBulkStockProcess {

@@ -200,6 +200,17 @@ public class SmartSaleBoxOperations {
 		return true;
 	}
 	
+	public static boolean validateSaleOutFields() {
+		String noSale = SmartSaleBoxMain.txtHistoryNoSale.getText();
+		String totalSaleHistory = SmartSaleBoxMain.txtTotalSaleHistory.getText();
+		
+		if (noSale.isEmpty() || noSale == null && 
+				totalSaleHistory.isEmpty() || totalSaleHistory == null ) {
+			return false;
+		}
+		return true;
+	}
+	
 	public static boolean validateSystemPaths() {
 		
 		String closure = SmartSaleBoxMain.txtSystemPathsClosure.getText();

@@ -72,4 +72,56 @@ public class SaveOutflowProcess {
 		return newOutflow.getIdOutflow();
 	}
 	
+	public static Integer createNewSaleReverse() {
+		Outflow newOutflow = new Outflow();
+		LocalDateTime myDateObj = LocalDateTime.now();
+		DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy", new Locale("es", "ES"));
+		String formattedDate = myDateObj.format(myFormatObj);
+		Double outflowQuantity = 0.0;
+			try {	
+				outflowQuantity = Double.parseDouble(SmartSaleBoxMain.txtTotalSaleHistory.getText());
+				
+					newOutflow.setIdOutflow(0);
+					newOutflow.setAttendee(SmartSaleBoxMain.adminName);
+					newOutflow.setConcept("Devolucion productos");
+					newOutflow.setDescription("Reverso en No. Venta: "+SmartSaleBoxMain.noSale);
+					newOutflow.setOutflowDate(formattedDate);
+					newOutflow.setPaymentType((String)SmartSaleBoxMain.cmbPaymentTypeSaleOut.getSelectedItem());
+					newOutflow.setQuantity(outflowQuantity);
+					
+					if(SmartSaleBoxMain.cmbPaymentTypeSaleOut.getSelectedItem().toString().equals("EFECTIVO") && SmartSaleBoxMain.cash>outflowQuantity) {
+						newOutflow = OutflowClient.addOutflow(newOutflow);
+						if(newOutflow.getIdOutflow()!=null) {
+							SmartSaleBoxMain.cash = SmartSaleBoxMain.cash-outflowQuantity;
+							LoginInitializer.initializeBalanceAndHistory();
+							UpdateCashProcess.updateCashAndNoSale();
+							SmartSaleBoxMain.noSale--;
+							JOptionPane.showMessageDialog(null, OPERATION_SAVED_SUCCESSFULLY+"\nCajón Actualizado: $"+SmartSaleBoxMain.cash);
+						}else {
+							JOptionPane.showMessageDialog(null,OPERATION_SAVED_FAILED);
+						}
+					}else if(SmartSaleBoxMain.cmbPaymentTypeSaleOut.getSelectedItem().toString().equals("EFECTIVO") && SmartSaleBoxMain.cash<outflowQuantity){
+						JOptionPane.showMessageDialog(null,NOT_ENOUGH_CASH+" $"+SmartSaleBoxMain.cash);
+					}else if(SmartSaleBoxMain.cmbPaymentTypeSaleOut.getSelectedItem().toString().equals("TARJETA")){
+						newOutflow = OutflowClient.addOutflow(newOutflow);
+						if(newOutflow.getIdOutflow()!=null) {
+							JOptionPane.showMessageDialog(null, OPERATION_SAVED_SUCCESSFULLY);
+							SmartSaleBoxClearFields.clearInflowsOutflowsSection();
+							LoginInitializer.initializeBalanceAndHistory();
+						}else {
+							JOptionPane.showMessageDialog(null,OPERATION_SAVED_FAILED);
+						}
+					}
+
+			}catch(Exception ex) {
+				System.out.println("ISSUE createNewOutflow: "+ex);
+				if(ex.toString().contains(VALIDATION_NUMBER)) {
+				JOptionPane.showMessageDialog(null, NUMERIC_VALIDATION_ERROR,"Validation", JOptionPane.WARNING_MESSAGE);	
+				}else {
+				JOptionPane.showMessageDialog(null, "Excepción al guardar operación","Validation", JOptionPane.WARNING_MESSAGE);	
+				}
+			}
+		return newOutflow.getIdOutflow();
+	}
+	
 }

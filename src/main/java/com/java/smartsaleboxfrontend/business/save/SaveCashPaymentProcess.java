@@ -1,12 +1,8 @@
 package com.java.smartsaleboxfrontend.business.save;
 
 import javax.swing.JOptionPane;
-
-import com.java.smartsalebox.client.CartSaleClient;
 import com.java.smartsalebox.client.CashPaymentClient;
-import com.java.smartsalebox.models.CartSale;
 import com.java.smartsalebox.models.CashPayment;
-import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
 
 public class SaveCashPaymentProcess {
 	

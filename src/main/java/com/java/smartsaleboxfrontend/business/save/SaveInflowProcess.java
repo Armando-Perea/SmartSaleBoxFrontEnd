@@ -7,7 +7,6 @@ import java.util.Locale;
 import javax.swing.JOptionPane;
 
 import com.java.smartsalebox.client.InflowClient;
-import com.java.smartsalebox.client.OutflowClient;
 import com.java.smartsalebox.models.Inflow;
 import com.java.smartsaleboxfrontend.business.update.UpdateCashProcess;
 import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;

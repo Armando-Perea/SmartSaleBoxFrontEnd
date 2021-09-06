@@ -9,7 +9,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import com.java.smartsaleboxfrontend.business.read.ReadBulkSaleInfo;
-import com.java.smartsaleboxfrontend.business.read.ReadCartSaleInfo;
 import com.java.smartsaleboxfrontend.business.save.SaveBulkProductProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveSaleProcess;
 import com.java.smartsaleboxfrontend.utils.SmartSaleBoxClearFields;

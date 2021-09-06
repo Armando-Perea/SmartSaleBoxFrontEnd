@@ -10,7 +10,6 @@ import javax.swing.table.DefaultTableModel;
 
 import com.java.smartsalebox.client.EmailConfigClient;
 import com.java.smartsalebox.client.ReportClient;
-import com.java.smartsalebox.mail.SendClosureMail;
 import com.java.smartsalebox.models.Closure;
 import com.java.smartsalebox.models.Sales;
 import com.java.smartsaleboxfrontend.business.delete.DeleteAdministratorProcess;
@@ -53,10 +52,7 @@ import javax.swing.JTabbedPane;
 import java.awt.SystemColor;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-
 import java.awt.Font;
-import java.awt.HeadlessException;
-
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -176,6 +172,7 @@ public class SmartSaleBoxMain extends JFrame {
 	public static JComboBox<String> cmbAdminRole;
 	public static JComboBox<String> cmbOperationType;
 	public static JComboBox<String> cmbPaymentTypeInOut;
+	public static JComboBox<String> cmbPaymentTypeSaleOut;
 	
 	public static JTextField txtSystemPathsClosure;
 	public static JTextField txtSystemPathsInflows;
@@ -508,7 +505,17 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedSalesHistory.add(txtTotalSaleHistory);
 		
 		JButton btnBackUpSale = new JButton("Generar Reverso");
-		btnBackUpSale.setBounds(737, 494, 164, 39);
+		btnBackUpSale.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(SmartSaleBoxOperations.validateSaleOutFields()) {
+					SaveOutflowProcess.createNewSaleReverse();
+				}else {
+					JOptionPane.showMessageDialog(null,"Ingrese No. de venta y Total por favor.");
+				}
+				
+			}
+		});
+		btnBackUpSale.setBounds(737, 557, 164, 39);
 		tabbedSalesHistory.add(btnBackUpSale);
 		
 		JButton btnPrintTicket = new JButton("Imprimir Ticket");
@@ -1625,6 +1632,16 @@ public class SmartSaleBoxMain extends JFrame {
 	tblNewProduct.getColumnModel().getColumn(5).setPreferredWidth(80);
 	tblNewProduct.getColumnModel().getColumn(6).setPreferredWidth(80);
 	scrollSaleHistory.setViewportView(tblNewProduct);
+	
+	cmbPaymentTypeSaleOut = new JComboBox();
+	cmbPaymentTypeSaleOut.setModel(new DefaultComboBoxModel(new String[] {"EFECTIVO", "TARJETA"}));
+	cmbPaymentTypeSaleOut.setBounds(737, 504, 180, 38);
+	tabbedSalesHistory.add(cmbPaymentTypeSaleOut);
+	
+	JLabel lblDevolverEn = new JLabel("Devolver en :");
+	lblDevolverEn.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+	lblDevolverEn.setBounds(737, 464, 188, 28);
+	tabbedSalesHistory.add(lblDevolverEn);
 	
 	final String bulkProductColumns[] = {"idProduct","Producto","PrecioCosto","PrecioKilo","Stock grs.","GananciaxKilo","GananciaGranel","CódigoBarras"};
 	tableModelNewBulkProducts = new DefaultTableModel(bulkProductColumns, 0);

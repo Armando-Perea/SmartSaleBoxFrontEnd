@@ -8,7 +8,7 @@ import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
 
 public class UpdateCashProcess {
 
-	private static final String CASH_UPDATED = "Venta Realizada!";
+	private static final String CASH_UPDATED = "Operación Realizada!";
 	private static final String CASH_NOT_FOUND = "Id no existe!";
 	private static final String CASH_UPDATE_FAILED = "No es posible actualizar cajón";
 	private static final String NUMERIC_VALIDATION_ERROR = "Dato debe ser numérico, revise información";

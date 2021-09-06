@@ -1,10 +1,7 @@
 package com.java.smartsaleboxfrontend.business.save;
 
 import javax.swing.JOptionPane;
-
-import com.java.smartsalebox.client.ControlBulkStockClient;
 import com.java.smartsalebox.client.ControlProductStockClient;
-import com.java.smartsalebox.models.ControlBulkStock;
 import com.java.smartsalebox.models.ControlProductStock;
 
 public class SaveProductStockProcess {
