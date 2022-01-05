@@ -72,7 +72,7 @@ public class SaveSaleProcess {
 		LocalDateTime myDateObj = LocalDateTime.now();
 		DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy", new Locale("es", "ES"));
 		String formattedDate = myDateObj.format(myFormatObj);
-
+		try {
 		product = ProductsClient.getProductByBarCode(SmartSaleBoxMain.txtProductCodeSearch.getText());
 		System.out.println("Product: "+product.toString());
 		saleObj = SalesClient.getSaleByProductIdAndNoSale(product.getIdProduct(), SmartSaleBoxMain.noSale);
@@ -95,7 +95,10 @@ public class SaveSaleProcess {
 			updateProductSale(saleObj, product.getStock());
 			SmartSaleBoxMain.txtProductCodeSearch.setText(null);
 		}
-
+		}catch(Exception e) {
+			JOptionPane.showMessageDialog(null, "No existe producto con Código: " + SmartSaleBoxMain.txtProductCodeSearch.getText());
+			SmartSaleBoxMain.txtProductCodeSearch.setText(null);
+		}
 	}
 
 	private static void saveNewProductSale(Sales saleObj, Integer stock) {

@@ -79,12 +79,14 @@ public class LoginInitializer {
 					CashClient.updateCash(cash);
 					SmartSaleBoxMain.noSale++;
 					SmartSaleBoxMain.ticketTitle = cash.getTicketTitle();
+					SmartSaleBoxMain.ticketService = cash.getTicketService();
 				}
 			}
 		} else {
 			SmartSaleBoxMain.cash = cash.getQuantity();
 			SmartSaleBoxMain.noSale = cash.getNoSale();
 			SmartSaleBoxMain.ticketTitle = cash.getTicketTitle();
+			SmartSaleBoxMain.ticketService = cash.getTicketService();
 			JOptionPane.showMessageDialog(null, "Verifique cajón : $" + SmartSaleBoxMain.cash, SYSTEM_TITLE,
 					JOptionPane.INFORMATION_MESSAGE);
 		}

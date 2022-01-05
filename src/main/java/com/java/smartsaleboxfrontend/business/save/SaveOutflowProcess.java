@@ -84,7 +84,7 @@ public class SaveOutflowProcess {
 					newOutflow.setIdOutflow(0);
 					newOutflow.setAttendee(SmartSaleBoxMain.adminName);
 					newOutflow.setConcept("Devolucion productos");
-					newOutflow.setDescription("Reverso en No. Venta: "+SmartSaleBoxMain.noSale);
+					newOutflow.setDescription("Reverso en No. Venta: "+SmartSaleBoxMain.txtHistoryNoSale.getText());
 					newOutflow.setOutflowDate(formattedDate);
 					newOutflow.setPaymentType((String)SmartSaleBoxMain.cmbPaymentTypeSaleOut.getSelectedItem());
 					newOutflow.setQuantity(outflowQuantity);

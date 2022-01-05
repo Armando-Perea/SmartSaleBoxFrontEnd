@@ -27,6 +27,7 @@ import com.java.smartsaleboxfrontend.business.read.ReadOutflowProcess;
 import com.java.smartsaleboxfrontend.business.read.ReadProductsInfo;
 import com.java.smartsaleboxfrontend.business.read.ReadSaleInfo;
 import com.java.smartsaleboxfrontend.business.read.ReadSystemPathsInfo;
+import com.java.smartsaleboxfrontend.business.read.SaleTicket;
 import com.java.smartsaleboxfrontend.business.save.LoginInitializer;
 import com.java.smartsaleboxfrontend.business.save.SaveAdminProcess;
 import com.java.smartsaleboxfrontend.business.save.SaveBulkProductProcess;
@@ -59,15 +60,20 @@ import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JPasswordField;
 import javax.swing.JComboBox;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.print.PrinterException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
+import java.awt.Color;
 
 public class SmartSaleBoxMain extends JFrame {
 
@@ -76,9 +82,11 @@ public class SmartSaleBoxMain extends JFrame {
 	public static BulkSaleMain bulkSaleMain = new BulkSaleMain();
 	
 	public static Integer noSale = 0;
-	public static Double cash = 500.00;
+	public static Double cash = 0.00;
 	public static String adminName;
+	public static String scannerIn="";
 	public static String ticketTitle;
+	public static Boolean ticketService;
 	public static List<Sales> salesList = new ArrayList<>();
 	public static List<Sales> bulkList = new ArrayList<>();
 	
@@ -181,11 +189,18 @@ public class SmartSaleBoxMain extends JFrame {
 	public static JTextField txtSystemPathsSales;
 	public static JTextField txtSystemPathsProducts;
 	public static JTextField txtTotalEarningsClosure;
+	public static JTextField txtBussinessName;
+	public static JTextField txtTicketPrintService;
+	public static JLabel lblBussinessName;
+	public static JTabbedPane tabbedPane;
+	
 
 	/**
 	 * Launch the application.
+	 * @throws InterruptedException 
+	 * @throws InvocationTargetException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InvocationTargetException, InterruptedException {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -196,14 +211,30 @@ public class SmartSaleBoxMain extends JFrame {
 				}
 			}
 		});
+		
 	}
+	
 
 	public SmartSaleBoxMain() {
+		
 		LoginInitializer.authenticationProcess();
 		initializeSmartSaleBoxComponents();
 		LoginInitializer.initializeBalanceAndHistory();
 		LoginInitializer.checkPendingSales();
+		SmartSaleBoxMain.lblBussinessName.setText(SmartSaleBoxMain.ticketTitle);
+		SmartSaleBoxMain.txtBussinessName.setText(SmartSaleBoxMain.ticketTitle);
+		SmartSaleBoxMain.txtTicketPrintService.setText(SmartSaleBoxMain.ticketService ? "ACTIVADO" : "DESACTIVADO");
 	}
+	
+	public void SmartSaleBoxMain2() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 450, 300);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setLayout(new BorderLayout(0, 0));
+		setContentPane(contentPane);
+	}
+	
 	
 	public void initializeSmartSaleBoxComponents() {
 		setTitle("Punto de Venta");
@@ -214,13 +245,68 @@ public class SmartSaleBoxMain extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
 		
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		contentPane.add(tabbedPane, BorderLayout.CENTER);
+		addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				tabbedPane.requestFocus();
+			}
+		});
+		tabbedPane.setFocusTraversalKeysEnabled(false);
+		tabbedPane.addKeyListener(new KeyListener() {
+			@Override public void keyTyped(KeyEvent e) {
+			}
+			@Override public void keyReleased(KeyEvent e) {
+			}
+			@Override public void keyPressed(KeyEvent e) { 
+				System.out.println("Key Character: " + e.getKeyChar() + "; Key Code: " + KeyEvent.getKeyText(e.getKeyCode())); 
+				scannerIn = scannerIn+e.getKeyChar();
+				System.out.println("ScannerIn: "+scannerIn);
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					txtProductCodeSearch.setText(null);
+					scannerIn = scannerIn.trim();
+		            System.out.println("Pressed " + e.getKeyCode());
+		            System.out.println("ScannerIn: "+scannerIn);
+		            txtProductCodeSearch.setText(scannerIn);
+		            if (SmartSaleBoxOperations.validateScannerReading()) {
+						SaveSaleProcess.addProductToSaleListByScanner();
+						 scannerIn="";
+					} else {
+						scannerIn="";
+						JOptionPane.showMessageDialog(null, "Ingrese código de barras por favor");
+					}
+		        }
+				if (e.getKeyCode() == KeyEvent.VK_F9) {
+		            System.out.println("Pressed " + e.getKeyCode());
+		            bulkSaleMain.setVisible(true);
+					bulkSaleMain.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		        }
+				if (e.getKeyCode() == KeyEvent.VK_TAB) {
+					System.out.println("Pressed " + e.getKeyCode());
+					txtReceived.setText(null);
+					txtReceived.requestFocus();	
+		        }
+				if (e.getKeyCode() == KeyEvent.VK_F5) {
+					System.out.println("Pressed " + e.getKeyCode());
+					DeleteSaleProcess.removeCurrentSaleProcess();
+					tabbedPane.requestFocus();
+		        }
+				if (e.getKeyCode() == KeyEvent.VK_F12) {
+					System.out.println("Pressed " + e.getKeyCode());
+					txtCardPayment.setEnabled(true);
+					txtCardPayment.setText(null);
+					txtCardPayment.requestFocus();
+		        }
+				
+			} });
+		
 		
 		JPanel tabbedSale = new JPanel();
 		tabbedSale.setBackground(SystemColor.window);
 		tabbedPane.addTab("Venta", null, tabbedSale, null);
 		tabbedSale.setLayout(null);
+		
 		
 		JLabel lblNewLabel = new JLabel("@SmartSaleBox.");
 		lblNewLabel.setFont(new Font("Lucida Bright", Font.BOLD, 24));
@@ -233,7 +319,7 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedSale.add(lblEnVenta);
 		
 		JPanel salePanel = new JPanel();
-		salePanel.setBounds(53, 209, 464, 214);
+		salePanel.setBounds(53, 209, 551, 214);
 		tabbedSale.add(salePanel);
 		salePanel.setLayout(new BorderLayout(0, 0));
 		
@@ -252,7 +338,7 @@ public class SmartSaleBoxMain extends JFrame {
 		cartSalePanel.add(scrollCartSale, BorderLayout.CENTER);
 		
 		JLabel lblProducto = new JLabel("Producto:");
-		lblProducto.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+		lblProducto.setFont(new Font("Dialog", Font.BOLD, 18));
 		lblProducto.setBounds(53, 52, 97, 28);
 		tabbedSale.add(lblProducto);
 		
@@ -317,6 +403,19 @@ public class SmartSaleBoxMain extends JFrame {
 			public void keyReleased(KeyEvent e) {
 				SmartSaleBoxOperations.saleReceivedCashProcess();
 			}
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					System.out.println("Pressed " + e.getKeyCode());
+					verifySale();
+					tabbedPane.requestFocus();
+		        }
+				if (e.getKeyCode() == KeyEvent.VK_F5) {
+					System.out.println("Pressed " + e.getKeyCode());
+					DeleteSaleProcess.removeCurrentSaleProcess();
+					tabbedPane.requestFocus();
+		        }
+			}
 		});
 		txtReceived.setFont(new Font("Dialog", Font.BOLD, 14));
 		txtReceived.setText("0.00");
@@ -333,44 +432,58 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedSale.add(txtChangeBack);
 		
 		JButton btnExecuteSale = new JButton("Cobrar");
+		btnExecuteSale.setBackground(new Color(51, 204, 0));
+		btnExecuteSale.setForeground(Color.WHITE);
 		btnExecuteSale.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(!SmartSaleBoxOperations.isValidSaleQuantity()) {
-					JOptionPane.showMessageDialog(null,"La cantidad recibida es menor, verifique!");
-				}else if(!SmartSaleBoxOperations.isValidCashChange()) {
-					JOptionPane.showMessageDialog(null,"El cambio a dar excede la cantidad \ndisponible en cajón $"+cash+" , \nintroduzca más efectivo en caja!");
-				}
-				else {
-					if(SaveSaleProcess.createNewSaleAndInflow(SmartSaleBoxOperations.getPaymentType())) {
-						UpdateProductStockProcess.updateGeneralProductStock();
-						UpdateBulkStockProcess.updateBulkProductStock();
-						UpdateProductEarningsProcess.addGeneralProductEarning();
-						UpdateProductEarningsProcess.addBulkProductEarning();
-						UpdateCashProcess.updateCashAndNoSale();
-						SmartSaleBoxClearFields.clearSaleMain();
-						ReadInflowProcess.initInflowBalanceProcess();
-						ReadOutflowProcess.initOutflowBalanceProcess();
-						ReadSaleInfo.getAllSaleHistoryTable();
-					}else {
-						JOptionPane.showMessageDialog(null,"No es posible guardar la compra por el momento!");
-					}
-				}
+				verifySale();
+//				if(!SmartSaleBoxOperations.isValidSaleQuantity()) {
+//					JOptionPane.showMessageDialog(null,"La cantidad recibida es menor, verifique!");
+//				}else if(!SmartSaleBoxOperations.isValidCashChange()) {
+//					JOptionPane.showMessageDialog(null,"El cambio a dar excede la cantidad \ndisponible en cajón $"+cash+" , \nintroduzca más efectivo en caja!");
+//				}
+//				else {
+//					if(SaveSaleProcess.createNewSaleAndInflow(SmartSaleBoxOperations.getPaymentType())) {
+//						UpdateProductStockProcess.updateGeneralProductStock();
+//						UpdateBulkStockProcess.updateBulkProductStock();
+//						UpdateProductEarningsProcess.addGeneralProductEarning();
+//						UpdateProductEarningsProcess.addBulkProductEarning();
+//						
+//						if(SmartSaleBoxMain.ticketService) {
+//							try {
+//								SaleTicket.printSaleProcess();
+//							} catch (PrinterException | InterruptedException e1) {
+//								JOptionPane.showMessageDialog(null,"No es posible Imprimir ticket, error: "+e1);
+//							}
+//						}
+//						
+//						UpdateCashProcess.updateCashAndNoSale();
+//						SmartSaleBoxClearFields.clearSaleMain();
+//						ReadInflowProcess.initInflowBalanceProcess();
+//						ReadOutflowProcess.initOutflowBalanceProcess();
+//						ReadSaleInfo.getAllSaleHistoryTable();
+//
+//					}else {
+//						JOptionPane.showMessageDialog(null,"No es posible guardar la compra por el momento!");
+//					}
+//				}
 			}
 		});
-		btnExecuteSale.setBounds(620, 538, 115, 39);
+		btnExecuteSale.setBounds(503, 579, 115, 39);
 		tabbedSale.add(btnExecuteSale);
 		
 		JLabel lblEnVenta_1 = new JLabel("En Venta:");
-		lblEnVenta_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
+		lblEnVenta_1.setFont(new Font("Dialog", Font.BOLD, 18));
 		lblEnVenta_1.setBounds(53, 169, 97, 28);
 		tabbedSale.add(lblEnVenta_1);
 		
 		JLabel lblConsultarProducto = new JLabel("Consultar Producto");
-		lblConsultarProducto.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblConsultarProducto.setBounds(652, 40, 150, 28);
+		lblConsultarProducto.setFont(new Font("Dialog", Font.BOLD, 18));
+		lblConsultarProducto.setBounds(705, 52, 186, 28);
 		tabbedSale.add(lblConsultarProducto);
 		
 		txtSaleProductSaleName = new JTextField();
+		txtSaleProductSaleName.setFont(new Font("Tahoma", Font.BOLD, 14));
 		txtSaleProductSaleName.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -384,20 +497,21 @@ public class SmartSaleBoxMain extends JFrame {
 			}
 		});
 		txtSaleProductSaleName.setColumns(10);
-		txtSaleProductSaleName.setBounds(624, 80, 212, 28);
+		txtSaleProductSaleName.setBounds(680, 96, 264, 44);
 		tabbedSale.add(txtSaleProductSaleName);
 		
 		JLabel lblNombre = new JLabel("Nombre:");
-		lblNombre.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblNombre.setBounds(555, 78, 69, 28);
+		lblNombre.setFont(new Font("Dialog", Font.BOLD, 18));
+		lblNombre.setBounds(583, 101, 87, 28);
 		tabbedSale.add(lblNombre);
 		
 		JLabel lblCdigo = new JLabel("Código:");
-		lblCdigo.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblCdigo.setBounds(555, 135, 64, 28);
+		lblCdigo.setFont(new Font("Dialog", Font.BOLD, 18));
+		lblCdigo.setBounds(591, 170, 79, 28);
 		tabbedSale.add(lblCdigo);
 		
 		txtProductCodeSearch = new JTextField();
+		txtProductCodeSearch.setFont(new Font("Tahoma", Font.BOLD, 14));
 		txtProductCodeSearch.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -417,41 +531,45 @@ public class SmartSaleBoxMain extends JFrame {
 			}
 		});
 		txtProductCodeSearch.setColumns(10);
-		txtProductCodeSearch.setBounds(624, 135, 212, 28);
+		txtProductCodeSearch.setBounds(680, 162, 264, 46);
 		tabbedSale.add(txtProductCodeSearch);
 		
 		JButton btnVentaKg = new JButton("Venta por Kg");
+		btnVentaKg.setForeground(Color.WHITE);
+		btnVentaKg.setBackground(new Color(153, 51, 0));
 		btnVentaKg.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				bulkSaleMain.setVisible(true);
 				bulkSaleMain.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			}
 		});
-		btnVentaKg.setBounds(529, 254, 150, 28);
+		btnVentaKg.setBounds(741, 241, 150, 39);
 		tabbedSale.add(btnVentaKg);
 		
 		JButton btnClearSale = new JButton("Borrar Venta");
+		btnClearSale.setBackground(new Color(0, 0, 0));
+		btnClearSale.setForeground(Color.WHITE);
 		btnClearSale.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				DeleteSaleProcess.removeCurrentSaleProcess();
 			}
 		});
-		btnClearSale.setBounds(53, 446, 140, 39);
+		btnClearSale.setBounds(53, 434, 123, 28);
 		tabbedSale.add(btnClearSale);
 		
 		JLabel lblF = new JLabel("F9");
 		lblF.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblF.setBounds(591, 279, 34, 28);
+		lblF.setBounds(800, 291, 34, 28);
 		tabbedSale.add(lblF);
 		
 		JLabel lblF_2 = new JLabel("F5");
 		lblF_2.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblF_2.setBounds(115, 490, 49, 28);
+		lblF_2.setBounds(97, 473, 49, 28);
 		tabbedSale.add(lblF_2);
 		
 		JLabel lblF_1 = new JLabel("F12");
 		lblF_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblF_1.setBounds(652, 579, 49, 28);
+		lblF_1.setBounds(705, 473, 49, 28);
 		tabbedSale.add(lblF_1);
 		
 		JPanel tabbedSalesHistory = new JPanel();
@@ -477,11 +595,14 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedSalesHistory.add(lblNoVenta);
 		
 		txtHistoryNoSale = new JTextField();
+		txtHistoryNoSale.setFont(new Font("Tahoma", Font.BOLD, 14));
 		txtHistoryNoSale.setBounds(128, 84, 85, 28);
 		tabbedSalesHistory.add(txtHistoryNoSale);
 		txtHistoryNoSale.setColumns(10);
 		
 		JButton btnHistorySearchSale = new JButton("Consultar");
+		btnHistorySearchSale.setBackground(new Color(153, 102, 255));
+		btnHistorySearchSale.setForeground(Color.WHITE);
 		btnHistorySearchSale.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (SmartSaleBoxOperations.validateGetSaleHistoryByNoSale()) {
@@ -500,11 +621,14 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedSalesHistory.add(lblTotalVentas);
 		
 		txtTotalSaleHistory = new JTextField();
+		txtTotalSaleHistory.setFont(new Font("Tahoma", Font.BOLD, 14));
 		txtTotalSaleHistory.setColumns(10);
 		txtTotalSaleHistory.setBounds(603, 561, 85, 35);
 		tabbedSalesHistory.add(txtTotalSaleHistory);
 		
 		JButton btnBackUpSale = new JButton("Generar Reverso");
+		btnBackUpSale.setBackground(new Color(204, 0, 0));
+		btnBackUpSale.setForeground(Color.WHITE);
 		btnBackUpSale.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(SmartSaleBoxOperations.validateSaleOutFields()) {
@@ -519,6 +643,21 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedSalesHistory.add(btnBackUpSale);
 		
 		JButton btnPrintTicket = new JButton("Imprimir Ticket");
+		btnPrintTicket.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					if(SmartSaleBoxOperations.validateSaleOutFields()) {
+						SaleTicket.printSaleProcessChecked();
+					}else {
+						JOptionPane.showMessageDialog(null,"Ingrese No. de venta y Total por favor.");
+					}
+				} catch (PrinterException | InterruptedException e1) {
+					JOptionPane.showMessageDialog(null,"No es posible imprimir ticket: "+e1);
+				}
+			}
+		});
+		btnPrintTicket.setBackground(new Color(153, 51, 102));
+		btnPrintTicket.setForeground(Color.WHITE);
 		btnPrintTicket.setBounds(737, 406, 164, 39);
 		tabbedSalesHistory.add(btnPrintTicket);
 		
@@ -549,8 +688,8 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedProducts_1.add(lblNewLabel_1_1_1);
 		
 		JLabel lblAltaProducto_1 = new JLabel("Alta Producto");
-		lblAltaProducto_1.setFont(new Font("Lucida Bright", Font.BOLD, 18));
-		lblAltaProducto_1.setBounds(112, 58, 140, 28);
+		lblAltaProducto_1.setFont(new Font("Dialog", Font.BOLD, 24));
+		lblAltaProducto_1.setBounds(112, 58, 180, 28);
 		tabbedProducts_1.add(lblAltaProducto_1);
 		
 		JLabel lblConsultaProducto_1 = new JLabel("Consulta Producto");
@@ -596,6 +735,8 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedProducts_1.add(lblProducto_2_4_2_1);
 		
 		JButton btnSaveNewProduct = new JButton("Guardar");
+		btnSaveNewProduct.setBackground(new Color(51, 153, 0));
+		btnSaveNewProduct.setForeground(Color.WHITE);
 		btnSaveNewProduct.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				SaveProductProcess.createNewProduct();
@@ -618,36 +759,44 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedProducts_1.add(btnNewCalculateEarning);
 		
 		txtNewProductName = new JTextField();
+		txtNewProductName.setFont(new Font("Tahoma", Font.BOLD, 14));
 		txtNewProductName.setColumns(10);
 		txtNewProductName.setBounds(138, 133, 270, 34);
 		tabbedProducts_1.add(txtNewProductName);
 		
 		txtNewCostPrice = new JTextField();
+		txtNewCostPrice.setFont(new Font("Tahoma", Font.BOLD, 14));
 		txtNewCostPrice.setColumns(10);
 		txtNewCostPrice.setBounds(157, 193, 95, 28);
 		tabbedProducts_1.add(txtNewCostPrice);
 		
 		txtNewSalePrice = new JTextField();
+		txtNewSalePrice.setFont(new Font("Tahoma", Font.BOLD, 14));
 		txtNewSalePrice.setColumns(10);
 		txtNewSalePrice.setBounds(157, 244, 95, 28);
 		tabbedProducts_1.add(txtNewSalePrice);
 		
 		txtNewEarning = new JTextField();
+		txtNewEarning.setFont(new Font("Tahoma", Font.BOLD, 14));
 		txtNewEarning.setColumns(10);
 		txtNewEarning.setBounds(158, 298, 94, 28);
 		tabbedProducts_1.add(txtNewEarning);
 		
 		txtNewStock = new JTextField();
+		txtNewStock.setFont(new Font("Tahoma", Font.BOLD, 14));
 		txtNewStock.setColumns(10);
 		txtNewStock.setBounds(158, 348, 94, 28);
 		tabbedProducts_1.add(txtNewStock);
 		
 		txtNewBarCode = new JTextField();
+		txtNewBarCode.setFont(new Font("Tahoma", Font.BOLD, 14));
 		txtNewBarCode.setColumns(10);
 		txtNewBarCode.setBounds(138, 401, 270, 34);
 		tabbedProducts_1.add(txtNewBarCode);
 		
 		JButton btnUpdateProd = new JButton("Actualizar");
+		btnUpdateProd.setBackground(new Color(51, 102, 255));
+		btnUpdateProd.setForeground(Color.WHITE);
 		btnUpdateProd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				UpdateProductProcess.updateSelectedProduct();
@@ -657,6 +806,8 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedProducts_1.add(btnUpdateProd);
 		
 		JButton btnDeleteProd = new JButton("Borrar");
+		btnDeleteProd.setBackground(new Color(204, 0, 0));
+		btnDeleteProd.setForeground(Color.WHITE);
 		btnDeleteProd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				DeleteProductProcess.removeSelectedProduct();
@@ -666,6 +817,8 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedProducts_1.add(btnDeleteProd);
 		
 		JButton btnShowAllprods = new JButton("Mostrar Todos");
+		btnShowAllprods.setBackground(new Color(153, 102, 255));
+		btnShowAllprods.setForeground(Color.WHITE);
 		btnShowAllprods.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ReadProductsInfo.fillProductTable();
@@ -675,6 +828,7 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedProducts_1.add(btnShowAllprods);
 		
 		txtGetProductNameSearch = new JTextField();
+		txtGetProductNameSearch.setFont(new Font("Tahoma", Font.BOLD, 16));
 		txtGetProductNameSearch.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -692,8 +846,8 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedProducts_1.add(txtGetProductNameSearch);
 		
 		JLabel lblProducto_2_6_1 = new JLabel("Producto:");
-		lblProducto_2_6_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_6_1.setBounds(503, 87, 85, 28);
+		lblProducto_2_6_1.setFont(new Font("Dialog", Font.BOLD, 18));
+		lblProducto_2_6_1.setBounds(493, 87, 95, 28);
 		tabbedProducts_1.add(lblProducto_2_6_1);
 		
 		JPanel panel_2 = new JPanel();
@@ -711,8 +865,8 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedProducts_2.add(lblNewLabel_1_1_2);
 		
 		JLabel lblAltaProductoGranel = new JLabel("Alta Producto Granel");
-		lblAltaProductoGranel.setFont(new Font("Lucida Bright", Font.BOLD, 18));
-		lblAltaProductoGranel.setBounds(112, 58, 215, 28);
+		lblAltaProductoGranel.setFont(new Font("Dialog", Font.BOLD, 24));
+		lblAltaProductoGranel.setBounds(112, 58, 276, 28);
 		tabbedProducts_2.add(lblAltaProductoGranel);
 		
 		JLabel lblConsultaProductoGranel = new JLabel("Consulta Producto Granel");
@@ -753,6 +907,8 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedProducts_2.add(lblProducto_2_4_2_2);
 		
 		JButton btnSaveNewBulk = new JButton("Guardar");
+		btnSaveNewBulk.setBackground(new Color(51, 153, 0));
+		btnSaveNewBulk.setForeground(Color.WHITE);
 		btnSaveNewBulk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				SaveBulkProductProcess.createNewBulkProduct();
@@ -779,26 +935,31 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedProducts_2.add(btnNewButton_2_1_2);
 		
 		txtNewBulkProductName = new JTextField();
+		txtNewBulkProductName.setFont(new Font("Tahoma", Font.BOLD, 14));
 		txtNewBulkProductName.setColumns(10);
 		txtNewBulkProductName.setBounds(138, 133, 270, 34);
 		tabbedProducts_2.add(txtNewBulkProductName);
 		
 		txtNewBulkCostPrice = new JTextField();
+		txtNewBulkCostPrice.setFont(new Font("Tahoma", Font.BOLD, 14));
 		txtNewBulkCostPrice.setColumns(10);
 		txtNewBulkCostPrice.setBounds(210, 191, 95, 28);
 		tabbedProducts_2.add(txtNewBulkCostPrice);
 		
 		txtNewBulkKiloPrice = new JTextField();
+		txtNewBulkKiloPrice.setFont(new Font("Tahoma", Font.BOLD, 14));
 		txtNewBulkKiloPrice.setColumns(10);
 		txtNewBulkKiloPrice.setBounds(210, 242, 95, 28);
 		tabbedProducts_2.add(txtNewBulkKiloPrice);
 		
 		txtNewBulkStock = new JTextField();
+		txtNewBulkStock.setFont(new Font("Tahoma", Font.BOLD, 14));
 		txtNewBulkStock.setColumns(10);
 		txtNewBulkStock.setBounds(210, 294, 94, 28);
 		tabbedProducts_2.add(txtNewBulkStock);
 		
 		txtNewBulkBarCodeProd = new JTextField();
+		txtNewBulkBarCodeProd.setFont(new Font("Tahoma", Font.BOLD, 14));
 		txtNewBulkBarCodeProd.setColumns(10);
 		txtNewBulkBarCodeProd.setBounds(140, 464, 270, 34);
 		tabbedProducts_2.add(txtNewBulkBarCodeProd);
@@ -809,6 +970,7 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedProducts_2.add(lblProducto_2_4_4_1);
 		
 		txtNewBulkKiloEarning = new JTextField();
+		txtNewBulkKiloEarning.setFont(new Font("Tahoma", Font.BOLD, 14));
 		txtNewBulkKiloEarning.setColumns(10);
 		txtNewBulkKiloEarning.setBounds(211, 343, 94, 28);
 		tabbedProducts_2.add(txtNewBulkKiloEarning);
@@ -819,6 +981,7 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedProducts_2.add(lblProducto_2_4_4_1_1);
 		
 		txtNewBulkEarning = new JTextField();
+		txtNewBulkEarning.setFont(new Font("Tahoma", Font.BOLD, 14));
 		txtNewBulkEarning.setColumns(10);
 		txtNewBulkEarning.setBounds(211, 394, 94, 28);
 		tabbedProducts_2.add(txtNewBulkEarning);
@@ -829,14 +992,20 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedProducts_2.add(lblProducto_2_4_1_2_1);
 		
 		JButton btnUpdateBulkProd = new JButton("Actualizar");
+		btnUpdateBulkProd.setBackground(new Color(51, 102, 255));
+		btnUpdateBulkProd.setForeground(Color.WHITE);
 		btnUpdateBulkProd.setBounds(453, 525, 117, 34);
 		tabbedProducts_2.add(btnUpdateBulkProd);
 		
 		JButton btnDeleteBulkProd = new JButton("Borrar");
+		btnDeleteBulkProd.setBackground(new Color(204, 0, 0));
+		btnDeleteBulkProd.setForeground(Color.WHITE);
 		btnDeleteBulkProd.setBounds(879, 525, 117, 34);
 		tabbedProducts_2.add(btnDeleteBulkProd);
 		
 		JButton btnShowAllBulkProd = new JButton("Mostrar Todos");
+		btnShowAllBulkProd.setBackground(new Color(153, 102, 255));
+		btnShowAllBulkProd.setForeground(Color.WHITE);
 		btnShowAllBulkProd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ReadBulkSaleInfo.fillProductBulkTable();
@@ -863,8 +1032,8 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedProducts_2.add(txtBulkProdSearch);
 		
 		JLabel lblProducto_2_7_1 = new JLabel("Producto:");
-		lblProducto_2_7_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_7_1.setBounds(525, 87, 85, 28);
+		lblProducto_2_7_1.setFont(new Font("Dialog", Font.BOLD, 18));
+		lblProducto_2_7_1.setBounds(502, 87, 108, 28);
 		tabbedProducts_2.add(lblProducto_2_7_1);
 		
 		JPanel tabbedAdmin = new JPanel();
@@ -1045,6 +1214,8 @@ public class SmartSaleBoxMain extends JFrame {
 		closurePanel.add(txtTotalOutflowsClosure);
 		
 		JButton btnNewButton = new JButton("Generar Corte");
+		btnNewButton.setBackground(new Color(0, 153, 0));
+		btnNewButton.setForeground(Color.WHITE);
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(SmartSaleBoxOperations.validateClosure()) {
@@ -1084,6 +1255,8 @@ public class SmartSaleBoxMain extends JFrame {
 		closurePanel.add(txtTotalProductClosure);
 		
 		JButton btnCalcularCorte = new JButton("Calcular Corte");
+		btnCalcularCorte.setBackground(new Color(153, 51, 0));
+		btnCalcularCorte.setForeground(Color.WHITE);
 		btnCalcularCorte.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ReadClosureCalculation.setClosureCalculationInfo();
@@ -1140,6 +1313,8 @@ public class SmartSaleBoxMain extends JFrame {
 		inOutControlPanel.add(lblProducto_2_5_2_2_1_1);
 		
 		JButton btnGenerateOperation = new JButton("Generar Operación");
+		btnGenerateOperation.setBackground(new Color(51, 153, 0));
+		btnGenerateOperation.setForeground(Color.WHITE);
 		btnGenerateOperation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(cmbOperationType.getSelectedIndex()==0) {
@@ -1209,6 +1384,8 @@ public class SmartSaleBoxMain extends JFrame {
 		EmailConfigPanel.add(lblProducto_2_5_2_1_1);
 		
 		JButton btnSaveEmail = new JButton("Guardar Email");
+		btnSaveEmail.setBackground(new Color(51, 153, 0));
+		btnSaveEmail.setForeground(Color.WHITE);
 		btnSaveEmail.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(SmartSaleBoxOperations.validateEmailConfig()) {
@@ -1229,12 +1406,14 @@ public class SmartSaleBoxMain extends JFrame {
 		scrollEmail.setViewportView(tblEmail);
 		
 		JButton btnUpdateEmail = new JButton("Actualizar");
+		btnUpdateEmail.setBackground(new Color(51, 102, 255));
+		btnUpdateEmail.setForeground(Color.WHITE);
 		btnUpdateEmail.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				UpdateEmailConfigProcess.updateEmailConfig();
 			}
 		});
-		btnUpdateEmail.setBounds(509, 420, 117, 25);
+		btnUpdateEmail.setBounds(509, 420, 117, 34);
 		EmailConfigPanel.add(btnUpdateEmail);
 		
 		JLabel lblConsultaEmail = new JLabel("Consulta Email");
@@ -1247,12 +1426,14 @@ public class SmartSaleBoxMain extends JFrame {
 		EmailConfigPanel.add(pwdEmailNew);
 		
 		JButton btnDeleteEmail = new JButton("Borrar");
+		btnDeleteEmail.setBackground(new Color(204, 0, 0));
+		btnDeleteEmail.setForeground(Color.WHITE);
 		btnDeleteEmail.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				DeleteEmailConfigProcess.removeSelectedEmail();
 			}
 		});
-		btnDeleteEmail.setBounds(879, 420, 117, 25);
+		btnDeleteEmail.setBounds(879, 420, 117, 34);
 		EmailConfigPanel.add(btnDeleteEmail);
 		
 		JPanel adminConfigPanel = new JPanel();
@@ -1267,30 +1448,32 @@ public class SmartSaleBoxMain extends JFrame {
 		
 		JLabel lblAltaAdministrador = new JLabel("Alta Administrador");
 		lblAltaAdministrador.setFont(new Font("Lucida Bright", Font.BOLD, 18));
-		lblAltaAdministrador.setBounds(203, 122, 192, 28);
+		lblAltaAdministrador.setBounds(203, 48, 192, 28);
 		adminConfigPanel.add(lblAltaAdministrador);
 		
 		JLabel lblConsultaAdministrador = new JLabel("Consulta Administrador");
 		lblConsultaAdministrador.setFont(new Font("Lucida Bright", Font.BOLD, 18));
-		lblConsultaAdministrador.setBounds(622, 175, 248, 28);
+		lblConsultaAdministrador.setBounds(620, 103, 248, 28);
 		adminConfigPanel.add(lblConsultaAdministrador);
 		
 		JLabel lblProducto_2_5_2_1_2 = new JLabel("Nombre:");
 		lblProducto_2_5_2_1_2.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_5_2_1_2.setBounds(124, 197, 63, 28);
+		lblProducto_2_5_2_1_2.setBounds(125, 88, 63, 28);
 		adminConfigPanel.add(lblProducto_2_5_2_1_2);
 		
 		JLabel lblProducto_2_5_2_1_1_1 = new JLabel("Password:");
 		lblProducto_2_5_2_1_1_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_5_2_1_1_1.setBounds(124, 415, 86, 28);
+		lblProducto_2_5_2_1_1_1.setBounds(125, 306, 86, 28);
 		adminConfigPanel.add(lblProducto_2_5_2_1_1_1);
 		
 		txtAdminName = new JTextField();
 		txtAdminName.setColumns(10);
-		txtAdminName.setBounds(187, 196, 216, 34);
+		txtAdminName.setBounds(188, 87, 216, 34);
 		adminConfigPanel.add(txtAdminName);
 		
 		JButton btnSaveAdmin = new JButton("Guardar");
+		btnSaveAdmin.setBackground(new Color(0, 153, 51));
+		btnSaveAdmin.setForeground(Color.WHITE);
 		btnSaveAdmin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(SmartSaleBoxOperations.validateAdminFields()) {
@@ -1300,96 +1483,106 @@ public class SmartSaleBoxMain extends JFrame {
 				}
 			}
 		});
-		btnSaveAdmin.setBounds(199, 526, 153, 34);
+		btnSaveAdmin.setBounds(200, 417, 153, 34);
 		adminConfigPanel.add(btnSaveAdmin);
 		
 		JLabel lblProducto_2_5_2_1_2_1 = new JLabel("Puesto:");
 		lblProducto_2_5_2_1_2_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_5_2_1_2_1.setBounds(145, 359, 63, 28);
+		lblProducto_2_5_2_1_2_1.setBounds(146, 250, 63, 28);
 		adminConfigPanel.add(lblProducto_2_5_2_1_2_1);
 		
 		pwdAdmin1 = new JPasswordField();
-		pwdAdmin1.setBounds(203, 414, 192, 34);
+		pwdAdmin1.setBounds(204, 305, 192, 34);
 		adminConfigPanel.add(pwdAdmin1);
 		
 		JLabel lblProducto_2_5_2_1_1_1_1 = new JLabel("Confirma Password:");
 		lblProducto_2_5_2_1_1_1_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_5_2_1_1_1_1.setBounds(52, 470, 148, 28);
+		lblProducto_2_5_2_1_1_1_1.setBounds(53, 361, 148, 28);
 		adminConfigPanel.add(lblProducto_2_5_2_1_1_1_1);
 		
 		pwdAdmin2 = new JPasswordField();
-		pwdAdmin2.setBounds(203, 469, 192, 34);
+		pwdAdmin2.setBounds(204, 360, 192, 34);
 		adminConfigPanel.add(pwdAdmin2);
 		
 		cmbAdminRole = new JComboBox();
 		cmbAdminRole.setModel(new DefaultComboBoxModel(new String[] {"Administrador"}));
-		cmbAdminRole.setBounds(201, 357, 216, 34);
+		cmbAdminRole.setBounds(202, 248, 216, 34);
 		adminConfigPanel.add(cmbAdminRole);
 		
 		scrollAdmin = new JScrollPane();
-		scrollAdmin.setBounds(466, 227, 553, 251);
+		scrollAdmin.setBounds(476, 142, 553, 251);
 		adminConfigPanel.add(scrollAdmin);
 		
 		tblAdmin = new JTable();
 		scrollAdmin.setViewportView(tblAdmin);
 		
 		JButton btnUpdateAdmin = new JButton("Actualizar");
+		btnUpdateAdmin.setBackground(new Color(51, 102, 204));
+		btnUpdateAdmin.setForeground(Color.WHITE);
 		btnUpdateAdmin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				UpdateAdminProcess.updateEmployee();
 			}
 		});
-		btnUpdateAdmin.setBounds(476, 490, 153, 34);
+		btnUpdateAdmin.setBounds(493, 417, 153, 34);
 		adminConfigPanel.add(btnUpdateAdmin);
 		
 		JButton btnDeleteAdmin = new JButton("Borrar");
+		btnDeleteAdmin.setBackground(new Color(204, 0, 0));
+		btnDeleteAdmin.setForeground(Color.WHITE);
 		btnDeleteAdmin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				DeleteAdministratorProcess.removeSelectedAdmin();
 			}
 		});
-		btnDeleteAdmin.setBounds(896, 490, 123, 34);
+		btnDeleteAdmin.setBounds(913, 417, 123, 34);
 		adminConfigPanel.add(btnDeleteAdmin);
 		
 		JLabel lblProducto_2_5_2_1_2_2 = new JLabel("Apellido:");
 		lblProducto_2_5_2_1_2_2.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_5_2_1_2_2.setBounds(112, 256, 77, 28);
+		lblProducto_2_5_2_1_2_2.setBounds(113, 147, 77, 28);
 		adminConfigPanel.add(lblProducto_2_5_2_1_2_2);
 		
 		JLabel lblProducto_2_5_2_1_2_2_1 = new JLabel("Telefono:");
 		lblProducto_2_5_2_1_2_2_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_5_2_1_2_2_1.setBounds(111, 307, 76, 28);
+		lblProducto_2_5_2_1_2_2_1.setBounds(112, 198, 76, 28);
 		adminConfigPanel.add(lblProducto_2_5_2_1_2_2_1);
 		
 		txtAdminLast = new JTextField();
 		txtAdminLast.setColumns(10);
-		txtAdminLast.setBounds(187, 255, 216, 34);
+		txtAdminLast.setBounds(188, 146, 216, 34);
 		adminConfigPanel.add(txtAdminLast);
 		
 		txtAdminPhone = new JTextField();
 		txtAdminPhone.setColumns(10);
-		txtAdminPhone.setBounds(187, 301, 216, 34);
+		txtAdminPhone.setBounds(188, 192, 216, 34);
 		adminConfigPanel.add(txtAdminPhone);
 		
 		JButton btnGetCashQuantity = new JButton("Consulta Cajón");
+		btnGetCashQuantity.setBackground(new Color(51, 0, 153));
+		btnGetCashQuantity.setForeground(Color.WHITE);
 		btnGetCashQuantity.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null,"Negocio: #"+ticketTitle+"\n Cajón: $"+cash+" \n No. Venta: #"+noSale);
+				JOptionPane.showMessageDialog(null,"Negocio: "+ticketTitle+"\n Cajón: $"+cash+" \n No. Venta: #"+noSale);
 			}
 		});
 		btnGetCashQuantity.setBounds(53, 561, 150, 36);
 		tabbedSale.add(btnGetCashQuantity);
 		
 		JButton btnDeleteProduct = new JButton("Borrar Producto");
+		btnDeleteProduct.setBackground(new Color(0, 0, 0));
+		btnDeleteProduct.setForeground(Color.WHITE);
 		btnDeleteProduct.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				DeleteSaleProcess.removeSelectedSaleProcess();
 			}
 		});
-		btnDeleteProduct.setBounds(529, 380, 150, 28);
+		btnDeleteProduct.setBounds(620, 395, 143, 28);
 		tabbedSale.add(btnDeleteProduct);
 		
 		JButton btnEnableCardPayment = new JButton("Tarjeta");
+		btnEnableCardPayment.setBackground(new Color(244, 164, 96));
+		btnEnableCardPayment.setForeground(Color.WHITE);
 		btnEnableCardPayment.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				txtCardPayment.setEnabled(true);
@@ -1399,21 +1592,25 @@ public class SmartSaleBoxMain extends JFrame {
 		tabbedSale.add(btnEnableCardPayment);
 		
 		JButton btnGetAllAdmin = new JButton("Mostrar Todos");
+		btnGetAllAdmin.setBackground(new Color(153, 102, 255));
+		btnGetAllAdmin.setForeground(Color.WHITE);
 		btnGetAllAdmin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ReadAdminInfo.getAllAdminTable();
 			}
 		});
-		btnGetAllAdmin.setBounds(676, 490, 153, 34);
+		btnGetAllAdmin.setBounds(693, 417, 153, 34);
 		adminConfigPanel.add(btnGetAllAdmin);
 		
 		JButton btnShowAllEmail = new JButton("Mostrar Todos");
+		btnShowAllEmail.setBackground(new Color(153, 102, 255));
+		btnShowAllEmail.setForeground(Color.WHITE);
 		btnShowAllEmail.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ReadEmailInfo.getAllEmailTable();
 			}
 		});
-		btnShowAllEmail.setBounds(681, 420, 137, 25);
+		btnShowAllEmail.setBounds(681, 420, 137, 34);
 		EmailConfigPanel.add(btnShowAllEmail);
 		
 		JPanel SystemPathsConfigPanel = new JPanel();
@@ -1437,6 +1634,8 @@ public class SmartSaleBoxMain extends JFrame {
 		SystemPathsConfigPanel.add(lblProducto_2_5_2_1_3);
 		
 		JButton btnGuardarDirectorio = new JButton("Guardar Directorio");
+		btnGuardarDirectorio.setBackground(new Color(0, 153, 0));
+		btnGuardarDirectorio.setForeground(Color.WHITE);
 		btnGuardarDirectorio.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(SmartSaleBoxOperations.validateSystemPaths()) {
@@ -1457,12 +1656,14 @@ public class SmartSaleBoxMain extends JFrame {
 		scrollPaths.setViewportView(tblPaths);
 		
 		JButton btnUpdateEmail_1 = new JButton("Actualizar");
+		btnUpdateEmail_1.setBackground(new Color(51, 102, 255));
+		btnUpdateEmail_1.setForeground(Color.WHITE);
 		btnUpdateEmail_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				UpdateSystemPathsProcess.updateSystemPaths();
 			}
 		});
-		btnUpdateEmail_1.setBounds(472, 405, 117, 25);
+		btnUpdateEmail_1.setBounds(472, 405, 117, 38);
 		SystemPathsConfigPanel.add(btnUpdateEmail_1);
 		
 		JLabel lblConsultaDirectorios = new JLabel("Consulta Directorios");
@@ -1471,21 +1672,25 @@ public class SmartSaleBoxMain extends JFrame {
 		SystemPathsConfigPanel.add(lblConsultaDirectorios);
 		
 		JButton btnDeleteEmail_1 = new JButton("Borrar");
+		btnDeleteEmail_1.setBackground(new Color(204, 0, 0));
+		btnDeleteEmail_1.setForeground(Color.WHITE);
 		btnDeleteEmail_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				DeleteSystemPathsProcess.removeSelectedPath();
 			}
 		});
-		btnDeleteEmail_1.setBounds(858, 405, 117, 25);
+		btnDeleteEmail_1.setBounds(858, 405, 117, 38);
 		SystemPathsConfigPanel.add(btnDeleteEmail_1);
 		
 		JButton btnShowAllEmail_1 = new JButton("Mostrar Todos");
+		btnShowAllEmail_1.setBackground(new Color(153, 102, 255));
+		btnShowAllEmail_1.setForeground(Color.WHITE);
 		btnShowAllEmail_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ReadSystemPathsInfo.getAllSystemPathsTable();
 			}
 		});
-		btnShowAllEmail_1.setBounds(662, 418, 137, 25);
+		btnShowAllEmail_1.setBounds(662, 418, 137, 47);
 		SystemPathsConfigPanel.add(btnShowAllEmail_1);
 		
 		JLabel lblSeRecomiendaCrear = new JLabel("*** Se recomienda crear una carpeta  C:\\SmartSaleBox");
@@ -1530,18 +1735,23 @@ public class SmartSaleBoxMain extends JFrame {
 		
 		JLabel lblProducto_2_5_2_1_3_3 = new JLabel("Ganancias:");
 		lblProducto_2_5_2_1_3_3.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_5_2_1_3_3.setBounds(29, 337, 77, 28);
+		lblProducto_2_5_2_1_3_3.setBounds(21, 337, 85, 28);
 		SystemPathsConfigPanel.add(lblProducto_2_5_2_1_3_3);
 		
-		JLabel lblProducto_2_5_2_1_3_4 = new JLabel("Products:");
+		JLabel lblProducto_2_5_2_1_3_4 = new JLabel("Productos:");
 		lblProducto_2_5_2_1_3_4.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblProducto_2_5_2_1_3_4.setBounds(39, 382, 74, 28);
+		lblProducto_2_5_2_1_3_4.setBounds(31, 382, 82, 28);
 		SystemPathsConfigPanel.add(lblProducto_2_5_2_1_3_4);
 		
 		JLabel lblProducto_2_5_2_1_3_4_1 = new JLabel("Ventas:");
 		lblProducto_2_5_2_1_3_4_1.setFont(new Font("Lucida Bright", Font.BOLD, 14));
 		lblProducto_2_5_2_1_3_4_1.setBounds(51, 437, 62, 28);
 		SystemPathsConfigPanel.add(lblProducto_2_5_2_1_3_4_1);
+		
+		lblBussinessName = new JLabel("SmartSaleBox");
+		lblBussinessName.setFont(new Font("Dialog", Font.BOLD, 24));
+		lblBussinessName.setBounds(197, 12, 407, 28);
+		tabbedSale.add(lblBussinessName);
 		
 		txtSystemPathsProducts = new JTextField();
 		txtSystemPathsProducts.setColumns(10);
@@ -1577,6 +1787,12 @@ public class SmartSaleBoxMain extends JFrame {
 	tblSale.getColumnModel().getColumn(6).setPreferredWidth(50);
 	tblSale.getColumnModel().getColumn(7).setPreferredWidth(50);
 	scrollSale.setViewportView(tblSale);
+	
+	JLabel lblF_1_1 = new JLabel("Cobrar (ENTER)");
+	lblF_1_1.setFont(new Font("Dialog", Font.BOLD, 14));
+	lblF_1_1.setBounds(614, 504, 123, 28);
+	tabbedSale.add(lblF_1_1);
+	
 		
 	final String inflowsColumns[] = { "Id", "Concepto", "Descripción", "Cantidad", "Tipo pago", "Atendió",
 				"Fecha" };
@@ -1612,9 +1828,9 @@ public class SmartSaleBoxMain extends JFrame {
 	tblSaleHistory.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 	tblSaleHistory.getColumnModel().getColumn(0).setPreferredWidth(50);
 	tblSaleHistory.getColumnModel().getColumn(1).setPreferredWidth(180);
-	tblSaleHistory.getColumnModel().getColumn(2).setPreferredWidth(70);
-	tblSaleHistory.getColumnModel().getColumn(3).setPreferredWidth(70);
-	tblSaleHistory.getColumnModel().getColumn(4).setPreferredWidth(70);
+	tblSaleHistory.getColumnModel().getColumn(2).setPreferredWidth(120);
+	tblSaleHistory.getColumnModel().getColumn(3).setPreferredWidth(120);
+	tblSaleHistory.getColumnModel().getColumn(4).setPreferredWidth(120);
 	tblSaleHistory.getColumnModel().getColumn(5).setPreferredWidth(50);
 	tblSaleHistory.getColumnModel().getColumn(6).setPreferredWidth(50);
 	scrollSaleHistory.setViewportView(tblSaleHistory);
@@ -1668,6 +1884,62 @@ public class SmartSaleBoxMain extends JFrame {
 	tblAdmin.getColumnModel().getColumn(4).setPreferredWidth(100);
 	scrollAdmin.setViewportView(tblAdmin);
 	
+	JLabel lblProducto_2_5_2_1_1_1_1_1 = new JLabel("Nombre de Negocio: ");
+	lblProducto_2_5_2_1_1_1_1_1.setFont(new Font("Dialog", Font.BOLD, 14));
+	lblProducto_2_5_2_1_1_1_1_1.setBounds(27, 517, 148, 28);
+	adminConfigPanel.add(lblProducto_2_5_2_1_1_1_1_1);
+	
+	JButton btnUpdateBussinessName = new JButton("Actualizar");
+	btnUpdateBussinessName.setBackground(new Color(51, 102, 204));
+	btnUpdateBussinessName.setForeground(Color.WHITE);
+	btnUpdateBussinessName.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			UpdateCashProcess.updateBussinessName(txtBussinessName.getText());
+		}
+	});
+	btnUpdateBussinessName.setBounds(370, 516, 107, 34);
+	adminConfigPanel.add(btnUpdateBussinessName);
+	
+	JLabel lblPrintService = new JLabel("Impresión Tickets: ");
+	lblPrintService.setFont(new Font("Dialog", Font.BOLD, 14));
+	lblPrintService.setBounds(539, 517, 131, 28);
+	adminConfigPanel.add(lblPrintService);
+	
+	JButton btnActivatePrintService = new JButton("Activar");
+	btnActivatePrintService.setBackground(new Color(0, 204, 102));
+	btnActivatePrintService.setForeground(Color.WHITE);
+	btnActivatePrintService.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			UpdateCashProcess.activateTicketService();
+		}
+	});
+	btnActivatePrintService.setBounds(671, 556, 101, 34);
+	adminConfigPanel.add(btnActivatePrintService);
+	
+	JButton btnUnActivatePrintService = new JButton("Desactivar");
+	btnUnActivatePrintService.setBackground(new Color(153, 51, 0));
+	btnUnActivatePrintService.setForeground(Color.WHITE);
+	btnUnActivatePrintService.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			UpdateCashProcess.deactivateTicketService();
+		}
+	});
+	btnUnActivatePrintService.setBounds(782, 556, 107, 34);
+	adminConfigPanel.add(btnUnActivatePrintService);
+	
+	txtBussinessName = new JTextField();
+	txtBussinessName.setFont(new Font("Tahoma", Font.BOLD, 14));
+	txtBussinessName.setColumns(10);
+	txtBussinessName.setBounds(174, 516, 186, 34);
+	adminConfigPanel.add(txtBussinessName);
+	
+	txtTicketPrintService = new JTextField();
+	txtTicketPrintService.setFont(new Font("Tahoma", Font.BOLD, 14));
+	txtTicketPrintService.setEnabled(false);
+	txtTicketPrintService.setColumns(10);
+	txtTicketPrintService.setBounds(682, 511, 186, 34);
+	adminConfigPanel.add(txtTicketPrintService);
+	
 	final String EmailColumns[] = {"idEmail","Email","Activado?"};
 	tableModelEmail = new DefaultTableModel(EmailColumns, 0);
 	tblEmail = new JTable(tableModelEmail);
@@ -1689,5 +1961,38 @@ public class SmartSaleBoxMain extends JFrame {
 	tblPaths.getColumnModel().getColumn(5).setPreferredWidth(150);
 	scrollPaths.setViewportView(tblPaths);
 	
+	}
+	
+	private static void verifySale() {
+		if(!SmartSaleBoxOperations.isValidSaleQuantity()) {
+			JOptionPane.showMessageDialog(null,"La cantidad recibida es menor, verifique!");
+		}else if(!SmartSaleBoxOperations.isValidCashChange()) {
+			JOptionPane.showMessageDialog(null,"El cambio a dar excede la cantidad \ndisponible en cajón $"+cash+" , \nintroduzca más efectivo en caja!");
+		}
+		else {
+			if(SaveSaleProcess.createNewSaleAndInflow(SmartSaleBoxOperations.getPaymentType())) {
+				UpdateProductStockProcess.updateGeneralProductStock();
+				UpdateBulkStockProcess.updateBulkProductStock();
+				UpdateProductEarningsProcess.addGeneralProductEarning();
+				UpdateProductEarningsProcess.addBulkProductEarning();
+				
+				if(SmartSaleBoxMain.ticketService) {
+					try {
+						SaleTicket.printSaleProcess();
+					} catch (PrinterException | InterruptedException e1) {
+						JOptionPane.showMessageDialog(null,"No es posible Imprimir ticket, error: "+e1);
+					}
+				}
+				
+				UpdateCashProcess.updateCashAndNoSale();
+				SmartSaleBoxClearFields.clearSaleMain();
+				ReadInflowProcess.initInflowBalanceProcess();
+				ReadOutflowProcess.initOutflowBalanceProcess();
+				ReadSaleInfo.getAllSaleHistoryTable();
+
+			}else {
+				JOptionPane.showMessageDialog(null,"No es posible guardar la compra por el momento!");
+			}
+		}
 	}
 }
