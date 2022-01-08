@@ -68,5 +68,5 @@ public class SmartSaleBoxClearFields {
 		SmartSaleBoxMain.txtSystemPathsSales.setText(null);
 		SmartSaleBoxMain.txtSystemPathsProducts.setText(null);
 	}
-
+	
 }

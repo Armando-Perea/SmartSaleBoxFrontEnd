@@ -19,7 +19,7 @@ public class ReadEmailInfo {
 			if(email.length>0) {
 				SmartSaleBoxMain.tableModelEmail.setRowCount(0);
 				for (EmailConfig em : email) {
-					Object[] emailItems = {em.getIdEmail(),em.getEmail(),em.getIsActiveService()};
+					Object[] emailItems = {em.getIdEmail(),em.getEmail(),em.getPassword(),em.getIsActiveService()};
 					SmartSaleBoxMain.tableModelEmail.addRow(emailItems);
 				}
 				SmartSaleBoxMain.scrollEmail.setViewportView(SmartSaleBoxMain.tblEmail);

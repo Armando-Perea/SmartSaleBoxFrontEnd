@@ -7,6 +7,8 @@ import com.java.smartsalebox.models.Inflow;
 import com.java.smartsalebox.models.Outflow;
 import com.java.smartsalebox.models.Sales;
 import java.text.DecimalFormat;
+
+import com.java.smartsaleboxfrontend.gui.BulkSaleMain;
 import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
 
 public class SmartSaleBoxOperations {
@@ -280,5 +282,23 @@ public static boolean validateClosure() {
 		finalTotal = String.valueOf(quantity);
 		return finalTotal;
 	}
+	
+	public static boolean isValidBulkSale() {
+		if(BulkSaleMain.txtBulkProductSelected.getText().isEmpty() || BulkSaleMain.txtSaleQuantity.getText().isEmpty()
+				|| BulkSaleMain.txtKiloGrams.getText().isEmpty() || BulkSaleMain.txtBulkSaleId.getText().isEmpty()
+				|| BulkSaleMain.txtBulkSaleStock.getText().isEmpty()) {
+			return false;
+		}
+		return true;
+	}
+	
+	public static boolean validateScannerBulkReading() {
+		String name = BulkSaleMain.txtBulkBarCode.getText();
+		if (name.isEmpty() || name == null) {
+			return false;
+		}
+		return true;
+	}
+	
 
 }

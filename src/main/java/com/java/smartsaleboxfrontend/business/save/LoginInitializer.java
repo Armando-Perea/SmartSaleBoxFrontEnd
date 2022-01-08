@@ -15,11 +15,13 @@ import org.apache.commons.collections.CollectionUtils;
 
 import com.java.smartsalebox.client.AdministratorClient;
 import com.java.smartsalebox.client.CashClient;
+import com.java.smartsalebox.client.EmailConfigClient;
 import com.java.smartsalebox.client.InflowClient;
 import com.java.smartsalebox.models.Administrator;
 import com.java.smartsalebox.models.Cash;
 import com.java.smartsalebox.models.Inflow;
 import com.java.smartsalebox.models.Sales;
+import com.java.smartsaleboxfrontend.business.read.ReadEmailInfo;
 import com.java.smartsaleboxfrontend.business.read.ReadInflowProcess;
 import com.java.smartsaleboxfrontend.business.read.ReadOutflowProcess;
 import com.java.smartsaleboxfrontend.business.read.ReadSaleInfo;
@@ -28,9 +30,9 @@ import com.java.smartsaleboxfrontend.gui.SmartSaleBoxMain;
 public class LoginInitializer {
 
 	private static final Integer ID_CASH = 1;
-	private static final Double MINIMUM_CASH = 20.00;
+	private static final Double MINIMUM_CASH = 1.00;
 	private static final String SYSTEM_TITLE = "SmartSaleBox";
-	private static final String MINIMUM_INIT_CASH_MSG = "Debe iniciar caja con minimo de $20 MXN por favor ";
+	private static final String MINIMUM_INIT_CASH_MSG = "Debe iniciar caja con minimo de $1 MXN por favor ";
 	private static final String USER_PASS_NOT_FOUND = "Usuario y Constraseña no existen";
 
 	public static void authenticationProcess() {
@@ -66,7 +68,7 @@ public class LoginInitializer {
 			cash = initializeCashSystem();
 		}
 		initCash = cash.getQuantity();
-		if (initCash == 0.0) {
+		if (initCash <= 0.0) {
 			inCash = Integer.parseInt(JOptionPane.showInputDialog("Inicialize caja por favor: "));
 			if (inCash < MINIMUM_CASH) {
 				JOptionPane.showMessageDialog(null, MINIMUM_INIT_CASH_MSG, SYSTEM_TITLE,
@@ -80,6 +82,7 @@ public class LoginInitializer {
 					SmartSaleBoxMain.noSale++;
 					SmartSaleBoxMain.ticketTitle = cash.getTicketTitle();
 					SmartSaleBoxMain.ticketService = cash.getTicketService();
+					SmartSaleBoxMain.mailService = EmailConfigClient.getEmailConfigById(1).getIsActiveService();
 				}
 			}
 		} else {
@@ -87,6 +90,7 @@ public class LoginInitializer {
 			SmartSaleBoxMain.noSale = cash.getNoSale();
 			SmartSaleBoxMain.ticketTitle = cash.getTicketTitle();
 			SmartSaleBoxMain.ticketService = cash.getTicketService();
+			SmartSaleBoxMain.mailService = EmailConfigClient.getEmailConfigById(1).getIsActiveService();
 			JOptionPane.showMessageDialog(null, "Verifique cajón : $" + SmartSaleBoxMain.cash, SYSTEM_TITLE,
 					JOptionPane.INFORMATION_MESSAGE);
 		}

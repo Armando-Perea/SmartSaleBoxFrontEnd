@@ -21,62 +21,22 @@ Agregar opcion para imprimir Ticket   LISTO
 Agregar método para imprimir ticket  LISTO
 Antes de mandar a Imprimir, obtener la lista de productos de la tabla de Sales y enviarla como parametro a
 SaleTIcket Metod. LISTO
+Imprimir Ticket LISTO
+tab para tarjeta hacia recibido LISTO
+tab para recibido hacia cobrar LISTO
+listener para venta por granel	 LISTO
+Opcion para envio de mail, ver contraseñas LISTO
+Scannear sin textbox  LISTO
+Funciones F9 F12 etc	LISTO
+Checar servicio getByBarcode en BulkSale --> LISTO
 
 
 # Pendientes
 
-Imprimir TIcket
-Scannear sin textbox
-Funciones F9 F12 etc
 
-
-txtGetProductNameSearch.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					if (SmartSaleBoxOperations.validateGetProdNameSearch()) {
-						ReadProductsInfo.fillProductTableByName(txtGetProductNameSearch.getText());
-					} else {
-						JOptionPane.showMessageDialog(null, "Ingrese Producto por favor");
-					}
-				}
-			}
-		});
-		
-		
-if (e.getKeyCode() == KeyEvent.VK_F9) {
-					bulkSaleMain.setVisible(true);
-					bulkSaleMain.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				}		
-		
-		
-	@Override
-	public void keyTyped(KeyEvent e) {
-		System.out.println("keyTyped " + e.getKeyCode());
-		
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e) {
-		System.out.println("Pressed " + e.getKeyCode());
-		if (e.getKeyCode() == KeyEvent.VK_F9) {
-            System.out.println("Pressed " + e.getKeyCode());
-            bulkSaleMain.setVisible(true);
-			bulkSaleMain.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        } 
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		System.out.println("keyReleased " + e.getKeyCode());
-		
-	}		
-		
-		
-Opcion para envio de mail, ver contraseñas
-tab para tarjeta hacia recibido
-tab para recibido hacia cobrar
-
-listener para venta por granel	
-		
+Limpiar tablas (Opcion para truncate de tablas)
+Reiniciar cajon a predeterminado
+Reiniciar Administrador a default admin admin
+Validar existencia de producto antes de darlo de alta mediante el codigo de barras	en prod y en Bulk
+Checar los Focuses 	
 		

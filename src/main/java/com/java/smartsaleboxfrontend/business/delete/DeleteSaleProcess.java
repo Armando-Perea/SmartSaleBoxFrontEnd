@@ -39,7 +39,7 @@ public class DeleteSaleProcess {
 	 * removeSelectedSaleProcess executes the removal process for the tempSale table.
 	 */
 	public static void removeCurrentSaleProcess() {
-		SalesClient.deleteSaleByNoSale(SmartSaleBoxMain.noSale);
+		//BulkProductsClient.
 		SmartSaleBoxClearFields.clearSaleMain();
 	}
 

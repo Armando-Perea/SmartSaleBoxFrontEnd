@@ -1,7 +1,6 @@
 package com.java.smartsaleboxfrontend.business.update;
 
 import javax.swing.JOptionPane;
-
 import com.java.smartsalebox.client.EmailConfigClient;
 import com.java.smartsalebox.models.EmailConfig;
 import com.java.smartsaleboxfrontend.business.read.ReadEmailInfo;
@@ -25,6 +24,7 @@ public class UpdateEmailConfigProcess {
 		Integer emailId;
 		int status = 0;
 		String email;
+		String password;
 		String isActive;
 		EmailConfig emailConfig = new EmailConfig();
 		row = SmartSaleBoxMain.tblEmail.getSelectedRow();
@@ -34,9 +34,13 @@ public class UpdateEmailConfigProcess {
 				emailConfig = EmailConfigClient.getEmailConfigById(emailId);
 				if (emailConfig != null) {
 					email = (String) SmartSaleBoxMain.tblEmail.getValueAt(row, 1);
-					isActive = (String) SmartSaleBoxMain.tblEmail.getValueAt(row, 2);
+					password = (String) SmartSaleBoxMain.tblEmail.getValueAt(row, 2);
+					isActive = (String) SmartSaleBoxMain.tblEmail.getValueAt(row, 3);
 					if (!email.isEmpty()) {
 						emailConfig.setEmail(email);
+					}
+					if (!password.isEmpty()) {
+						emailConfig.setPassword(password);
 					}
 					if (isActive.toLowerCase().equals("true") || isActive.toLowerCase().equals("si")) {
 						emailConfig.setIsActiveService(true);
@@ -71,6 +75,40 @@ public class UpdateEmailConfigProcess {
 				JOptionPane.showMessageDialog(null, VALIDATION_DATA, VALIDATION_UPDATE_TITLE,
 						JOptionPane.WARNING_MESSAGE);
 			}
+		}
+	}
+	
+	public static void activateMailService() {
+		int status = 0;
+		EmailConfig email = new EmailConfig();
+		email = EmailConfigClient.getEmailConfigById(1);
+		email.setIsActiveService(true);
+		status = EmailConfigClient.updateEmailConfig(email);
+		if (status > 0 && status < 300) {
+			JOptionPane.showMessageDialog(null, "Envío de Correo Activado!", VALIDATION_UPDATE_TITLE,
+					JOptionPane.INFORMATION_MESSAGE);
+			SmartSaleBoxMain.txtMailService.setText("ACTIVADO");
+			SmartSaleBoxMain.mailService = true;
+		}else {
+			JOptionPane.showMessageDialog(null, "No se pudo actualizar Servicio de Correo", VALIDATION_UPDATE_TITLE,
+					JOptionPane.INFORMATION_MESSAGE);
+		}
+	}
+	
+	public static void deactivateMailService() {
+		int status = 0;
+		EmailConfig email = new EmailConfig();
+		email = EmailConfigClient.getEmailConfigById(1);
+		email.setIsActiveService(false);
+		status = EmailConfigClient.updateEmailConfig(email);
+		if (status > 0 && status < 300) {
+			JOptionPane.showMessageDialog(null, "Envío de Correo Desactivado!", VALIDATION_UPDATE_TITLE,
+					JOptionPane.INFORMATION_MESSAGE);
+			SmartSaleBoxMain.txtMailService.setText("DESACTIVADO");
+			SmartSaleBoxMain.mailService = false;
+		}else {
+			JOptionPane.showMessageDialog(null, "No se pudo actualizar Servicio de Correo", VALIDATION_UPDATE_TITLE,
+					JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 

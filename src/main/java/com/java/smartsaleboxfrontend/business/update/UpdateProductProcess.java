@@ -11,6 +11,7 @@ public class UpdateProductProcess {
 
 	// tblNewBulkProducts
 	private static final String PRODUCT_UPDATED = "Producto Actualizado con Éxito!";
+	private static final String BARCODE_ALREADYEXISTS = "El código de barras ya existe y corresponde al producto: ";
 	private static final String PRODUCT_NOT_FOUND = "Producto no existe!";
 	private static final String PRODUCT_UPDATE_FAILED = "No es posible actualizar producto";
 	private static final String SELECT_PRODUCT = "Seleccione un producto en la tabla";
@@ -30,8 +31,10 @@ public class UpdateProductProcess {
 		int status = 0;
 		String barCode, prodName;
 		Double costPrice, saleprice, earning;
+		Boolean updateProd = true;
 
 		Products product = new Products();
+		Products productBarcode = new Products();
 		row = SmartSaleBoxMain.tblNewProduct.getSelectedRow();
 		try {
 			if (row > -1) {
@@ -45,37 +48,51 @@ public class UpdateProductProcess {
 					stock = Integer.parseInt(SmartSaleBoxMain.tblNewProduct.getValueAt(row, 5).toString());
 					barCode = (String) SmartSaleBoxMain.tblNewProduct.getValueAt(row, 6);
 					//// SETTING THE VALUES TO CAREER OBJECT
-					if (!prodName.isEmpty()) {
+					if (!barCode.isEmpty()) {
+						productBarcode = ProductsClient.getProductByBarCode(barCode);
+						if(productBarcode != null) {
+							if(productBarcode.getProduct() == product.getProduct()) 
+								product.setBarCode(barCode);
+							else
+								updateProd =false;
+						}else {
+							product.setBarCode(barCode);
+						}
+					}
+					if (!prodName.isEmpty() && updateProd) {
 						product.setProduct(prodName);
 					}
-					if (!costPrice.isNaN()) {
+					if (!costPrice.isNaN() && updateProd) {
 						product.setCostPrice(costPrice);
 					}
-					if (!saleprice.isNaN()) {
+					if (!saleprice.isNaN() && updateProd) {
 						product.setSalePrice(saleprice);
 					}
 
-					if (!earning.isNaN()) {
+					if (!earning.isNaN() && updateProd) {
 						product.setEarning(saleprice-costPrice);
 					}
 
-					if (stock > -1) {
+					if (stock > -1  && updateProd) {
 						product.setStock(stock);
 					}
-
-					if (!barCode.isEmpty()) {
-						product.setBarCode(barCode);
-					}
-
-					status = ProductsClient.updateProduct(product);
-					if (status > 0 && status < 300) {
-						JOptionPane.showMessageDialog(null, PRODUCT_UPDATED, VALIDATION_UPDATE_TITLE,
+						
+					if(updateProd) {
+						status = ProductsClient.updateProduct(product);
+						if (status > 0 && status < 300) {
+							JOptionPane.showMessageDialog(null, PRODUCT_UPDATED, VALIDATION_UPDATE_TITLE,
+									JOptionPane.INFORMATION_MESSAGE);
+							ReadProductsInfo.fillProductTable();
+						} else {
+							JOptionPane.showMessageDialog(null, PRODUCT_UPDATE_FAILED, VALIDATION_UPDATE_TITLE,
+									JOptionPane.INFORMATION_MESSAGE);
+						}
+					}else {
+						JOptionPane.showMessageDialog(null, BARCODE_ALREADYEXISTS+productBarcode.getProduct()+"\n Intente otro código porfavor", VALIDATION_UPDATE_TITLE,
 								JOptionPane.INFORMATION_MESSAGE);
 						ReadProductsInfo.fillProductTable();
-					} else {
-						JOptionPane.showMessageDialog(null, PRODUCT_UPDATE_FAILED, VALIDATION_UPDATE_TITLE,
-								JOptionPane.INFORMATION_MESSAGE);
 					}
+					
 				} else {
 					JOptionPane.showMessageDialog(null, PRODUCT_NOT_FOUND, VALIDATION_UPDATE_TITLE,
 							JOptionPane.INFORMATION_MESSAGE);
@@ -85,7 +102,7 @@ public class UpdateProductProcess {
 						JOptionPane.WARNING_MESSAGE);
 			}
 		} catch (Exception ex) {
-			System.out.println("ISSUE: " + ex);
+			System.out.println("ISSUE updateSelectedProduct: " + ex.getMessage());
 			if (ex.toString().contains(VALIDATION_NUMBER) || ex.toString().contains(VALIDATION_TOTAL)) {
 				JOptionPane.showMessageDialog(null, NUMERIC_VALIDATION_ERROR, VALIDATION_UPDATE_TITLE,
 						JOptionPane.WARNING_MESSAGE);

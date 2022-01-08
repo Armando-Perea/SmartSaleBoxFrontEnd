@@ -88,6 +88,30 @@ public class ReadBulkSaleInfo {
 		}
 	}
 	
+	/**
+	 * fillCartSaleTableByName search process to be shown at list table.
+	 */
+	public static void fillBulkSaleTableByBarCode(String barCode) {
+		BulkProducts product;
+		try {
+			product = BulkProductsClient.getBulkProductByBarCode(barCode);
+			if (product != null) {
+				BulkSaleMain.tableModelBulkSale.setRowCount(0);
+
+					Object[] productItems = { product.getProduct(), product.getKiloPrice(),
+							product.getGrStock(),product.getIdBulkProduct() };
+					BulkSaleMain.tableModelBulkSale.addRow(productItems);
+
+				BulkSaleMain.scrollBulkSale.setViewportView(BulkSaleMain.tblBulkSale);
+			} else {
+				JOptionPane.showMessageDialog(null, PRODUCT_NOT_FOUND, VALIDATION_UPDATE_TITLE,
+						JOptionPane.INFORMATION_MESSAGE);
+			}
+		} catch (Exception ex) {
+			System.out.println("ISSUE: " + ex);
+		}
+	}
+	
 	public static void calculatePrice() {
 		Double kiloPrice, kiloGrams ,saleQuantity, kilo;
 		kilo=1000.0;
@@ -97,7 +121,6 @@ public class ReadBulkSaleInfo {
 			saleQuantity = (kiloGrams*kiloPrice)/kilo;
 			BulkSaleMain.txtSaleQuantity.setText(SmartSaleBoxOperations.roundDouble(saleQuantity));
 		}catch(Exception ex) {
-			BulkSaleMain.txtKiloGrams.setText("0.00");
 			BulkSaleMain.txtSaleQuantity.setText("0.00");
 		}
 
@@ -113,7 +136,6 @@ public class ReadBulkSaleInfo {
 			BulkSaleMain.txtKiloGrams.setText(SmartSaleBoxOperations.roundDouble(kiloGrams));
 		}catch(Exception ex) {
 			BulkSaleMain.txtKiloGrams.setText("0.00");
-			BulkSaleMain.txtSaleQuantity.setText("0.00");
 		}
 
 	}

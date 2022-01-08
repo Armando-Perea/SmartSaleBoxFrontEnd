@@ -87,6 +87,7 @@ public class SmartSaleBoxMain extends JFrame {
 	public static String scannerIn="";
 	public static String ticketTitle;
 	public static Boolean ticketService;
+	public static Boolean mailService;
 	public static List<Sales> salesList = new ArrayList<>();
 	public static List<Sales> bulkList = new ArrayList<>();
 	
@@ -193,6 +194,9 @@ public class SmartSaleBoxMain extends JFrame {
 	public static JTextField txtTicketPrintService;
 	public static JLabel lblBussinessName;
 	public static JTabbedPane tabbedPane;
+	public static JTextField txtMailService;
+	
+	public static JButton btnExecuteSale;
 	
 
 	/**
@@ -216,6 +220,7 @@ public class SmartSaleBoxMain extends JFrame {
 	
 
 	public SmartSaleBoxMain() {
+		setResizable(false);
 		
 		LoginInitializer.authenticationProcess();
 		initializeSmartSaleBoxComponents();
@@ -224,6 +229,7 @@ public class SmartSaleBoxMain extends JFrame {
 		SmartSaleBoxMain.lblBussinessName.setText(SmartSaleBoxMain.ticketTitle);
 		SmartSaleBoxMain.txtBussinessName.setText(SmartSaleBoxMain.ticketTitle);
 		SmartSaleBoxMain.txtTicketPrintService.setText(SmartSaleBoxMain.ticketService ? "ACTIVADO" : "DESACTIVADO");
+		SmartSaleBoxMain.txtMailService.setText(SmartSaleBoxMain.mailService ? "ACTIVADO" : "DESACTIVADO");
 	}
 	
 	public void SmartSaleBoxMain2() {
@@ -276,6 +282,10 @@ public class SmartSaleBoxMain extends JFrame {
 						scannerIn="";
 						JOptionPane.showMessageDialog(null, "Ingrese código de barras por favor");
 					}
+		        }
+				if (e.getKeyCode() == KeyEvent.VK_F1) {
+					System.out.println("Pressed " + e.getKeyCode());
+					JOptionPane.showMessageDialog(null,"Negocio: "+ticketTitle+"\n Cajón: $"+cash+" \n No. Venta: #"+noSale);
 		        }
 				if (e.getKeyCode() == KeyEvent.VK_F9) {
 		            System.out.println("Pressed " + e.getKeyCode());
@@ -390,6 +400,20 @@ public class SmartSaleBoxMain extends JFrame {
 		txtCardPayment.setColumns(10);
 		txtCardPayment.setBounds(517, 475, 87, 28);
 		tabbedSale.add(txtCardPayment);
+		txtCardPayment.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				SmartSaleBoxOperations.saleReceivedCashProcess();
+			}
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_TAB) {
+					System.out.println("Hacia Efectivo " + e.getKeyCode());
+					txtReceived.setText(null);
+					txtReceived.requestFocus();
+		        }
+			}
+		});
 		
 		txtReceived = new JTextField();
 		txtReceived.addMouseListener(new MouseAdapter() {
@@ -415,6 +439,11 @@ public class SmartSaleBoxMain extends JFrame {
 					DeleteSaleProcess.removeCurrentSaleProcess();
 					tabbedPane.requestFocus();
 		        }
+				if (e.getKeyCode() == KeyEvent.VK_TAB) {
+					System.out.println("Pressed " + e.getKeyCode());
+					btnExecuteSale.requestFocus();
+		        }
+				
 			}
 		});
 		txtReceived.setFont(new Font("Dialog", Font.BOLD, 14));
@@ -431,42 +460,12 @@ public class SmartSaleBoxMain extends JFrame {
 		txtChangeBack.setBounds(517, 540, 87, 28);
 		tabbedSale.add(txtChangeBack);
 		
-		JButton btnExecuteSale = new JButton("Cobrar");
+		btnExecuteSale = new JButton("Cobrar");
 		btnExecuteSale.setBackground(new Color(51, 204, 0));
 		btnExecuteSale.setForeground(Color.WHITE);
 		btnExecuteSale.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				verifySale();
-//				if(!SmartSaleBoxOperations.isValidSaleQuantity()) {
-//					JOptionPane.showMessageDialog(null,"La cantidad recibida es menor, verifique!");
-//				}else if(!SmartSaleBoxOperations.isValidCashChange()) {
-//					JOptionPane.showMessageDialog(null,"El cambio a dar excede la cantidad \ndisponible en cajón $"+cash+" , \nintroduzca más efectivo en caja!");
-//				}
-//				else {
-//					if(SaveSaleProcess.createNewSaleAndInflow(SmartSaleBoxOperations.getPaymentType())) {
-//						UpdateProductStockProcess.updateGeneralProductStock();
-//						UpdateBulkStockProcess.updateBulkProductStock();
-//						UpdateProductEarningsProcess.addGeneralProductEarning();
-//						UpdateProductEarningsProcess.addBulkProductEarning();
-//						
-//						if(SmartSaleBoxMain.ticketService) {
-//							try {
-//								SaleTicket.printSaleProcess();
-//							} catch (PrinterException | InterruptedException e1) {
-//								JOptionPane.showMessageDialog(null,"No es posible Imprimir ticket, error: "+e1);
-//							}
-//						}
-//						
-//						UpdateCashProcess.updateCashAndNoSale();
-//						SmartSaleBoxClearFields.clearSaleMain();
-//						ReadInflowProcess.initInflowBalanceProcess();
-//						ReadOutflowProcess.initOutflowBalanceProcess();
-//						ReadSaleInfo.getAllSaleHistoryTable();
-//
-//					}else {
-//						JOptionPane.showMessageDialog(null,"No es posible guardar la compra por el momento!");
-//					}
-//				}
 			}
 		});
 		btnExecuteSale.setBounds(503, 579, 115, 39);
@@ -559,12 +558,12 @@ public class SmartSaleBoxMain extends JFrame {
 		
 		JLabel lblF = new JLabel("F9");
 		lblF.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblF.setBounds(800, 291, 34, 28);
+		lblF.setBounds(801, 280, 34, 28);
 		tabbedSale.add(lblF);
 		
 		JLabel lblF_2 = new JLabel("F5");
 		lblF_2.setFont(new Font("Lucida Bright", Font.BOLD, 14));
-		lblF_2.setBounds(97, 473, 49, 28);
+		lblF_2.setBounds(101, 461, 49, 28);
 		tabbedSale.add(lblF_2);
 		
 		JLabel lblF_1 = new JLabel("F12");
@@ -1224,13 +1223,15 @@ public class SmartSaleBoxMain extends JFrame {
 					if(ReportClient.generateClosureReports()) {
 						JOptionPane.showMessageDialog(null,"Reportes PDFs Generados");
 						try {
-							if(EmailConfigClient.sendEmailReports(newClosure)) {
-								JOptionPane.showMessageDialog(null,"Email enviado a Administrador");
-							}else {
-								JOptionPane.showMessageDialog(null,"Email no pudo ser enviado, favor de enviar manualmente a Administrador");
-							}
+								if(SmartSaleBoxMain.mailService) {
+									if(EmailConfigClient.sendEmailReports(newClosure)) {
+										JOptionPane.showMessageDialog(null,"Email enviado a Administrador");
+									}else {
+										JOptionPane.showMessageDialog(null,"Servicio de Correo esta Inactivo, favor de enviar manualmente a Administrador");
+									}
+								}
 						} catch (Exception ex) {
-							JOptionPane.showMessageDialog(null,"Corte Generado sin envio de Email por error conexion a Internet");
+							JOptionPane.showMessageDialog(null,"Corte Generado sin envio de Email :"+ex.getMessage());
 						} 
 					}
 				}
@@ -1788,10 +1789,15 @@ public class SmartSaleBoxMain extends JFrame {
 	tblSale.getColumnModel().getColumn(7).setPreferredWidth(50);
 	scrollSale.setViewportView(tblSale);
 	
-	JLabel lblF_1_1 = new JLabel("Cobrar (ENTER)");
+	JLabel lblF_1_1 = new JLabel("Cobrar (Enter)");
 	lblF_1_1.setFont(new Font("Dialog", Font.BOLD, 14));
 	lblF_1_1.setBounds(614, 504, 123, 28);
 	tabbedSale.add(lblF_1_1);
+	
+	JLabel lblF_2_1 = new JLabel("F1");
+	lblF_2_1.setFont(new Font("Dialog", Font.BOLD, 14));
+	lblF_2_1.setBounds(101, 591, 49, 28);
+	tabbedSale.add(lblF_2_1);
 	
 		
 	final String inflowsColumns[] = { "Id", "Concepto", "Descripción", "Cantidad", "Tipo pago", "Atendió",
@@ -1940,14 +1946,56 @@ public class SmartSaleBoxMain extends JFrame {
 	txtTicketPrintService.setBounds(682, 511, 186, 34);
 	adminConfigPanel.add(txtTicketPrintService);
 	
-	final String EmailColumns[] = {"idEmail","Email","Activado?"};
+	final String EmailColumns[] = {"idEmail","Email","Password","Activado?"};
 	tableModelEmail = new DefaultTableModel(EmailColumns, 0);
 	tblEmail = new JTable(tableModelEmail);
 	tblEmail.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 	tblEmail.getColumnModel().getColumn(0).setPreferredWidth(100);
 	tblEmail.getColumnModel().getColumn(1).setPreferredWidth(150);
 	tblEmail.getColumnModel().getColumn(2).setPreferredWidth(150);
+	tblEmail.getColumnModel().getColumn(3).setPreferredWidth(150);
 	scrollEmail.setViewportView(tblEmail);
+	
+	JLabel lblPrintService_1 = new JLabel("Envío de correo:");
+	lblPrintService_1.setFont(new Font("Dialog", Font.BOLD, 14));
+	lblPrintService_1.setBounds(49, 492, 117, 28);
+	EmailConfigPanel.add(lblPrintService_1);
+	
+	txtMailService = new JTextField();
+	txtMailService.setFont(new Font("Tahoma", Font.BOLD, 14));
+	txtMailService.setEnabled(false);
+	txtMailService.setColumns(10);
+	txtMailService.setBounds(176, 490, 186, 34);
+	EmailConfigPanel.add(txtMailService);
+	
+	JButton btnActivateMailService = new JButton("Activar");
+	btnActivateMailService.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			UpdateEmailConfigProcess.activateMailService();
+			ReadEmailInfo.getAllEmailTable();
+		}
+	});
+	btnActivateMailService.setForeground(Color.WHITE);
+	btnActivateMailService.setBackground(new Color(0, 204, 102));
+	btnActivateMailService.setBounds(165, 535, 101, 34);
+	EmailConfigPanel.add(btnActivateMailService);
+	
+	JButton btnUnActivateMailService = new JButton("Desactivar");
+	btnUnActivateMailService.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			UpdateEmailConfigProcess.deactivateMailService();
+			ReadEmailInfo.getAllEmailTable();
+		}
+	});
+	btnUnActivateMailService.setForeground(Color.WHITE);
+	btnUnActivateMailService.setBackground(new Color(153, 51, 0));
+	btnUnActivateMailService.setBounds(276, 535, 107, 34);
+	EmailConfigPanel.add(btnUnActivateMailService);
+	
+	JLabel lblPrintService_1_1 = new JLabel("El Correo con Id= 1 es el utilizado para enviar los informes al hacer el corte.");
+	lblPrintService_1_1.setFont(new Font("Dialog", Font.BOLD, 14));
+	lblPrintService_1_1.setBounds(449, 61, 568, 64);
+	EmailConfigPanel.add(lblPrintService_1_1);
 	
 	final String SystemPathsColumns[] = {"id","Cierre","Entradas","Salidas","Ganancias","Productos","Ventas"};
 	tableModelPaths = new DefaultTableModel(SystemPathsColumns, 0);
@@ -1989,7 +2037,8 @@ public class SmartSaleBoxMain extends JFrame {
 				ReadInflowProcess.initInflowBalanceProcess();
 				ReadOutflowProcess.initOutflowBalanceProcess();
 				ReadSaleInfo.getAllSaleHistoryTable();
-
+				scannerIn = scannerIn.trim();
+				tabbedPane.requestFocus();
 			}else {
 				JOptionPane.showMessageDialog(null,"No es posible guardar la compra por el momento!");
 			}
